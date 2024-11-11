@@ -108,7 +108,7 @@ def fetch_runtime():
     config = get_config_filepath()
 
     if embed.exists():
-        logging.info(f"比较[{embed}]文件和配置文件校验和")
+        logging.info(f"比较[{embed.name}]文件和配置文件[{config.name}]校验和")
         src_checksum = _get_json_value(config, "embed_file_checksum")
         dst_checksum = _calc_checksum(embed)
         if src_checksum == dst_checksum:
@@ -124,9 +124,11 @@ def fetch_runtime():
         runtime_files = url.read()
 
     logging.info(f"从地址[{fastest_url}]下载运行时")
-
+    t0 = time.perf_counter()
     with open(embed, "wb") as f:
         f.write(runtime_files)
+    logging.info(f"下载完成, 总共用时: {time.perf_counter() - t0:.2f}s.")
 
     checksum = _calc_checksum(embed)
+    logging.info(f"写入校验和[{checksum}]到配置文件{config}")
     _update_json_values(config, dict(embed_file_checksum=checksum))
