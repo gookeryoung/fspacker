@@ -137,7 +137,7 @@ def fetch_runtime():
 
 def unpack_runtime(project_dir: pathlib.Path) -> bool:
     embed = get_embed_filepath()
-    dest = project_dir / "runtime"
+    dest = project_dir / "dist" / "runtime"
     if not dest.exists():
         logging.info(f"创建项目运行时文件夹: [{dest}]")
         dest.mkdir(parents=True)
