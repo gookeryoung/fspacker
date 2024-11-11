@@ -2,6 +2,7 @@ import hashlib
 import json
 import logging
 import pathlib
+import shutil
 import time
 import typing
 from urllib.request import urlopen
@@ -16,7 +17,7 @@ from fspacker.parser.dirs import (
     get_config_filepath,
 )
 
-__all__ = ("fetch_runtime",)
+__all__ = ("fetch_runtime", "unpack_runtime")
 
 
 def _calc_checksum(
@@ -127,8 +128,26 @@ def fetch_runtime():
     t0 = time.perf_counter()
     with open(embed, "wb") as f:
         f.write(runtime_files)
-    logging.info(f"下载完成, 总共用时: {time.perf_counter() - t0:.2f}s.")
+    logging.info(f"下载完成, 用时: {time.perf_counter() - t0:.2f}s.")
 
     checksum = _calc_checksum(embed)
     logging.info(f"写入校验和[{checksum}]到配置文件{config}")
     _update_json_values(config, dict(embed_file_checksum=checksum))
+
+
+def unpack_runtime(project_dir: pathlib.Path) -> bool:
+    embed = get_embed_filepath()
+    dest = project_dir / "runtime"
+    if not dest.exists():
+        logging.info(f"创建项目运行时文件夹: [{dest}]")
+        dest.mkdir(parents=True)
+
+    logging.info(f"解压运行时文件[{embed.name}]->[{dest}]")
+    t0 = time.perf_counter()
+    try:
+        shutil.unpack_archive(embed, dest, "zip")
+        logging.info(f"解压完成, 用时: {time.perf_counter() - t0:.2f}s.")
+        return True
+    except ValueError as e:
+        logging.error(f"解压失败, 信息: {e}")
+        return False

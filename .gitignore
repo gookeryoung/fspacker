@@ -160,3 +160,11 @@ cython_debug/
 #.idea/
 .idea
 uv.lock
+
+# python embed files
+*.exe
+*.dll
+python.cat
+python38._pth
+python38.zip
+LICENSE.txt

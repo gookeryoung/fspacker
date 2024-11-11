@@ -19,6 +19,7 @@ _cache_dir: typing.Optional[pathlib.Path] = None
 _embed_dir: typing.Optional[pathlib.Path] = None
 _wheel_dir: typing.Optional[pathlib.Path] = None
 _config_path: typing.Optional[pathlib.Path] = None
+_embed_path: typing.Optional[pathlib.Path] = None
 _python_ver: typing.Optional[str] = None
 _arch: typing.Optional[str] = None
 _archive_file: typing.Optional[str] = None
@@ -103,7 +104,13 @@ def get_embed_dir():
 
 
 def get_embed_filepath():
-    return get_embed_dir() / get_embed_archive_name()
+    global _embed_path
+
+    if _embed_path is None:
+        _embed_path = get_embed_dir() / get_embed_archive_name()
+        logging.info(f"embed 压缩包路径: [{_embed_path}]")
+
+    return _embed_path
 
 
 def get_wheel_dir():
