@@ -10,7 +10,7 @@ from urllib.request import urlopen
 import requests
 
 from fspacker.config import EMBED_URL_PREFIX
-from fspacker.parser.dirs import (
+from fspacker.dirs import (
     get_embed_archive_name,
     get_python_ver,
     get_embed_filepath,
