@@ -60,7 +60,7 @@ def _setup_library_repo() -> None:
                 )
 
         except ValueError as e:
-            logging.error(f"分析库文件[{lib_file.stem}]出错")
+            logging.error(f"分析库文件[{lib_file.stem}]出错, 信息: [{e}]")
 
 
 def fetch_libs_repo() -> typing.Dict[str, LibraryInfo]:
@@ -79,7 +79,8 @@ def get_libs_std() -> typing.List[str]:
         major_ver = get_python_ver_major()
         _libs_std = stdlib_list.stdlib_list(major_ver)
         logging.info(
-            f"获取内置库信息, python {major_ver}共包含[{len(_libs_std)}]个内置库"
+            f"获取内置库信息, python {major_ver}\
+                共包含[{len(_libs_std)}]个内置库"
         )
 
     return _libs_std

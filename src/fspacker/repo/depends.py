@@ -22,7 +22,8 @@ class DependsInfo:
             files = [*self.files[:MAX_SHOWN_FILES], "..."]
         else:
             files = self.files
-        return f"[name={self.name}, files={files}, folders={self.folders}], depends={self.depends}"
+        return f"[name={self.name}, files={files}, \
+            folders={self.folders}], depends={self.depends}"
 
 
 _depends_config: typing.Dict[str, DependsInfo] = {}
@@ -32,7 +33,7 @@ def fetch_depends_tree() -> typing.Dict[str, DependsInfo]:
     global _depends_config
 
     if not len(_depends_config):
-        depends = {}
+        depends: typing.Dict[str, DependsInfo] = {}
         config_file = get_depends_filepath()
         config = rtoml.load(config_file)
         for k, v in config.items():

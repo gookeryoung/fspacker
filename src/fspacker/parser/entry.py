@@ -2,7 +2,7 @@ import logging
 import shutil
 import string
 
-from fspacker.dirs import get_dist_dir, get_assets_dir
+from fspacker.dirs import get_assets_dir, get_dist_dir
 from fspacker.parser.project import ProjectConfig
 
 __all__ = ("pack_entry",)

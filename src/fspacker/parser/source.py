@@ -2,17 +2,14 @@ import logging
 import pathlib
 import typing
 
-from fspacker.config import IGNORE_DIRS, GUI_LIBS
+from fspacker.config import GUI_LIBS, IGNORE_DIRS
 
 __all__ = ("SourceParser",)
 
 from fspacker.parser.deps import pack_src_deps
-
 from fspacker.parser.entry import pack_entry
 from fspacker.parser.library import pack_library
-
 from fspacker.parser.project import ProjectConfig
-
 from fspacker.repo.library import LibraryInfo, fetch_libs_repo
 from fspacker.repo.runtime import pack_runtime
 
@@ -78,7 +75,7 @@ class SourceParser:
     def _parse_py_file(self, filepath: pathlib.Path):
         dep_src = []
 
-        with open(filepath, "r", encoding="utf-8") as f:
+        with open(filepath, encoding="utf-8") as f:
             content = "".join(f.readlines())
             if "def main" in content or "__main__" in content:
                 libs = self._parse_libs(content)
