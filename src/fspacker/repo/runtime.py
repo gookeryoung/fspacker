@@ -18,7 +18,7 @@ from fspacker.dirs import (
     get_runtime_dir,
 )
 
-__all__ = ("fetch_runtime", "unpack_runtime")
+__all__ = ("fetch_runtime", "pack_runtime")
 
 
 def _calc_checksum(
@@ -136,7 +136,7 @@ def fetch_runtime():
     _update_json_values(config, dict(embed_file_checksum=checksum))
 
 
-def unpack_runtime(project_dir: pathlib.Path) -> bool:
+def pack_runtime(project_dir: pathlib.Path) -> bool:
     embed = get_embed_filepath()
     dest = get_runtime_dir(project_dir)
     if not dest.exists():

@@ -10,11 +10,15 @@ __all__ = ("fetch_libs_repo",)
 
 @dataclasses.dataclass
 class LibraryInfo:
-    name: str
+    package_name: str
+    version: str
+    build_tag: str
+    abi_tag: str
+    platform_tag: str
     filepath: pathlib.Path
 
     def __repr__(self):
-        return f"[name={self.name}, filepath={self.filepath}]"
+        return f"[package_name={self.package_name}, filepath={self.filepath}]"
 
 
 _libs_repo: typing.Dict[str, LibraryInfo] = {}
@@ -27,10 +31,27 @@ def _setup_library_repo() -> None:
     )
     logging.info(f"获取库文件, 总数: {len(lib_files)}")
     for lib_file in lib_files:
-        _libs_repo.setdefault(
-            lib_file.stem,
-            LibraryInfo(name=lib_file.stem, filepath=lib_file),
-        )
+        try:
+            package_name, *version, build_tag, abi_tag, platform_tag = (
+                lib_file.stem.split("-")
+            )
+            _libs_repo.setdefault(
+                lib_file.stem,
+                LibraryInfo(
+                    package_name=package_name,
+                    version=version,
+                    build_tag=build_tag,
+                    abi_tag=abi_tag,
+                    platform_tag=platform_tag,
+                    filepath=lib_file,
+                ),
+            )
+
+            if len(version) > 1:
+                logging.info(f"库文件[{lib_file.stem}]包含多个版本: [{version}]")
+
+        except ValueError as e:
+            logging.error(f"分析库文件[{lib_file.stem}]出错")
 
 
 def fetch_libs_repo() -> typing.Dict[str, LibraryInfo]:
