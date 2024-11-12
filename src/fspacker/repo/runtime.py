@@ -20,9 +20,11 @@ from fspacker.dirs import (
 
 __all__ = ("fetch_runtime", "pack_runtime")
 
+from fspacker.parser.project import ProjectConfig
+
 
 def _calc_checksum(
-    filepath: pathlib.Path, algorithm="md5", block_size=4096
+        filepath: pathlib.Path, algorithm="md5", block_size=4096
 ) -> str:
     """计算文件校验和.
 
@@ -55,7 +57,7 @@ def _get_json_value(filepath: pathlib.Path, key: str) -> typing.Any:
 
 
 def _update_json_values(
-    filepath: pathlib.Path, updates: typing.Dict[str, typing.Any]
+        filepath: pathlib.Path, updates: typing.Dict[str, typing.Any]
 ):
     """Update [key, value] in json file
 
@@ -136,9 +138,9 @@ def fetch_runtime():
     _update_json_values(config, dict(embed_file_checksum=checksum))
 
 
-def pack_runtime(project_dir: pathlib.Path) -> bool:
+def pack_runtime(target: ProjectConfig) -> bool:
     embed = get_embed_filepath()
-    dest = get_runtime_dir(project_dir)
+    dest = get_runtime_dir(target.src.parent)
     if not dest.exists():
         logging.info(f"创建项目运行时文件夹: [{dest}]")
         dest.mkdir(parents=True)

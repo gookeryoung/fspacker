@@ -6,7 +6,10 @@ from fspacker.config import IGNORE_DIRS, GUI_LIBS
 
 __all__ = ("SourceParser",)
 
+from fspacker.parser.deps import pack_src_deps
+
 from fspacker.parser.entry import pack_entry
+
 from fspacker.parser.project import ProjectConfig
 
 from fspacker.repo.library import LibraryInfo, fetch_libs_repo
@@ -32,8 +35,10 @@ class SourceParser:
         self._parse_func()
 
     def pack(self):
-        self._pack_runtime()
-        self._pack_entry()
+        for name, target in self.targets.items():
+            pack_runtime(target)
+            pack_entry(target)
+            pack_src_deps(target)
 
     def _parse_toml(self):
         """通过 pyproject.toml 分析项目结构"""
@@ -99,12 +104,3 @@ class SourceParser:
                 ]:
                     libs.append(v)
         return libs
-
-    def _pack_runtime(self):
-        """打包运行时"""
-        for name, target in self.targets.items():
-            pack_runtime(target.src.parent)
-
-    def _pack_entry(self):
-        for name, target in self.targets.items():
-            pack_entry(target)
