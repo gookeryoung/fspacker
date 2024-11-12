@@ -14,6 +14,7 @@ __all__ = (
     "get_embed_filepath",
     "get_wheel_dir",
     "get_dist_dir",
+    "get_runtime_dir",
 )
 
 _cache_dir: typing.Optional[pathlib.Path] = None
@@ -126,6 +127,8 @@ def get_wheel_dir():
 
 
 def get_dist_dir(project_dir: pathlib.Path):
-    dist_dir = project_dir / "dist"
-    logging.info(f"项目发布路径: [{dist_dir}]")
-    return dist_dir
+    return project_dir / "dist"
+
+
+def get_runtime_dir(project_dir: pathlib.Path):
+    return get_dist_dir(project_dir) / "runtime"

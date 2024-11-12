@@ -15,7 +15,7 @@ from fspacker.parser.dirs import (
     get_python_ver,
     get_embed_filepath,
     get_config_filepath,
-    get_dist_dir,
+    get_runtime_dir,
 )
 
 __all__ = ("fetch_runtime", "unpack_runtime")
@@ -138,7 +138,7 @@ def fetch_runtime():
 
 def unpack_runtime(project_dir: pathlib.Path) -> bool:
     embed = get_embed_filepath()
-    dest = get_dist_dir(project_dir) / "runtime"
+    dest = get_runtime_dir(project_dir)
     if not dest.exists():
         logging.info(f"创建项目运行时文件夹: [{dest}]")
         dest.mkdir(parents=True)
