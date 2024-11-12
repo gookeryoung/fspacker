@@ -12,14 +12,14 @@ __all__ = (
     "get_embed_archive_name",
     "get_embed_dir",
     "get_embed_filepath",
-    "get_wheel_dir",
+    "get_lib_dir",
     "get_dist_dir",
     "get_runtime_dir",
 )
 
 _cache_dir: typing.Optional[pathlib.Path] = None
 _embed_dir: typing.Optional[pathlib.Path] = None
-_wheel_dir: typing.Optional[pathlib.Path] = None
+_lib_dir: typing.Optional[pathlib.Path] = None
 _config_path: typing.Optional[pathlib.Path] = None
 _embed_path: typing.Optional[pathlib.Path] = None
 _python_ver: typing.Optional[str] = None
@@ -115,20 +115,31 @@ def get_embed_filepath():
     return _embed_path
 
 
-def get_wheel_dir():
-    global _wheel_dir
+def get_lib_dir() -> pathlib.Path:
+    global _lib_dir
 
-    if _wheel_dir is None:
-        _wheel_dir = _get_cached_dir() / "wheel-repo"
-        logging.info(f"创建 wheel 库目录: {_wheel_dir}")
-        _wheel_dir.mkdir(exist_ok=True, parents=True)
+    if _lib_dir is None:
+        _lib_dir = os.getenv("FSPACKER_LIB_DIR")
 
-    return _wheel_dir
+        if _lib_dir:
+            _lib_dir = pathlib.Path(_lib_dir).expanduser()
+            logging.info(f"获取环境变量库目录: [{_lib_dir}]")
+        else:
+            _lib_dir = _get_cached_dir() / "lib-repo"
+            logging.info(
+                f"未设置环境变量[FSPACKER_LIB_DIR], 获取默认库目录: [{_lib_dir}]"
+            )
+
+        if not _lib_dir.exists():
+            logging.info(f"创建库目录: {_lib_dir}")
+            _lib_dir.mkdir(exist_ok=True, parents=True)
+
+    return _lib_dir
 
 
-def get_dist_dir(project_dir: pathlib.Path):
+def get_dist_dir(project_dir: pathlib.Path) -> pathlib.Path:
     return project_dir / "dist"
 
 
-def get_runtime_dir(project_dir: pathlib.Path):
+def get_runtime_dir(project_dir: pathlib.Path) -> pathlib.Path:
     return get_dist_dir(project_dir) / "runtime"
