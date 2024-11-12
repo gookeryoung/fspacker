@@ -4,7 +4,6 @@ import pathlib
 import time
 
 from fspacker.parser.source import SourceParser
-from fspacker.repo.depends import fetch_depends_tree
 from fspacker.repo.library import fetch_libs_repo, get_libs_std
 from fspacker.repo.runtime import fetch_runtime
 
@@ -40,7 +39,6 @@ def main():
 
     fetch_runtime()
     fetch_libs_repo()
-    fetch_depends_tree()
     get_libs_std()
 
     parser = SourceParser(directory, directory)

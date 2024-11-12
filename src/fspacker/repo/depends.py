@@ -14,9 +14,10 @@ class DependsInfo:
     name: str
     files: typing.List[str]
     folders: typing.List[str]
+    depends: typing.List[str]
 
     def __repr__(self):
-        return f"[name={self.name}, files={self.files}, folders={self.folders}]"
+        return f"[name={self.name}, files={self.files}, folders={self.folders}], depends={self.depends}"
 
 
 _depends_config: typing.Dict[str, DependsInfo] = {}
@@ -34,8 +35,9 @@ def fetch_depends_tree() -> typing.Dict[str, DependsInfo]:
                 k,
                 DependsInfo(
                     name=k,
-                    files=config[k]["files"],
-                    folders=config[k]["folders"],
+                    files=config[k].get("files"),
+                    folders=config[k].get("folders"),
+                    depends=config[k].get("depends")
                 ),
             )
         _depends_config.update(depends)

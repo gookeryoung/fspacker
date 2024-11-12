@@ -17,4 +17,9 @@ IGNORE_DIRS = (
     "__pycache__",
     ".ruff_cache",
 )
+IGNORE_SYMBOLS = (
+    "dist-info",
+    "__pycache__",
+    "docs",
+)
 GUI_LIBS = ("pyside2", "pyqt5", "pygame", "matplotlib", "tkinter")

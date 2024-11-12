@@ -43,7 +43,7 @@ def _setup_library_repo() -> None:
                 lib_file.stem.split("-")
             )
             _libs_repo.setdefault(
-                lib_file.stem,
+                package_name.lower(),
                 LibraryInfo(
                     package_name=package_name,
                     version=version,

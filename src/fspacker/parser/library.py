@@ -1,28 +1,34 @@
 import logging
-import pathlib
 import zipfile
 
+from fspacker.config import IGNORE_SYMBOLS
 from fspacker.dirs import get_dist_dir
 from fspacker.parser.project import ProjectConfig
+from fspacker.repo.depends import fetch_depends_tree
+from fspacker.repo.library import LibraryInfo, fetch_libs_repo
 
 
-def unzip_wheel_file(whl_file: pathlib.Path, output_dir):
-    """
-    从 .whl 文件中解压指定的文件并将其放到特定目录中。
+def unzip_wheel_file(lib: LibraryInfo, output_dir):
+    """从库文件中解压指定的文件并将其放到特定目录中。"""
+    lib_repo = fetch_libs_repo()
+    dep_tree = fetch_depends_tree()
+    dependency = dep_tree.get(lib.package_name)
 
-    :param whl_file: .whl 文件的路径
-    :param output_dir: 输出目录
-    """
+    with zipfile.ZipFile(lib.filepath, "r") as f:
+        for target_file in f.namelist():
+            if hasattr(dependency, "files"):
+                relative_path = target_file.replace(f"{lib.package_name}/", "")
+                if relative_path not in dependency.files:
+                    continue
 
-    # 打开 .whl 文件
-    with zipfile.ZipFile(whl_file, "r") as zip_ref:
-        # 检查目标文件是否存在
-        if target_file in zip_ref.namelist():
-            # 解压目标文件到输出目录
-            zip_ref.extract(target_file, output_dir)
-            print(f"Extracted {target_file} to {output_dir}")
-        else:
-            print(f"{target_file} not found in {whl_file}")
+            if any(_ in target_file for _ in IGNORE_SYMBOLS):
+                continue
+                
+            f.extract(target_file, output_dir)
+
+    if hasattr(dependency, "depends"):
+        for depend in dependency.depends:
+            unzip_wheel_file(lib_repo.get(depend), output_dir)
 
 
 def pack_library(target: ProjectConfig):
@@ -39,14 +45,5 @@ def pack_library(target: ProjectConfig):
             logging.info(f"目录[{packages_dir.name}]下已存在[{lib}]库, 跳过")
             continue
 
-        # if lib == "tkinter":
-        #     logging.info(
-        #         f"解压tkinter库[{PATH_LIB}]->[{packages_dir.parent}]"
-        #     )
-        #     shutil.unpack_archive(PATH_LIB, packages_dir.parent, "zip")
-        #
-        # # 对于tkinter库还需要复制依赖库文件
-        # logging.info(f"解压依赖库[{lib}]->[{packages_dir}]")
-        # shutil.unpack_archive(
-        #     DIR_PACKAGE / f"{lib}.zip", packages_dir, "zip"
-        # )
+        logging.info(f"解压依赖库[{lib}]->[{packages_dir}]")
+        unzip_wheel_file(lib, packages_dir)

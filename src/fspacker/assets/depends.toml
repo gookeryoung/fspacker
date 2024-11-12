@@ -13,9 +13,23 @@ files = [
     "QtGui.pyi",
     "QtWidgets.pyd",
     "QtWidgets.pyi",
+    "plugins/iconengines/qsvgicon.dll",
+    "plugins/imageformats/qgif.dll",
+    "plugins/imageformats/qicns.dll",
+    "plugins/imageformats/qico.dll",
+    "plugins/imageformats/qjpeg.dll",
+    "plugins/imageformats/qsvg.dll",
+    "plugins/imageformats/qtga.dll",
+    "plugins/imageformats/qtiff.dll",
+    "plugins/imageformats/qwbmp.dll",
+    "plugins/imageformats/qwebp.dll",
+    "plugins/platforms/qwindows.dll",
+    "plugins/platforms/qwebgl.dll",
+    "plugins/platforms/qoffscreen.dll",
+    "plugins/platforms/qminimal.dll",
+    "plugins/platforms/qdirect2d.dll",
 ]
-folders = [
-    "plugins.iconengines",
-    "plugins.imageformats",
-    "plugins.platforms",
+depends = [
+    "shiboken2",
+    "six"
 ]
