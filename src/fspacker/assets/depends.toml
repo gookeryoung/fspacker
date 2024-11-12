@@ -1,0 +1,21 @@
+[PySide2]
+files = [
+    "__init__.py",
+    "pyside2.abi3.dll",
+    "Qt5Core.dll",
+    "Qt5Gui.dll",
+    "Qt5Network.dll",
+    "Qt5Qml.dll",
+    "Qt5Widgets.dll",
+    "QtCore.pyd",
+    "QtCore.pyi",
+    "QtGui.pyd",
+    "QtGui.pyi",
+    "QtWidgets.pyd",
+    "QtWidgets.pyi",
+]
+folders = [
+    "plugins.iconengines",
+    "plugins.imageformats",
+    "plugins.platforms",
+]

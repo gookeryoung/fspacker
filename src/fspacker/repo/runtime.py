@@ -24,7 +24,7 @@ from fspacker.parser.project import ProjectConfig
 
 
 def _calc_checksum(
-        filepath: pathlib.Path, algorithm="md5", block_size=4096
+    filepath: pathlib.Path, algorithm="md5", block_size=4096
 ) -> str:
     """计算文件校验和.
 
@@ -57,7 +57,7 @@ def _get_json_value(filepath: pathlib.Path, key: str) -> typing.Any:
 
 
 def _update_json_values(
-        filepath: pathlib.Path, updates: typing.Dict[str, typing.Any]
+    filepath: pathlib.Path, updates: typing.Dict[str, typing.Any]
 ):
     """Update [key, value] in json file
 

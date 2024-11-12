@@ -9,6 +9,7 @@ __all__ = ("SourceParser",)
 from fspacker.parser.deps import pack_src_deps
 
 from fspacker.parser.entry import pack_entry
+from fspacker.parser.library import pack_library
 
 from fspacker.parser.project import ProjectConfig
 
@@ -39,6 +40,7 @@ class SourceParser:
             pack_runtime(target)
             pack_entry(target)
             pack_src_deps(target)
+            pack_library(target)
 
     def _parse_toml(self):
         """通过 pyproject.toml 分析项目结构"""

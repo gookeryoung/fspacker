@@ -12,6 +12,7 @@ __all__ = (
     "get_config_filepath",
     "get_embed_archive_name",
     "get_assets_dir",
+    "get_depends_filepath",
     "get_embed_dir",
     "get_embed_filepath",
     "get_lib_dir",
@@ -24,6 +25,7 @@ _embed_dir: typing.Optional[pathlib.Path] = None
 _lib_dir: typing.Optional[pathlib.Path] = None
 _assets_dir: typing.Optional[pathlib.Path] = None
 _config_path: typing.Optional[pathlib.Path] = None
+_depends_path: typing.Optional[pathlib.Path] = None
 _embed_path: typing.Optional[pathlib.Path] = None
 _python_ver: typing.Optional[str] = None
 _python_ver_major: typing.Optional[str] = None
@@ -114,6 +116,16 @@ def get_assets_dir() -> pathlib.Path:
         logging.info(f"获取 assets 目录: [{_assets_dir}]")
 
     return _assets_dir
+
+
+def get_depends_filepath() -> pathlib.Path:
+    global _depends_path
+
+    if _depends_path is None:
+        _depends_path = get_assets_dir() / "depends.toml"
+        logging.info(f"依赖文件: [{_depends_path}]")
+
+    return _depends_path
 
 
 def get_embed_dir() -> pathlib.Path:

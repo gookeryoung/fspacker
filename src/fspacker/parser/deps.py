@@ -4,9 +4,7 @@ import shutil
 from fspacker.dirs import get_dist_dir
 from fspacker.parser.project import ProjectConfig
 
-__all__ = (
-    "pack_src_deps",
-)
+__all__ = ("pack_src_deps",)
 
 
 def pack_src_deps(target: ProjectConfig):
@@ -18,8 +16,6 @@ def pack_src_deps(target: ProjectConfig):
 
     for dep in target.deps:
         if dep.is_dir():
-            shutil.copytree(
-                dep, str(dst / dep.stem), dirs_exist_ok=True
-            )
+            shutil.copytree(dep, str(dst / dep.stem), dirs_exist_ok=True)
         elif dep.is_file():
             shutil.copy(dep, str(dst / dep.name))
