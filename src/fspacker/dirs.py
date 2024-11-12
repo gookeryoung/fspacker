@@ -10,6 +10,7 @@ __all__ = (
     "get_python_ver",
     "get_config_filepath",
     "get_embed_archive_name",
+    "get_assets_dir",
     "get_embed_dir",
     "get_embed_filepath",
     "get_lib_dir",
@@ -20,6 +21,7 @@ __all__ = (
 _cache_dir: typing.Optional[pathlib.Path] = None
 _embed_dir: typing.Optional[pathlib.Path] = None
 _lib_dir: typing.Optional[pathlib.Path] = None
+_assets_dir: typing.Optional[pathlib.Path] = None
 _config_path: typing.Optional[pathlib.Path] = None
 _embed_path: typing.Optional[pathlib.Path] = None
 _python_ver: typing.Optional[str] = None
@@ -27,7 +29,7 @@ _arch: typing.Optional[str] = None
 _archive_file: typing.Optional[str] = None
 
 
-def get_python_ver():
+def get_python_ver() -> str:
     global _python_ver
 
     if not _python_ver:
@@ -37,7 +39,7 @@ def get_python_ver():
     return _python_ver
 
 
-def _get_arch():
+def _get_arch() -> str:
     global _arch
 
     if not _arch:
@@ -53,7 +55,8 @@ def _get_cached_dir() -> pathlib.Path:
     global _cache_dir
 
     if _cache_dir is None:
-        _cache_dir = os.getenv("FSPACKER_CACHE_DIR")
+        env = os.getenv("FSPACKER_CACHE_DIR")
+        _cache_dir = pathlib.Path(env) if env else None
 
         if _cache_dir:
             _cache_dir = pathlib.Path(_cache_dir).expanduser()
@@ -79,7 +82,7 @@ def get_config_filepath() -> pathlib.Path:
     return _config_path
 
 
-def get_embed_archive_name():
+def get_embed_archive_name() -> str:
     """获取 embed 文件压缩包名称"""
     global _archive_file
 
@@ -89,7 +92,19 @@ def get_embed_archive_name():
     return _archive_file
 
 
-def get_embed_dir():
+def get_assets_dir() -> pathlib.Path:
+    """获取 assets 文件夹"""
+    global _assets_dir
+
+    if _assets_dir is None:
+        _assets_dir = pathlib.Path(__file__).parent / "assets"
+        assert _assets_dir.exists()
+        logging.info(f"获取 assets 目录: [{_assets_dir}]")
+
+    return _assets_dir
+
+
+def get_embed_dir() -> pathlib.Path:
     """获取 embed 文件夹"""
     global _embed_dir
 
@@ -105,7 +120,7 @@ def get_embed_dir():
     return _embed_dir
 
 
-def get_embed_filepath():
+def get_embed_filepath() -> pathlib.Path:
     global _embed_path
 
     if _embed_path is None:
@@ -119,7 +134,8 @@ def get_lib_dir() -> pathlib.Path:
     global _lib_dir
 
     if _lib_dir is None:
-        _lib_dir = os.getenv("FSPACKER_LIB_DIR")
+        env = os.getenv("FSPACKER_LIB_DIR")
+        _lib_dir = pathlib.Path(env) if env else None
 
         if _lib_dir:
             _lib_dir = pathlib.Path(_lib_dir).expanduser()
