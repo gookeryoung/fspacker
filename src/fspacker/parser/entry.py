@@ -3,7 +3,7 @@ import shutil
 import string
 
 from fspacker.dirs import get_dist_dir, get_assets_dir
-from fspacker.parser.source import SourceParser
+from fspacker.parser.source import ProjectConfig
 
 __all__ = ("pack_entry",)
 
@@ -18,8 +18,8 @@ main()
 )
 
 
-def _pack_int_file(parser: SourceParser) -> None:
-    name = parser.config.project_name
+def _pack_int_file(target: ProjectConfig) -> None:
+    name = target.project_name
     dst = get_dist_dir(parser.directory) / f"{name}.int"
 
     logging.info(f"创建int文件[{name}.int]->[{dst}]")
@@ -28,9 +28,9 @@ def _pack_int_file(parser: SourceParser) -> None:
         f.write(content)
 
 
-def pack_entry(parser: SourceParser) -> None:
-    name = parser.config.project_name
-    exe_file = "gui.exe" if parser.config.is_gui else "console.exe"
+def pack_entry(target: ProjectConfig) -> None:
+    name = target.project_name
+    exe_file = "gui.exe" if target.is_gui else "console.exe"
     src = get_assets_dir() / exe_file
     dst = (get_dist_dir(parser.directory) / exe_file).with_name(f"{name}.exe")
 

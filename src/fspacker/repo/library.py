@@ -8,6 +8,7 @@ import stdlib_list
 from fspacker.dirs import get_lib_dir, get_python_ver_major
 
 __all__ = (
+    "LibraryInfo",
     "fetch_libs_repo",
     "get_libs_std",
 )
@@ -23,7 +24,7 @@ class LibraryInfo:
     filepath: pathlib.Path
 
     def __repr__(self):
-        return f"[package_name={self.package_name}, filepath={self.filepath}]"
+        return self.package_name
 
 
 _libs_std: typing.List[str] = []
