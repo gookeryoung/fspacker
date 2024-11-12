@@ -76,7 +76,10 @@ def get_libs_std() -> typing.List[str]:
     global _libs_std
 
     if not len(_libs_std):
-        _libs_std = stdlib_list.stdlib_list(get_python_ver_major())
-        logging.info(f"获取内置库信息: [{_libs_std}]")
+        major_ver = get_python_ver_major()
+        _libs_std = stdlib_list.stdlib_list(major_ver)
+        logging.info(
+            f"获取内置库信息, python {major_ver}共包含[{len(_libs_std)}]个内置库"
+        )
 
     return _libs_std

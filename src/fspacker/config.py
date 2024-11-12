@@ -23,3 +23,6 @@ IGNORE_SYMBOLS = (
     "docs",
 )
 GUI_LIBS = ("pyside2", "pyqt5", "pygame", "matplotlib", "tkinter")
+
+# 最多显示文件数
+MAX_SHOWN_FILES = 3

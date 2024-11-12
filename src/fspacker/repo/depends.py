@@ -6,6 +6,7 @@ __all__ = ("fetch_depends_tree",)
 
 import rtoml
 
+from fspacker.config import MAX_SHOWN_FILES
 from fspacker.dirs import get_depends_filepath
 
 
@@ -17,7 +18,11 @@ class DependsInfo:
     depends: typing.List[str]
 
     def __repr__(self):
-        return f"[name={self.name}, files={self.files}, folders={self.folders}], depends={self.depends}"
+        if len(self.files) >= MAX_SHOWN_FILES:
+            files = [*self.files[:MAX_SHOWN_FILES], "..."]
+        else:
+            files = self.files
+        return f"[name={self.name}, files={files}, folders={self.folders}], depends={self.depends}"
 
 
 _depends_config: typing.Dict[str, DependsInfo] = {}
@@ -37,7 +42,7 @@ def fetch_depends_tree() -> typing.Dict[str, DependsInfo]:
                     name=k,
                     files=config[k].get("files"),
                     folders=config[k].get("folders"),
-                    depends=config[k].get("depends")
+                    depends=config[k].get("depends"),
                 ),
             )
         _depends_config.update(depends)

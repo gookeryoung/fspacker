@@ -23,7 +23,7 @@ def unzip_wheel_file(lib: LibraryInfo, output_dir):
 
             if any(_ in target_file for _ in IGNORE_SYMBOLS):
                 continue
-                
+
             f.extract(target_file, output_dir)
 
     if hasattr(dependency, "depends"):
