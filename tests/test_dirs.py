@@ -7,6 +7,7 @@ from fspacker.dirs import (
     _get_cached_dir,
     get_assets_dir,
     get_config_filepath,
+    get_depends_filepath,
     get_embed_archive_name,
     get_python_ver,
     get_python_ver_major,
@@ -55,3 +56,8 @@ def test_get_assets_dir():
     assert all(
         _ in filenames for _ in ("gui.exe", "console.exe", "depends.toml")
     )
+
+
+def test_depends_filepath():
+    depends_filepath = get_depends_filepath()
+    assert "depends.toml" == depends_filepath.name
