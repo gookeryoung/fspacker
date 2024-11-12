@@ -69,19 +69,11 @@ def _get_cached_dir() -> pathlib.Path:
     global _cache_dir
 
     if _cache_dir is None:
-        env = os.getenv("FSPACKER_CACHE_DIR")
-        _cache_dir = pathlib.Path(env) if env else None
-
-        if _cache_dir:
-            _cache_dir = pathlib.Path(_cache_dir).expanduser()
-        else:
-            _cache_dir = pathlib.Path("~").expanduser() / ".cache" / "fspacker"
+        _cache_dir = pathlib.Path("~").expanduser() / ".cache" / "fspacker"
 
         if not _cache_dir.exists():
             logging.info(f"创建缓存文件夹: [{_cache_dir}]")
             _cache_dir.mkdir(parents=True)
-        else:
-            logging.info(f"缓存文件夹: [{_cache_dir}]")
 
     return _cache_dir
 
