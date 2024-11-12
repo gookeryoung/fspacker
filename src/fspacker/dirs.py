@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
 
 __all__ = (
     "get_python_ver",
+    "get_python_ver_major",
     "get_config_filepath",
     "get_embed_archive_name",
     "get_assets_dir",
@@ -25,6 +26,7 @@ _assets_dir: typing.Optional[pathlib.Path] = None
 _config_path: typing.Optional[pathlib.Path] = None
 _embed_path: typing.Optional[pathlib.Path] = None
 _python_ver: typing.Optional[str] = None
+_python_ver_major: typing.Optional[str] = None
 _arch: typing.Optional[str] = None
 _archive_file: typing.Optional[str] = None
 
@@ -37,6 +39,16 @@ def get_python_ver() -> str:
         logging.info(f"python版本: [{_python_ver}]")
 
     return _python_ver
+
+
+def get_python_ver_major() -> str:
+    global _python_ver_major
+
+    if not _python_ver_major:
+        _python_ver_major = ".".join(platform.python_version_tuple()[:2])
+        logging.info(f"python主版本: [{_python_ver_major}]")
+
+    return _python_ver_major
 
 
 def _get_arch() -> str:

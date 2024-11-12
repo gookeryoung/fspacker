@@ -3,9 +3,14 @@ import logging
 import pathlib
 import typing
 
-from fspacker.dirs import get_lib_dir
+import stdlib_list
 
-__all__ = ("fetch_libs_repo",)
+from fspacker.dirs import get_lib_dir, get_python_ver_major
+
+__all__ = (
+    "fetch_libs_repo",
+    "get_libs_std",
+)
 
 
 @dataclasses.dataclass
@@ -21,6 +26,7 @@ class LibraryInfo:
         return f"[package_name={self.package_name}, filepath={self.filepath}]"
 
 
+_libs_std: typing.List[str] = []
 _libs_repo: typing.Dict[str, LibraryInfo] = {}
 
 
@@ -48,7 +54,9 @@ def _setup_library_repo() -> None:
             )
 
             if len(version) > 1:
-                logging.info(f"库文件[{lib_file.stem}]包含多个版本: [{version}]")
+                logging.info(
+                    f"库文件[{lib_file.stem}]包含多个版本: [{version}]"
+                )
 
         except ValueError as e:
             logging.error(f"分析库文件[{lib_file.stem}]出错")
@@ -61,3 +69,13 @@ def fetch_libs_repo() -> typing.Dict[str, LibraryInfo]:
         _setup_library_repo()
 
     return _libs_repo
+
+
+def get_libs_std() -> typing.List[str]:
+    global _libs_std
+
+    if not len(_libs_std):
+        _libs_std = stdlib_list.stdlib_list(get_python_ver_major())
+        logging.info(f"获取内置库信息: [{_libs_std}]")
+
+    return _libs_std
