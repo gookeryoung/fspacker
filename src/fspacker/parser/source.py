@@ -1,28 +1,16 @@
-import dataclasses
 import logging
 import pathlib
 import typing
 
 from fspacker.config import IGNORE_DIRS, GUI_LIBS
 
-__all__ = (
-    "ProjectConfig",
-    "SourceParser",
-)
+__all__ = ("SourceParser",)
+
+from fspacker.parser.entry import pack_entry
+from fspacker.parser.project import ProjectConfig
 
 from fspacker.repo.library import LibraryInfo, fetch_libs_repo
-
-
-@dataclasses.dataclass
-class ProjectConfig:
-    src: pathlib.Path
-    is_gui: bool
-    deps: typing.List[pathlib.Path]
-    libs: typing.List[LibraryInfo]
-
-    def __repr__(self):
-        deps = [_.stem for _ in self.deps]
-        return f"src={self.src}, deps={deps}, libs={self.libs}"
+from fspacker.repo.runtime import pack_runtime
 
 
 class SourceParser:
@@ -31,7 +19,6 @@ class SourceParser:
         self.root = pathlib.Path(root)
         self.targets: typing.Dict[str, ProjectConfig] = {}
         self.target_contents: typing.Dict[str, str] = {}
-        self.dist_root = root / "dist"
 
         self._parse_func: typing.Optional[typing.Callable] = None
 
@@ -43,6 +30,10 @@ class SourceParser:
             self._parse_func = self._parse_raw
 
         self._parse_func()
+
+    def pack(self):
+        self._pack_runtime()
+        self._pack_entry()
 
     def _parse_toml(self):
         """通过 pyproject.toml 分析项目结构"""
@@ -108,3 +99,12 @@ class SourceParser:
                 ]:
                     libs.append(v)
         return libs
+
+    def _pack_runtime(self):
+        """打包运行时"""
+        for name, target in self.targets.items():
+            pack_runtime(target.src.parent)
+
+    def _pack_entry(self):
+        for name, target in self.targets.items():
+            pack_entry(target)

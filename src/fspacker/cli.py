@@ -5,7 +5,7 @@ import time
 
 from fspacker.parser.source import SourceParser
 from fspacker.repo.library import fetch_libs_repo, get_libs_std
-from fspacker.repo.runtime import fetch_runtime, pack_runtime
+from fspacker.repo.runtime import fetch_runtime
 
 
 def main():
@@ -42,7 +42,7 @@ def main():
     get_libs_std()
 
     parser = SourceParser(directory, directory)
-    pack_runtime(directory)
+    parser.pack()
 
     logging.info(f"打包完成, 总共用时: {time.perf_counter() - t0:.2f}s.")
 

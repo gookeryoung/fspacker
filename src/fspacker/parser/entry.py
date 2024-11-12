@@ -3,7 +3,7 @@ import shutil
 import string
 
 from fspacker.dirs import get_dist_dir, get_assets_dir
-from fspacker.parser.source import ProjectConfig
+from fspacker.parser.project import ProjectConfig
 
 __all__ = ("pack_entry",)
 
@@ -19,8 +19,8 @@ main()
 
 
 def _pack_int_file(target: ProjectConfig) -> None:
-    name = target.project_name
-    dst = get_dist_dir(parser.directory) / f"{name}.int"
+    name = target.src.stem
+    dst = get_dist_dir(target.src.parent) / f"{name}.int"
 
     logging.info(f"创建int文件[{name}.int]->[{dst}]")
     content = TEMPLATE.substitute(SRC=f"src.{name}")
@@ -29,18 +29,15 @@ def _pack_int_file(target: ProjectConfig) -> None:
 
 
 def pack_entry(target: ProjectConfig) -> None:
-    name = target.project_name
     exe_file = "gui.exe" if target.is_gui else "console.exe"
     src = get_assets_dir() / exe_file
-    dst = (get_dist_dir(parser.directory) / exe_file).with_name(f"{name}.exe")
+    dst = get_dist_dir(target.src.parent) / f"{target.src.stem}.exe"
 
     if not dst.exists():
-        logging.info(
-            f"分析为[{'窗体' if parser.config.is_gui else '控制台'}]目标"
-        )
+        logging.info(f"分析为[{'窗体' if target.is_gui else '控制台'}]目标")
         logging.info(f"拷贝可执行文件[{src}]->[{dst}]")
         shutil.copy(src, dst)
     else:
         logging.info(f"入口文件[{dst}]已存在, 跳过")
 
-    _pack_int_file(parser)
+    _pack_int_file(target)
