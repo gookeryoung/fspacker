@@ -35,12 +35,12 @@ class SourceParser(BaseParser):
         imports = set()
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
-                import_name = node.module.split(".")[0]
+                import_name = node.module.split(".")[0].lower()
                 if import_name not in std_libs:
                     imports.add(import_name)
             elif isinstance(node, ast.Import):
                 for alias in node.names:
-                    import_name = alias.name.split(".")[0]
+                    import_name = alias.name.split(".")[0].lower()
                     if import_name not in std_libs:
                         imports.add(import_name)
         return imports

@@ -170,7 +170,11 @@ def get_lib_dir() -> pathlib.Path:
 
 
 def get_dist_dir(project_dir: pathlib.Path) -> pathlib.Path:
-    return project_dir / "dist"
+    dist_dir = project_dir / "dist"
+    if not dist_dir.exists():
+        dist_dir.mkdir(parents=True)
+
+    return dist_dir
 
 
 def get_runtime_dir(project_dir: pathlib.Path) -> pathlib.Path:

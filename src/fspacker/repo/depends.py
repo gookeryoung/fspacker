@@ -38,7 +38,7 @@ def fetch_depends_tree() -> typing.Dict[str, DependsInfo]:
         config = rtoml.load(config_file)
         for k, v in config.items():
             depends.setdefault(
-                k,
+                k.lower(),
                 DependsInfo(
                     name=k,
                     files=config[k].get("files"),
