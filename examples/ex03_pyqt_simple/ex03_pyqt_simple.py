@@ -9,7 +9,6 @@ def main():
     win.setWindowTitle("PyStand")
 
     layout = QVBoxLayout()
-
     label = QLabel("Hello, World !!")
     label.setAlignment(Qt.AlignCenter)
     layout.addWidget(label)
@@ -28,5 +27,4 @@ def main():
     )
 
     win.show()
-
     app.exec_()
