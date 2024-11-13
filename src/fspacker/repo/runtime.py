@@ -20,7 +20,7 @@ from fspacker.dirs import (
 
 __all__ = ("fetch_runtime", "pack_runtime")
 
-from fspacker.parser.common import ProjectConfig
+from fspacker.common import BuildTarget
 
 
 def _calc_checksum(
@@ -138,7 +138,7 @@ def fetch_runtime():
     _update_json_values(config, dict(embed_file_checksum=checksum))
 
 
-def pack_runtime(target: ProjectConfig) -> bool:
+def pack_runtime(target: BuildTarget) -> bool:
     embed = get_embed_filepath()
     dest = get_runtime_dir(target.src.parent)
     if not dest.exists():

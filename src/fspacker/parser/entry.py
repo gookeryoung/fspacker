@@ -3,7 +3,7 @@ import shutil
 import string
 
 from fspacker.dirs import get_assets_dir, get_dist_dir
-from fspacker.parser.common import ProjectConfig
+from fspacker.common import BuildTarget
 
 __all__ = ("pack_entry",)
 
@@ -18,7 +18,7 @@ main()
 )
 
 
-def _pack_int_file(target: ProjectConfig) -> None:
+def _pack_int_file(target: BuildTarget) -> None:
     name = target.src.stem
     dst = get_dist_dir(target.src.parent) / f"{name}.int"
 
@@ -28,7 +28,7 @@ def _pack_int_file(target: ProjectConfig) -> None:
         f.write(content)
 
 
-def pack_entry(target: ProjectConfig) -> None:
+def pack_entry(target: BuildTarget) -> None:
     exe_file = "gui.exe" if target.is_gui else "console.exe"
     src = get_assets_dir() / exe_file
     dst = get_dist_dir(target.src.parent) / f"{target.src.stem}.exe"

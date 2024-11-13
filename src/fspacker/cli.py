@@ -3,15 +3,23 @@ import logging
 import pathlib
 import time
 
-from fspacker.parser.source import SourceParser
-from fspacker.repo.library import fetch_libs_repo, get_libs_std
-from fspacker.repo.runtime import fetch_runtime
+from fspacker.process import Processor
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-z", "--zip", type=bool, default=False, help="压缩模式"
+        "-z",
+        "--zip",
+        type=bool,
+        default=False,
+        help="Zip mode, pack as zip files.",
+    )
+    parser.add_argument(
+        "--debug",
+        type=bool,
+        default=False,
+        help="Debug mode, show detail information",
     )
     parser.add_argument(
         "-d",
@@ -30,12 +38,15 @@ def main():
     logging.info(f"启动打包, 模式: [{'' if zip_mode else '非'}压缩]")
     logging.info(f"源代码路径: [{directory}]")
 
-    fetch_runtime()
-    fetch_libs_repo()
-    get_libs_std()
+    processor = Processor(directory)
+    processor.run()
 
-    parser = SourceParser(directory, directory)
-    parser.pack()
+    # fetch_runtime()
+    # fetch_libs_repo()
+    # get_libs_std()
+    #
+    # parser = SourceParser(directory, directory)
+    # parser.pack()
 
     logging.info(f"打包完成, 总共用时: {time.perf_counter() - t0:.2f}s.")
 

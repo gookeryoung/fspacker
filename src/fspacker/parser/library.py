@@ -5,7 +5,7 @@ import zipfile
 
 from fspacker.config import IGNORE_SYMBOLS
 from fspacker.dirs import get_dist_dir, get_lib_dir
-from fspacker.parser.common import ProjectConfig
+from fspacker.common import BuildTarget
 from fspacker.repo.depends import fetch_depends_tree
 from fspacker.repo.library import fetch_libs_repo
 
@@ -53,7 +53,7 @@ def download_library(lib: str, lib_dir: pathlib.Path):
     )
 
 
-def pack_library(target: ProjectConfig):
+def pack_library(target: BuildTarget):
     packages_dir = get_dist_dir(target.src.parent) / "site-packages"
     libs_repo = fetch_libs_repo()
     lib_dir = get_lib_dir()

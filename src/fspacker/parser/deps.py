@@ -2,12 +2,12 @@ import logging
 import shutil
 
 from fspacker.dirs import get_dist_dir
-from fspacker.parser.common import ProjectConfig
+from fspacker.common import BuildTarget
 
 __all__ = ("pack_src_deps",)
 
 
-def pack_src_deps(target: ProjectConfig):
+def pack_src_deps(target: BuildTarget):
     dst = get_dist_dir(target.src.parent) / "src"
     dst.mkdir(exist_ok=True, parents=True)
 
