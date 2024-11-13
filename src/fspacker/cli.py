@@ -41,13 +41,6 @@ def main():
     processor = Processor(directory)
     processor.run()
 
-    # fetch_runtime()
-    # fetch_libs_repo()
-    # get_libs_std()
-    #
-    # parser = SourceParser(directory, directory)
-    # parser.pack()
-
     logging.info(f"打包完成, 总共用时: {time.perf_counter() - t0:.2f}s.")
 
 
