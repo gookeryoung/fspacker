@@ -16,7 +16,7 @@ def unzip_wheel_file(lib: LibraryInfo, output_dir):
 
     with zipfile.ZipFile(lib.filepath, "r") as f:
         for target_file in f.namelist():
-            if hasattr(dependency, "files"):
+            if dependency is not None and hasattr(dependency, "files"):
                 relative_path = target_file.replace(f"{lib.package_name}/", "")
                 if relative_path not in dependency.files:
                     continue
@@ -26,9 +26,10 @@ def unzip_wheel_file(lib: LibraryInfo, output_dir):
 
             f.extract(target_file, output_dir)
 
-    if hasattr(dependency, "depends"):
+    if dependency is not None and hasattr(dependency, "depends"):
         for depend in dependency.depends:
-            unzip_wheel_file(lib_repo.get(depend), output_dir)
+            if (item := lib_repo.get(depend)) is not None:
+                unzip_wheel_file(item, output_dir)
 
 
 def pack_library(target: ProjectConfig):

@@ -11,10 +11,10 @@ import requests
 
 from fspacker.config import EMBED_URL_PREFIX
 from fspacker.dirs import (
-    get_embed_archive_name,
-    get_python_ver,
-    get_embed_filepath,
     get_config_filepath,
+    get_embed_archive_name,
+    get_embed_filepath,
+    get_python_ver,
     get_runtime_dir,
 )
 
@@ -51,7 +51,7 @@ def _calc_checksum(
 
 
 def _get_json_value(filepath: pathlib.Path, key: str) -> typing.Any:
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         data = json.load(f)
         return data.setdefault(key, None)
 
@@ -66,7 +66,7 @@ def _update_json_values(
         updates (typing.Dict[str, typing.Any]): update values
     """
     if filepath.exists():
-        with open(filepath, "r") as fr:
+        with open(filepath) as fr:
             data = json.load(fr)
     else:
         data = {}
