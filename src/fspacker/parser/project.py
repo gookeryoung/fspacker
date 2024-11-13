@@ -2,7 +2,6 @@ import dataclasses
 import pathlib
 import typing
 
-from fspacker.repo.library import LibraryInfo
 
 __all__ = ("ProjectConfig",)
 
@@ -12,7 +11,7 @@ class ProjectConfig:
     src: pathlib.Path
     is_gui: bool
     deps: typing.List[pathlib.Path]
-    libs: typing.List[LibraryInfo]
+    libs: typing.Set[str]
 
     def __repr__(self):
         deps = [_.stem for _ in self.deps]

@@ -1,23 +1,28 @@
 import logging
+import pathlib
+import subprocess
 import zipfile
 
 from fspacker.config import IGNORE_SYMBOLS
-from fspacker.dirs import get_dist_dir
+from fspacker.dirs import get_dist_dir, get_lib_dir
 from fspacker.parser.project import ProjectConfig
 from fspacker.repo.depends import fetch_depends_tree
-from fspacker.repo.library import LibraryInfo, fetch_libs_repo
+from fspacker.repo.library import fetch_libs_repo
 
 
-def unzip_wheel_file(lib: LibraryInfo, output_dir):
+def unzip_wheel_file(lib: str, output_dir):
     """从库文件中解压指定的文件并将其放到特定目录中。"""
     lib_repo = fetch_libs_repo()
     dep_tree = fetch_depends_tree()
-    dependency = dep_tree.get(lib.package_name)
+    lib_info = lib_repo.get(lib)
+    dependency = dep_tree.get(lib)
 
-    with zipfile.ZipFile(lib.filepath, "r") as f:
+    with zipfile.ZipFile(lib_info.filepath, "r") as f:
         for target_file in f.namelist():
             if dependency is not None and hasattr(dependency, "files"):
-                relative_path = target_file.replace(f"{lib.package_name}/", "")
+                relative_path = target_file.replace(
+                    f"{lib_info.package_name}/", ""
+                )
                 if relative_path not in dependency.files:
                     continue
 
@@ -32,8 +37,26 @@ def unzip_wheel_file(lib: LibraryInfo, output_dir):
                 unzip_wheel_file(item, output_dir)
 
 
+def download_library(lib: str, lib_dir: pathlib.Path):
+    subprocess.call(
+        [
+            "python",
+            "-m",
+            "pip",
+            "download",
+            lib,
+            "--no-deps",
+            "-d",
+            str(lib_dir),
+        ],
+    )
+
+
 def pack_library(target: ProjectConfig):
     packages_dir = get_dist_dir(target.src.parent) / "site-packages"
+    libs_repo = fetch_libs_repo()
+    lib_dir = get_lib_dir()
+
     if not packages_dir.exists():
         logging.info(f"创建包目录[{packages_dir}]")
         packages_dir.mkdir(parents=True)
@@ -42,9 +65,15 @@ def pack_library(target: ProjectConfig):
         exist_folders = list(
             _.stem for _ in packages_dir.iterdir() if _.is_dir()
         )
-        if lib.package_name in exist_folders:
+        if lib in exist_folders:
             logging.info(f"目录[{packages_dir.name}]下已存在[{lib}]库, 跳过")
             continue
 
-        logging.info(f"解压依赖库[{lib}]->[{packages_dir}]")
+        if lib in libs_repo:
+            logging.info(f"解压依赖库[{lib}]->[{packages_dir}]")
+        else:
+            logging.info(f"库目录中未找到[{lib}]")
+            download_library(lib, lib_dir)
+            logging.info(f"下载依赖库[{lib}]->[{lib_dir}]")
+
         unzip_wheel_file(lib, packages_dir)

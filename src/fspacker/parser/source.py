@@ -2,7 +2,7 @@ import logging
 import pathlib
 import typing
 
-from fspacker.config import GUI_LIBS, IGNORE_DIRS
+from fspacker.config import GUI_LIBS, IGNORE_SYMBOLS
 
 __all__ = ("SourceParser",)
 
@@ -10,8 +10,10 @@ from fspacker.parser.deps import pack_src_deps
 from fspacker.parser.entry import pack_entry
 from fspacker.parser.library import pack_library
 from fspacker.parser.project import ProjectConfig
-from fspacker.repo.library import LibraryInfo, fetch_libs_repo
 from fspacker.repo.runtime import pack_runtime
+
+import ast
+import os
 
 
 class SourceParser:
@@ -51,7 +53,7 @@ class SourceParser:
             list(self.directory.iterdir()), key=lambda x: x.is_dir()
         )
         for entry in entries:
-            if entry.is_dir() and entry.stem.lower() not in IGNORE_DIRS:
+            if entry.is_dir() and entry.stem.lower() not in IGNORE_SYMBOLS:
                 self._parse_dir(entry)
                 continue
             if entry.is_file() and entry.suffix in ".py":
@@ -78,9 +80,8 @@ class SourceParser:
         with open(filepath, encoding="utf-8") as f:
             content = "".join(f.readlines())
             if "def main" in content or "__main__" in content:
-                libs = self._parse_libs(content)
-                lib_names = set([_.package_name.lower() for _ in libs])
-                is_gui = lib_names.intersection(GUI_LIBS)
+                libs = self._parse_file_imports(content, filepath)
+                is_gui = libs.intersection(GUI_LIBS)
                 self.targets[filepath.stem] = ProjectConfig(
                     src=filepath, deps=dep_src, libs=libs, is_gui=is_gui
                 )
@@ -88,18 +89,25 @@ class SourceParser:
                 self.target_contents[filepath.stem] = content
 
     @staticmethod
-    def _parse_libs(content: str) -> typing.List[LibraryInfo]:
+    def _parse_file_imports(
+        content: str, filepath: pathlib.Path
+    ) -> typing.Set[str]:
         """分析引用的库"""
-        libs: typing.List[LibraryInfo] = []
-        libs_repos = fetch_libs_repo()
-        for k, v in libs_repos.items():
-            expressions: typing.List[str] = [
-                f"import {v.package_name}",
-                f"from {v.package_name}",
-            ]
-            for exp in expressions:
-                if exp in content and v.package_name not in [
-                    x.package_name for x in libs
-                ]:
-                    libs.append(v)
-        return libs
+        tree = ast.parse(content, filename=filepath)
+        imports = set()
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                for alias in node.names:
+                    imports.add(alias.name.split(".")[0])
+        return imports
+
+    def _parse_dir_imports(self, directory):
+        all_imports = set()
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith(".py"):
+                    file_path = os.path.join(root, file)
+                    imports = self._parse_file_imports(file_path)
+                    all_imports.update(imports)
+
+        return all_imports
