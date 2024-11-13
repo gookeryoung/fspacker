@@ -9,7 +9,7 @@ __all__ = ("SourceParser",)
 from fspacker.parser.deps import pack_src_deps
 from fspacker.parser.entry import pack_entry
 from fspacker.parser.library import pack_library
-from fspacker.parser.project import ProjectConfig
+from fspacker.parser.common import ProjectConfig
 from fspacker.repo.runtime import pack_runtime
 
 import ast

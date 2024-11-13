@@ -2,7 +2,7 @@ import logging
 import shutil
 
 from fspacker.dirs import get_dist_dir
-from fspacker.parser.project import ProjectConfig
+from fspacker.parser.common import ProjectConfig
 
 __all__ = ("pack_src_deps",)
 

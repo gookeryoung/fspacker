@@ -20,7 +20,7 @@ from fspacker.dirs import (
 
 __all__ = ("fetch_runtime", "pack_runtime")
 
-from fspacker.parser.project import ProjectConfig
+from fspacker.parser.common import ProjectConfig
 
 
 def _calc_checksum(

@@ -5,7 +5,7 @@ import zipfile
 
 from fspacker.config import IGNORE_SYMBOLS
 from fspacker.dirs import get_dist_dir, get_lib_dir
-from fspacker.parser.project import ProjectConfig
+from fspacker.parser.common import ProjectConfig
 from fspacker.repo.depends import fetch_depends_tree
 from fspacker.repo.library import fetch_libs_repo
 

@@ -3,7 +3,7 @@ import shutil
 import string
 
 from fspacker.dirs import get_assets_dir, get_dist_dir
-from fspacker.parser.project import ProjectConfig
+from fspacker.parser.common import ProjectConfig
 
 __all__ = ("pack_entry",)
 
