@@ -25,6 +25,11 @@ dev-dependencies = [
     "ruff>=0.7.3",
     "fspacker",
     "pyside2>=5.15.2.1",
+    "pypdf>=5.1.0",
+    "pandas>=2.0.3",
+    "numpy>=1.24.4",
+    "matplotlib>=3.7.5",
+    "py7zr>=0.22.0",
 ]
 [tool.uv.sources]
 fspacker = { workspace = true }
