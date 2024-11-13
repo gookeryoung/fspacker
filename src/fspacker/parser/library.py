@@ -17,19 +17,20 @@ def unzip_wheel_file(lib: str, output_dir):
     lib_info = lib_repo.get(lib)
     dependency = dep_tree.get(lib)
 
-    with zipfile.ZipFile(lib_info.filepath, "r") as f:
-        for target_file in f.namelist():
-            if dependency is not None and hasattr(dependency, "files"):
-                relative_path = target_file.replace(
-                    f"{lib_info.package_name}/", ""
-                )
-                if relative_path not in dependency.files:
+    if lib_info is not None:
+        with zipfile.ZipFile(lib_info.filepath, "r") as f:
+            for target_file in f.namelist():
+                if dependency is not None and hasattr(dependency, "files"):
+                    relative_path = target_file.replace(
+                        f"{lib_info.package_name}/", ""
+                    )
+                    if relative_path not in dependency.files:
+                        continue
+
+                if any(_ in target_file for _ in IGNORE_SYMBOLS):
                     continue
 
-            if any(_ in target_file for _ in IGNORE_SYMBOLS):
-                continue
-
-            f.extract(target_file, output_dir)
+                f.extract(target_file, output_dir)
 
     if dependency is not None and hasattr(dependency, "depends"):
         for depend in dependency.depends:

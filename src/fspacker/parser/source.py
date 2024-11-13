@@ -10,10 +10,10 @@ from fspacker.parser.deps import pack_src_deps
 from fspacker.parser.entry import pack_entry
 from fspacker.parser.library import pack_library
 from fspacker.parser.common import ProjectConfig
+from fspacker.repo.library import get_libs_std
 from fspacker.repo.runtime import pack_runtime
 
 import ast
-import os
 
 
 class SourceParser:
@@ -94,20 +94,17 @@ class SourceParser:
     ) -> typing.Set[str]:
         """分析引用的库"""
         tree = ast.parse(content, filename=filepath)
+        std_libs = get_libs_std()
         imports = set()
         for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom)):
+            if isinstance(node, ast.ImportFrom):
+                import_name = node.module.split(".")[0]
+                if import_name not in std_libs:
+                    imports.add(import_name)
+            elif isinstance(node, ast.Import):
                 for alias in node.names:
-                    imports.add(alias.name.split(".")[0])
+                    import_name = alias.name.split(".")[0]
+                    if import_name not in std_libs:
+                        imports.add(import_name)
+        logging.info(f"分析引用库: [{imports}]")
         return imports
-
-    def _parse_dir_imports(self, directory):
-        all_imports = set()
-        for root, _, files in os.walk(directory):
-            for file in files:
-                if file.endswith(".py"):
-                    file_path = os.path.join(root, file)
-                    imports = self._parse_file_imports(file_path)
-                    all_imports.update(imports)
-
-        return all_imports

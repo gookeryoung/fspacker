@@ -27,8 +27,7 @@ def main():
     directory = pathlib.Path(args.directory)
 
     t0 = time.perf_counter()
-    logging.info("启动打包")
-    logging.info(f"模式: [{'' if zip_mode else '非'}压缩]")
+    logging.info(f"启动打包, 模式: [{'' if zip_mode else '非'}压缩]")
     logging.info(f"源代码路径: [{directory}]")
 
     fetch_runtime()

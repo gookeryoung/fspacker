@@ -24,6 +24,7 @@ dev-dependencies = [
     "pytest-cov>=5.0.0",
     "ruff>=0.7.3",
     "fspacker",
+    "pyside2>=5.15.2.1",
 ]
 [tool.uv.sources]
 fspacker = { workspace = true }
