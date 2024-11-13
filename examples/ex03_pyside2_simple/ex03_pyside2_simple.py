@@ -1,15 +1,21 @@
-from PySide2.QtCore import *
-from PySide2.QtWidgets import *
+from PySide2.QtCore import Qt
+from PySide2.QtWidgets import (
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QLabel,
+    QPushButton,
+)
 
 
 def main():
     app = QApplication([])
 
     win = QWidget()
-    win.setWindowTitle("PyStand")
+    win.setWindowTitle("pyside2 simple gui")
 
     layout = QVBoxLayout()
-    label = QLabel("Hello, World !!")
+    label = QLabel("Hello, Pyside2!")
     label.setAlignment(Qt.AlignCenter)
     layout.addWidget(label)
 
