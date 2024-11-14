@@ -15,6 +15,8 @@ EMBED_REPO_DIR = CACHE_DIR / "embed-repo"
 EMBED_FILE_NAME = f"python-{PYTHON_VER}-embed-{MACHINE}.zip"
 EMBED_FILEPATH = EMBED_REPO_DIR / EMBED_FILE_NAME
 DEPENDS_FILEPATH = ASSETS_DIR / "depends.toml"
+TKINTER_LIB_FILEPATH = ASSETS_DIR / "tkinter-lib.zip"
+TKINTER_FILEPATH = ASSETS_DIR / "tkinter.zip"
 
 if __libs_env and pathlib.Path(__libs_env).expanduser().exists():
     pathlib.Path(__libs_env).expanduser()

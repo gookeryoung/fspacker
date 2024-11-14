@@ -6,6 +6,7 @@ from fspacker.packer.depends import DependsPacker
 from fspacker.packer.entry import EntryPacker
 from fspacker.packer.library import LibraryPacker
 from fspacker.packer.runtime import RuntimePacker
+from fspacker.packer.tkinter import TkinterPacker
 from fspacker.parser.folder import FolderParser
 from fspacker.parser.source import SourceParser
 
@@ -24,6 +25,7 @@ class Processor:
             runtime=RuntimePacker(),
             depends=DependsPacker(),
             library=LibraryPacker(),
+            tkinter=TkinterPacker(),
         )
 
     def run(self):
@@ -35,8 +37,5 @@ class Processor:
                 self.parsers.get("source").parse(entry)
 
         for target in self.config.targets.values():
-            self.packers.get("base").pack(target=target)
-            self.packers.get("entry").pack(target=target)
-            self.packers.get("runtime").pack(target=target)
-            self.packers.get("depends").pack(target=target)
-            self.packers.get("library").pack(target=target)
+            for packer in self.packers.values():
+                packer.pack(target)

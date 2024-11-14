@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 def main():
     # 创建主窗口
     root = tk.Tk()

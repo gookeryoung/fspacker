@@ -54,4 +54,3 @@ class DependsPacker(BasePacker):
                 )
             elif dep_target.is_file():
                 shutil.copy(dep_target, str(dst / dep_target.name))
-

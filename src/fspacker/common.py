@@ -18,9 +18,10 @@ class BuildTarget:
     src: pathlib.Path
     deps: typing.List[pathlib.Path]
     ast: typing.Set[str]
+    extra: typing.Set[str]
 
     def __repr__(self):
-        return f"[src={self.src.name}, ast={self.ast}, deps={self.deps}]"
+        return f"[src={self.src.name}, ast={self.ast}, deps={self.deps}], extra={self.extra}"
 
     @cached_property
     def dist_dir(self) -> pathlib.Path:

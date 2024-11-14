@@ -19,7 +19,7 @@ main()
 
 class EntryPacker(BasePacker):
     def pack(self, target: BuildTarget):
-        is_gui = target.ast.intersection(GUI_LIBS)
+        is_gui = target.ast.union(target.extra).intersection(GUI_LIBS)
 
         exe_file = "gui.exe" if is_gui else "console.exe"
         src = ASSETS_DIR / exe_file
