@@ -61,6 +61,20 @@ class TestProcess:
 
         assert exec_dist_dir(root_dir / "dist")
 
+    def test_pack_ex23(self):
+        root_dir = DIR_EXAMPLES / "ex23_numba"
+        proc = Processor(root_dir)
+        proc.run()
+
+        assert exec_dist_dir(root_dir / "dist")
+
+    def test_pack_ex24(self):
+        root_dir = DIR_EXAMPLES / "ex24_pandas"
+        proc = Processor(root_dir)
+        proc.run()
+
+        assert exec_dist_dir(root_dir / "dist")
+
 
 if __name__ == "__main__":
     pytest.main()
