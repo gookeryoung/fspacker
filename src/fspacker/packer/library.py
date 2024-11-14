@@ -3,10 +3,11 @@ import subprocess
 import typing
 import zipfile
 
-from fspacker.common import BuildTarget, LibraryInfo
-from fspacker.config import IGNORE_SYMBOLS, LIBS_REPO_DIR
+import rtoml
+
+from fspacker.common import BuildTarget, LibraryInfo, DependsInfo
+from fspacker.config import IGNORE_SYMBOLS, LIBS_REPO_DIR, DEPENDS_FILEPATH
 from fspacker.packer.base import BasePacker
-from fspacker.packer.depends import parse_depends_tree
 
 __all__ = [
     "LibraryPacker",
@@ -15,10 +16,12 @@ __all__ = [
 
 class LibraryPacker(BasePacker):
     LIBS_REPO: typing.Dict[str, LibraryInfo] = {}
+    DEPEND_TREE_REPO: typing.Dict[str, DependsInfo] = {}
 
     def __init__(self):
         super().__init__()
 
+        self._parse_depends_repo()
         self._parse_libs_repo()
 
     def pack(self, target: BuildTarget):
@@ -63,9 +66,8 @@ class LibraryPacker(BasePacker):
 
     def _unzip_lib(self, lib: str, output_dir):
         """从库文件中解压指定的文件并将其放到特定目录中。"""
-        dep_tree = parse_depends_tree()
         lib_info = self.LIBS_REPO.get(lib)
-        dependency = dep_tree.get(lib)
+        dependency = self.DEPEND_TREE_REPO.get(lib)
 
         if lib_info is not None:
             with zipfile.ZipFile(lib_info.filepath, "r") as f:
@@ -120,3 +122,19 @@ class LibraryPacker(BasePacker):
 
             except ValueError as e:
                 logging.error(f"分析库文件[{lib_file.stem}]出错, 信息: [{e}]")
+
+    def _parse_depends_repo(self) -> typing.Dict[str, DependsInfo]:
+        depends: typing.Dict[str, DependsInfo] = {}
+        config = rtoml.load(DEPENDS_FILEPATH)
+        for k, v in config.items():
+            depends.setdefault(
+                k.lower(),
+                DependsInfo(
+                    name=k,
+                    files=config[k].get("files"),
+                    folders=config[k].get("folders"),
+                    depends=config[k].get("depends"),
+                ),
+            )
+        self.DEPEND_TREE_REPO.update(depends)
+        logging.info(f"获取依赖信息: {depends}")

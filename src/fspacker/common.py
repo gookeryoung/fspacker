@@ -5,6 +5,7 @@ import typing
 __all__ = [
     "BuildTarget",
     "BuildConfig",
+    "DependsInfo",
     "LibraryInfo",
 ]
 
@@ -19,9 +20,13 @@ class BuildTarget:
     deps: typing.List[pathlib.Path]
     ast: typing.Set[str]
     extra: typing.Set[str]
+    code: str
 
     def __repr__(self):
-        return f"[src={self.src.name}, ast={self.ast}, deps={self.deps}], extra={self.extra}"
+        return (
+            f"[src={self.src.name}, ast={self.ast}, "
+            f"deps={self.deps}], extra={self.extra}"
+        )
 
     @cached_property
     def dist_dir(self) -> pathlib.Path:
@@ -68,5 +73,7 @@ class DependsInfo:
             files = [*self.files[:MAX_SHOWN_FILES], "..."]
         else:
             files = self.files
-        return f"[name={self.name}, files={files}, \
-            folders={self.folders}], depends={self.depends}"
+        return (
+            f"[name={self.name}, files={files}, "
+            f"folders={self.folders}], depends={self.depends}"
+        )

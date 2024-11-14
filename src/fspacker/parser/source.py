@@ -21,11 +21,15 @@ class SourceParser(BaseParser):
 
     def parse(self, entry: pathlib.Path):
         with open(entry, encoding="utf-8") as f:
-            content = "".join(f.readlines())
-            if "def main" in content or "__main__" in content:
-                ast_tree, extra = self._parse_ast(content, entry)
+            code = "".join(f.readlines())
+            if "def main" in code or "__main__" in code:
+                ast_tree, extra = self._parse_ast(code, entry)
                 self.config.targets[entry.stem] = BuildTarget(
-                    src=entry, deps=set(), ast=ast_tree, extra=extra
+                    src=entry,
+                    deps=set(),
+                    ast=ast_tree,
+                    extra=extra,
+                    code=code,
                 )
                 logging.info(f"增加打包目标{self.config.targets[entry.stem]}")
 

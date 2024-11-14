@@ -109,19 +109,21 @@ class RuntimePacker(BasePacker):
             self.fetch_runtime()
 
         logging.info(f"解压运行时文件[{EMBED_FILEPATH.name}]->[{dest}]")
-        t0 = time.perf_counter()
         try:
             shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
-            logging.info(f"解压完成, 用时: {time.perf_counter() - t0:.2f}s.")
             return True
         except ValueError as e:
             logging.error(f"解压失败, 信息: {e}")
             return False
 
-    def fetch_runtime(self):
+    @staticmethod
+    def fetch_runtime():
         """获取python运行时"""
-        from fspacker.config import EMBED_FILEPATH as EMBED
+        from fspacker.config import EMBED_FILEPATH as EMBED, EMBED_REPO_DIR
         from fspacker.config import CONFIG_FILEPATH as CFG
+
+        if not EMBED_REPO_DIR.exists():
+            EMBED_REPO_DIR.mkdir(parents=True)
 
         if EMBED.exists():
             logging.info(f"比较[{EMBED.name}]文件和配置文件[{CFG.name}]校验和")
