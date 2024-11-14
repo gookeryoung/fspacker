@@ -45,5 +45,10 @@ GUI_LIBS = (
     "tkinter",
 )
 
+TKINTER_LIBS = (
+    "tkinter",
+    "matplotlib",
+)
+
 # 最多显示文件数
 MAX_SHOWN_FILES = 3

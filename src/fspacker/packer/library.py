@@ -1,6 +1,4 @@
 import logging
-import pathlib
-import subprocess
 import typing
 import zipfile
 
@@ -9,6 +7,7 @@ import rtoml
 from fspacker.common import BuildTarget, LibraryInfo, DependsInfo
 from fspacker.config import IGNORE_SYMBOLS, LIBS_REPO_DIR, DEPENDS_FILEPATH
 from fspacker.packer.base import BasePacker
+from fspacker.utils.wheel import download_install_wheel
 
 __all__ = [
     "LibraryPacker",
@@ -34,7 +33,7 @@ class LibraryPacker(BasePacker):
 
         for libname in target.ast:
             exist_folders = list(
-                _.stem for _ in packages_dir.iterdir() if _.is_dir()
+                _.stem.lower() for _ in packages_dir.iterdir() if _.is_dir()
             )
             if libname in exist_folders:
                 logging.info(
@@ -42,31 +41,7 @@ class LibraryPacker(BasePacker):
                 )
                 continue
 
-            if libname not in self.LIBS_REPO:
-                logging.info(f"库目录中未找到[{libname}]")
-                filepath = self._download_lib(libname)
-                logging.info(f"下载依赖库[{libname}]->[{LIBS_REPO_DIR}]")
-                self.LIBS_REPO[libname] = LibraryInfo.from_path(filepath)
-
-            logging.info(f"解压依赖库[{libname}]->[{packages_dir}]")
-            self._unzip_lib(libname, packages_dir)
-
-    @staticmethod
-    def _download_lib(libname: str) -> pathlib.Path:
-        subprocess.call(
-            [
-                "python",
-                "-m",
-                "pip",
-                "download",
-                libname,
-                "--no-deps",
-                "-d",
-                str(LIBS_REPO_DIR),
-            ],
-        )
-        lib_filepath = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))[0]
-        return lib_filepath
+            download_install_wheel(libname, target.packages_dir)
 
     def _unzip_lib(self, lib: str, output_dir):
         """从库文件中解压指定的文件并将其放到特定目录中。"""
@@ -87,13 +62,6 @@ class LibraryPacker(BasePacker):
                         continue
 
                     f.extract(target_file, output_dir)
-
-        if dependency is not None and hasattr(dependency, "depends"):
-            for depend in dependency.depends:
-                if self.LIBS_REPO.get(depend) is None:
-                    self._download_lib(depend)
-                    logging.info(f"下载依赖库[{depend}]->[{LIBS_REPO_DIR}]")
-                self._unzip_lib(depend, output_dir)
 
     def _parse_libs_repo(self) -> None:
         lib_files = list(

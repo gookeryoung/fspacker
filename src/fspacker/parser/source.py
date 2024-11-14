@@ -7,7 +7,7 @@ __all__ = ("SourceParser",)
 
 import stdlib_list
 
-from fspacker.config import PYTHON_VER_SHORT
+from fspacker.config import PYTHON_VER_SHORT, TKINTER_LIBS
 from fspacker.parser.base import BaseParser
 
 import ast
@@ -50,8 +50,8 @@ class SourceParser(BaseParser):
                     import_name = alias.name.split(".")[0].lower()
                     if import_name not in std_libs:
                         imports.add(import_name)
-                    if import_name == "tkinter":
-                        extra.add(import_name)
+                    if import_name in TKINTER_LIBS:
+                        extra.add("tkinter")
         return imports, extra
 
 

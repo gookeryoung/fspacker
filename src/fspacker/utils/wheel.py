@@ -3,16 +3,16 @@ import pathlib
 import subprocess
 import typing
 import zipfile
-from subprocess import CalledProcessError
 
 from fspacker.config import LIBS_REPO_DIR
 
 
-def download_wheel(libname: str) -> typing.Set[typing.Tuple[str, pathlib.Path]]:
+def download_install_wheel(libname: str, dst: pathlib.Path):
     """Download a wheel using pip."""
-    wheel_tree = set()
 
-    try:
+    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
+    if not lib_files:
+        logging.warning(f"No wheel for {libname}, start downloading.")
         subprocess.call(
             [
                 "python",
@@ -20,23 +20,26 @@ def download_wheel(libname: str) -> typing.Set[typing.Tuple[str, pathlib.Path]]:
                 "pip",
                 "download",
                 libname,
-                "--no-deps",
                 "-d",
                 str(LIBS_REPO_DIR),
             ],
         )
-        lib_file = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))[0]
-        logging.info(f"Successfully download {libname}")
-        wheel_tree.add((libname, lib_file))
 
-        dependencies = (_.split(" ")[0] for _ in get_wheel_dependencies(lib_file))
-        logging.info(f"Parsing dependencies: {dependencies}")
-        for dep in dependencies:
-            wheel_tree.union(download_wheel(dep))
-
-        return wheel_tree
-    except CalledProcessError as e:
-        logging.error(f"Failed to download {libname}: {e}")
+    logging.info(f"Install wheel for {libname}")
+    subprocess.call(
+        [
+            "python",
+            "-m",
+            "pip",
+            "install",
+            libname,
+            "-t",
+            str(dst),
+            "--no-index",
+            "--find-links",
+            str(LIBS_REPO_DIR),
+        ],
+    )
 
 
 def get_wheel_dependencies(wheel_file: pathlib.Path) -> typing.Set[str]:
