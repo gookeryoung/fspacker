@@ -1,11 +1,11 @@
 import logging
+import shutil
 import typing
-import zipfile
 
 import rtoml
 
 from fspacker.common import BuildTarget, LibraryInfo, DependsInfo
-from fspacker.config import IGNORE_SYMBOLS, LIBS_REPO_DIR, DEPENDS_FILEPATH
+from fspacker.config import LIBS_REPO_DIR, DEPENDS_FILEPATH
 from fspacker.packer.base import BasePacker
 from fspacker.utils.wheel import download_install_wheel, download_wheel
 
@@ -54,22 +54,19 @@ class LibraryPacker(BasePacker):
         dep = self.DEPEND_TREE_REPO.get(libname)
         info = self.LIBS_REPO.get(libname)
 
-        with zipfile.ZipFile(info.filepath, "r") as f:
-            for target_file in f.namelist():
-                if hasattr(dep, "files"):
-                    relative_path = target_file.replace(
-                        f"{info.package_name}/", ""
-                    )
-                    if relative_path not in dep.files:
-                        continue
+        if libname == "PIL":
+            filepath = self.LIBS_REPO.get("pillow").filepath
+        elif libname == "dateutil":
+            filepath = self.LIBS_REPO.get("pillow").filepath
+        else:
+            filepath = info.filepath if info else None
 
-                if hasattr(dep, "depends"):
-                    for d in dep.depends:
-                        self.unzip(d, target)
+        if filepath:
+            shutil.unpack_archive(filepath, target.packages_dir, "zip")
 
-                if any(_ in target_file for _ in IGNORE_SYMBOLS):
-                    continue
-                f.extract(target_file, target.packages_dir)
+        if hasattr(dep, "depends"):
+            for d in dep.depends:
+                self.unzip(d, target)
 
     def _parse_libs_repo(self) -> None:
         lib_files = list(
@@ -99,9 +96,9 @@ class LibraryPacker(BasePacker):
                 k.lower(),
                 DependsInfo(
                     name=k,
-                    files=config[k].get("files"),
-                    folders=config[k].get("folders"),
-                    depends=config[k].get("depends"),
+                    files=config[k].setdefault("files", []),
+                    folders=config[k].setdefault("folders", []),
+                    depends=config[k].setdefault("depends", []),
                 ),
             )
         self.DEPEND_TREE_REPO.update(depends)
