@@ -47,6 +47,20 @@ class TestProcess:
 
         assert exec_dist_dir(root_dir / "dist")
 
+    def test_pack_ex13(self):
+        root_dir = DIR_EXAMPLES / "ex13_pypdf"
+        proc = Processor(root_dir)
+        proc.run()
+
+        assert exec_dist_dir(root_dir / "dist")
+
+    def test_pack_ex14(self):
+        root_dir = DIR_EXAMPLES / "ex14_py7zr"
+        proc = Processor(root_dir)
+        proc.run()
+
+        assert exec_dist_dir(root_dir / "dist")
+
     def test_pack_ex20(self):
         root_dir = DIR_EXAMPLES / "ex20_pygame_snake"
         proc = Processor(root_dir)

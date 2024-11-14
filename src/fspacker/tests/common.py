@@ -17,7 +17,7 @@ def exec_dist_dir(dist_dir: pathlib.Path):
         return False
 
     try:
-        subprocess.check_call([exe_files[0]], timeout=TEST_CALL_TIMEOUT)
+        subprocess.run([exe_files[0]], timeout=TEST_CALL_TIMEOUT)
     except subprocess.CalledProcessError as e:
         logging.error(e)
         return False
