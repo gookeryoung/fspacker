@@ -33,3 +33,22 @@ depends = [
     "shiboken2",
     "six"
 ]
+
+[matplotlib]
+depends = [
+    "contourpy",
+    "cycler",
+    "python_dateutil",
+    "fontTools",
+    "importlib_resources",
+    "kiwisolver",
+    "numpy",
+    "packaging",
+    "pillow",
+    "pyparsing",
+    "six",
+    "zipp",
+]
+ast = [
+    "tkinter"
+]
