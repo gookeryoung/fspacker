@@ -60,6 +60,20 @@ class LibraryInfo:
     def __repr__(self):
         return self.package_name
 
+    @staticmethod
+    def from_path(path: pathlib.Path):
+        package_name, *version, build_tag, abi_tag, platform_tag = (
+            path.stem.split("-")
+        )
+        return LibraryInfo(
+            package_name=package_name,
+            version=version,
+            build_tag=build_tag,
+            abi_tag=abi_tag,
+            platform_tag=platform_tag,
+            filepath=path,
+        )
+
 
 @dataclasses.dataclass
 class DependsInfo:

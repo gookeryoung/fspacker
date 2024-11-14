@@ -1,4 +1,5 @@
 import logging
+import pathlib
 import subprocess
 import typing
 import zipfile
@@ -43,14 +44,15 @@ class LibraryPacker(BasePacker):
 
             if libname not in self.LIBS_REPO:
                 logging.info(f"库目录中未找到[{libname}]")
-                self._download_lib(libname)
+                filepath = self._download_lib(libname)
                 logging.info(f"下载依赖库[{libname}]->[{LIBS_REPO_DIR}]")
+                self.LIBS_REPO[libname] = LibraryInfo.from_path(filepath)
 
             logging.info(f"解压依赖库[{libname}]->[{packages_dir}]")
             self._unzip_lib(libname, packages_dir)
 
     @staticmethod
-    def _download_lib(libname: str):
+    def _download_lib(libname: str) -> pathlib.Path:
         subprocess.call(
             [
                 "python",
@@ -63,6 +65,8 @@ class LibraryPacker(BasePacker):
                 str(LIBS_REPO_DIR),
             ],
         )
+        lib_filepath = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))[0]
+        return lib_filepath
 
     def _unzip_lib(self, lib: str, output_dir):
         """从库文件中解压指定的文件并将其放到特定目录中。"""
@@ -100,24 +104,12 @@ class LibraryPacker(BasePacker):
         logging.info(f"获取库文件, 总数: {len(lib_files)}")
         for lib_file in lib_files:
             try:
-                package_name, *version, build_tag, abi_tag, platform_tag = (
-                    lib_file.stem.split("-")
-                )
-                self.LIBS_REPO.setdefault(
-                    package_name.lower(),
-                    LibraryInfo(
-                        package_name=package_name,
-                        version=version,
-                        build_tag=build_tag,
-                        abi_tag=abi_tag,
-                        platform_tag=platform_tag,
-                        filepath=lib_file,
-                    ),
-                )
+                info = LibraryInfo.from_path(lib_file)
+                self.LIBS_REPO.setdefault(info.package_name.lower(), info)
 
-                if len(version) > 1:
+                if len(info.version) > 1:
                     logging.info(
-                        f"库文件[{lib_file.stem}]包含多个版本: [{version}]"
+                        f"库文件[{lib_file.stem}]包含多个版本: [{info.version}]"
                     )
 
             except ValueError as e:
