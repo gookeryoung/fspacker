@@ -7,7 +7,7 @@ import rtoml
 from fspacker.common import BuildTarget, LibraryInfo, DependsInfo
 from fspacker.config import IGNORE_SYMBOLS, LIBS_REPO_DIR, DEPENDS_FILEPATH
 from fspacker.packer.base import BasePacker
-from fspacker.utils.wheel import download_install_wheel
+from fspacker.utils.wheel import download_install_wheel, download_wheel
 
 __all__ = [
     "LibraryPacker",
@@ -41,27 +41,35 @@ class LibraryPacker(BasePacker):
                 )
                 continue
 
-            download_install_wheel(libname, target.packages_dir)
+            if not self.LIBS_REPO.get(libname):
+                filepath = download_wheel(libname)
+                if filepath:
+                    self.LIBS_REPO[libname] = LibraryInfo.from_path(filepath)
+            if self.DEPEND_TREE_REPO.get(libname):
+                self.unzip(libname, target)
+            else:
+                download_install_wheel(libname, target.packages_dir)
 
-    def _unzip_lib(self, lib: str, output_dir):
-        """从库文件中解压指定的文件并将其放到特定目录中。"""
-        lib_info = self.LIBS_REPO.get(lib)
-        dependency = self.DEPEND_TREE_REPO.get(lib)
+    def unzip(self, libname, target):
+        dep = self.DEPEND_TREE_REPO.get(libname)
+        info = self.LIBS_REPO.get(libname)
 
-        if lib_info is not None:
-            with zipfile.ZipFile(lib_info.filepath, "r") as f:
-                for target_file in f.namelist():
-                    if dependency is not None and hasattr(dependency, "files"):
-                        relative_path = target_file.replace(
-                            f"{lib_info.package_name}/", ""
-                        )
-                        if relative_path not in dependency.files:
-                            continue
-
-                    if any(_ in target_file for _ in IGNORE_SYMBOLS):
+        with zipfile.ZipFile(info.filepath, "r") as f:
+            for target_file in f.namelist():
+                if hasattr(dep, "files"):
+                    relative_path = target_file.replace(
+                        f"{info.package_name}/", ""
+                    )
+                    if relative_path not in dep.files:
                         continue
 
-                    f.extract(target_file, output_dir)
+                if hasattr(dep, "depends"):
+                    for d in dep.depends:
+                        self.unzip(d, target)
+
+                if any(_ in target_file for _ in IGNORE_SYMBOLS):
+                    continue
+                f.extract(target_file, target.packages_dir)
 
     def _parse_libs_repo(self) -> None:
         lib_files = list(

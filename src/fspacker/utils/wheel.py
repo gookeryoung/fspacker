@@ -9,21 +9,7 @@ from fspacker.config import LIBS_REPO_DIR
 
 def download_install_wheel(libname: str, dst: pathlib.Path):
     """Download a wheel using pip."""
-
-    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
-    if not lib_files:
-        logging.warning(f"No wheel for {libname}, start downloading.")
-        subprocess.call(
-            [
-                "python",
-                "-m",
-                "pip",
-                "download",
-                libname,
-                "-d",
-                str(LIBS_REPO_DIR),
-            ],
-        )
+    download_wheel(libname)
 
     logging.info(f"Install wheel for {libname}")
     subprocess.call(
@@ -40,6 +26,29 @@ def download_install_wheel(libname: str, dst: pathlib.Path):
             str(LIBS_REPO_DIR),
         ],
     )
+
+
+def download_wheel(libname):
+    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
+    if not lib_files:
+        logging.warning(f"No wheel for {libname}, start downloading.")
+        subprocess.call(
+            [
+                "python",
+                "-m",
+                "pip",
+                "download",
+                libname,
+                "-d",
+                str(LIBS_REPO_DIR),
+            ],
+        )
+        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
+
+    if len(lib_files):
+        return lib_files[0]
+    else:
+        return None
 
 
 def get_wheel_dependencies(wheel_file: pathlib.Path) -> typing.Set[str]:
