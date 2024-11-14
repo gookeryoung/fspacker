@@ -5,11 +5,15 @@ import typing
 
 __all__ = ("SourceParser",)
 
+import stdlib_list
+
+from fspacker.config import PYTHON_VER_SHORT
 from fspacker.parser.base import BaseParser
-from fspacker.repo.library import get_libs_std
 
 import ast
 from fspacker.common import BuildTarget
+
+__std_libs: typing.Set[str] = set()
 
 
 class SourceParser(BaseParser):
@@ -31,7 +35,7 @@ class SourceParser(BaseParser):
     def _parse_ast(content: str, filepath: pathlib.Path) -> typing.Set[str]:
         """分析引用的库"""
         tree = ast.parse(content, filename=filepath)
-        std_libs = get_libs_std()
+        std_libs = _parse_std_libs()
         imports = set()
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
@@ -44,3 +48,12 @@ class SourceParser(BaseParser):
                     if import_name not in std_libs:
                         imports.add(import_name)
         return imports
+
+
+def _parse_std_libs() -> typing.Set[str]:
+    global __std_libs
+
+    if not len(__std_libs):
+        __std_libs = stdlib_list.stdlib_list(PYTHON_VER_SHORT)
+        logging.info(f"获取内置库[{len(__std_libs)}]个")
+    return __std_libs
