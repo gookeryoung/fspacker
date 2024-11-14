@@ -1,11 +1,12 @@
 import logging
 import shutil
 import typing
+import zipfile
 
 import rtoml
 
 from fspacker.common import BuildTarget, LibraryInfo, DependsInfo
-from fspacker.config import LIBS_REPO_DIR, DEPENDS_FILEPATH
+from fspacker.config import LIBS_REPO_DIR, DEPENDS_FILEPATH, IGNORE_SYMBOLS
 from fspacker.packer.base import BasePacker
 from fspacker.utils.wheel import download_install_wheel, download_wheel
 
@@ -61,8 +62,22 @@ class LibraryPacker(BasePacker):
         else:
             filepath = info.filepath if info else None
 
-        if filepath:
-            shutil.unpack_archive(filepath, target.packages_dir, "zip")
+        if hasattr(dep, "files"):
+            with zipfile.ZipFile(info.filepath, "r") as f:
+                for target_file in f.namelist():
+                    relative_path = target_file.replace(
+                        f"{info.package_name}/", ""
+                    )
+                    if len(dep.files) and relative_path not in dep.files:
+                        continue
+
+                    if any(_ in target_file for _ in IGNORE_SYMBOLS):
+                        continue
+
+                    f.extract(target_file, target.packages_dir)
+        else:
+            if filepath:
+                shutil.unpack_archive(filepath, target.packages_dir, "zip")
 
         if hasattr(dep, "depends"):
             for d in dep.depends:
