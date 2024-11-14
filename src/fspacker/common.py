@@ -7,6 +7,8 @@ __all__ = [
     "BuildConfig",
 ]
 
+from functools import cached_property
+
 
 @dataclasses.dataclass
 class BuildTarget:
@@ -16,6 +18,18 @@ class BuildTarget:
 
     def __repr__(self):
         return f"[src={self.src.name}, ast={self.ast}, deps={self.deps}]"
+
+    @cached_property
+    def dist_dir(self) -> pathlib.Path:
+        return self.src.parent / "dist"
+
+    @cached_property
+    def runtime_dir(self) -> pathlib.Path:
+        return self.dist_dir / "runtime"
+
+    @cached_property
+    def packages_dir(self) -> pathlib.Path:
+        return self.dist_dir / "site-packages"
 
 
 @dataclasses.dataclass

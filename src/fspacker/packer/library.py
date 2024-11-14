@@ -4,8 +4,7 @@ import subprocess
 import zipfile
 
 from fspacker.common import BuildTarget
-from fspacker.config import IGNORE_SYMBOLS
-from fspacker.dirs import get_dist_dir, get_lib_dir
+from fspacker.config import IGNORE_SYMBOLS, LIBS_REPO_DIR
 from fspacker.packer.base import BasePacker
 from fspacker.repo.depends import fetch_depends_tree
 from fspacker.repo.library import fetch_libs_repo
@@ -17,7 +16,6 @@ def unzip_lib_file(lib: str, output_dir):
     dep_tree = fetch_depends_tree()
     lib_info = lib_repo.get(lib)
     dependency = dep_tree.get(lib)
-    lib_dir = get_lib_dir()
 
     if lib_info is not None:
         with zipfile.ZipFile(lib_info.filepath, "r") as f:
@@ -37,8 +35,8 @@ def unzip_lib_file(lib: str, output_dir):
     if dependency is not None and hasattr(dependency, "depends"):
         for depend in dependency.depends:
             if lib_repo.get(depend) is None:
-                download_library(depend, lib_dir)
-                logging.info(f"下载依赖库[{depend}]->[{lib_dir}]")
+                download_library(depend, LIBS_REPO_DIR)
+                logging.info(f"下载依赖库[{depend}]->[{LIBS_REPO_DIR}]")
 
             unzip_lib_file(depend, output_dir)
 
@@ -60,9 +58,8 @@ def download_library(lib: str, lib_dir: pathlib.Path):
 
 class LibraryPacker(BasePacker):
     def pack(self, target: BuildTarget):
-        packages_dir = get_dist_dir(target.src.parent) / "site-packages"
+        packages_dir = target.dist_dir / "site-packages"
         libs_repo = fetch_libs_repo()
-        lib_dir = get_lib_dir()
 
         if not packages_dir.exists():
             logging.info(f"创建包目录[{packages_dir}]")
@@ -80,8 +77,8 @@ class LibraryPacker(BasePacker):
 
             if lib not in libs_repo:
                 logging.info(f"库目录中未找到[{lib}]")
-                download_library(lib, lib_dir)
-                logging.info(f"下载依赖库[{lib}]->[{lib_dir}]")
+                download_library(lib, LIBS_REPO_DIR)
+                logging.info(f"下载依赖库[{lib}]->[{LIBS_REPO_DIR}]")
 
             logging.info(f"解压依赖库[{lib}]->[{packages_dir}]")
             unzip_lib_file(lib, packages_dir)

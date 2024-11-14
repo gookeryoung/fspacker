@@ -9,19 +9,7 @@ from fspacker.dirs import (
     get_config_filepath,
     get_depends_filepath,
     get_embed_archive_name,
-    get_python_ver,
-    get_python_ver_major,
 )
-
-
-def test_get_py_ver():
-    ver = get_python_ver()
-    assert ver == "".join(sys.version[:5])
-
-
-def test_get_py_ver_major():
-    ver = get_python_ver_major()
-    assert ver == "".join(sys.version[:3])
 
 
 def test_get_arch():

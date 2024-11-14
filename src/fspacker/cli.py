@@ -3,7 +3,9 @@ import logging
 import pathlib
 import time
 
-from fspacker.process import Processor
+from fspacker.core.process import Processor
+
+logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
 
 
 def main():

@@ -1,6 +1,7 @@
 import pathlib
 
 from fspacker.common import BuildConfig
+from fspacker.packer.base import BasePacker
 from fspacker.packer.depends import DependsPacker
 from fspacker.packer.entry import EntryPacker
 from fspacker.packer.library import LibraryPacker
@@ -18,6 +19,7 @@ class Processor:
             folder=FolderParser(self.config, root_dir),
         )
         self.packers = dict(
+            base=BasePacker(),
             entry=EntryPacker(),
             runtime=RuntimePacker(),
             depends=DependsPacker(),
@@ -33,6 +35,7 @@ class Processor:
                 self.parsers.get("source").parse(entry)
 
         for target in self.config.targets.values():
+            self.packers.get("base").pack(target=target)
             self.packers.get("entry").pack(target=target)
             self.packers.get("runtime").pack(target=target)
             self.packers.get("depends").pack(target=target)

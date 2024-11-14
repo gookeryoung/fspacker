@@ -2,13 +2,12 @@ import logging
 import shutil
 
 from fspacker.common import BuildTarget
-from fspacker.dirs import get_dist_dir
 from fspacker.packer.base import BasePacker
 
 
 class DependsPacker(BasePacker):
     def pack(self, target: BuildTarget):
-        dst = get_dist_dir(target.src.parent) / "src"
+        dst = target.dist_dir / "src"
         dst.mkdir(exist_ok=True, parents=True)
 
         logging.info(f"复制源文件[{target.src}]->[{dst}]")

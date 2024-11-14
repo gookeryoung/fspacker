@@ -5,7 +5,7 @@ import typing
 
 import stdlib_list
 
-from fspacker.dirs import get_lib_dir, get_python_ver_major
+from fspacker.config import PYTHON_VER_SHORT, LIBS_REPO_DIR
 
 __all__ = (
     "LibraryInfo",
@@ -32,9 +32,8 @@ _libs_repo: typing.Dict[str, LibraryInfo] = {}
 
 
 def _setup_library_repo() -> None:
-    lib_dir = get_lib_dir()
     lib_files = list(
-        _ for _ in lib_dir.rglob("*") if _.suffix in (".whl", ".tar.gz")
+        _ for _ in LIBS_REPO_DIR.rglob("*") if _.suffix in (".whl", ".tar.gz")
     )
     logging.info(f"获取库文件, 总数: {len(lib_files)}")
     for lib_file in lib_files:
@@ -76,10 +75,9 @@ def get_libs_std() -> typing.List[str]:
     global _libs_std
 
     if not len(_libs_std):
-        major_ver = get_python_ver_major()
-        _libs_std = stdlib_list.stdlib_list(major_ver)
+        _libs_std = stdlib_list.stdlib_list(PYTHON_VER_SHORT)
         logging.info(
-            f"获取内置库信息, python {major_ver}\
+            f"获取内置库信息, python {PYTHON_VER_SHORT}\
                 共包含[{len(_libs_std)}]个内置库"
         )
 

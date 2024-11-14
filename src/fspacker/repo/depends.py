@@ -6,8 +6,7 @@ __all__ = ("fetch_depends_tree",)
 
 import rtoml
 
-from fspacker.config import MAX_SHOWN_FILES
-from fspacker.dirs import get_depends_filepath
+from fspacker.config import MAX_SHOWN_FILES, DEPENDS_FILEPATH
 
 
 @dataclasses.dataclass
@@ -34,8 +33,7 @@ def fetch_depends_tree() -> typing.Dict[str, DependsInfo]:
 
     if not len(_depends_config):
         depends: typing.Dict[str, DependsInfo] = {}
-        config_file = get_depends_filepath()
-        config = rtoml.load(config_file)
+        config = rtoml.load(DEPENDS_FILEPATH)
         for k, v in config.items():
             depends.setdefault(
                 k.lower(),
