@@ -7,7 +7,7 @@ from fspacker.packer.libspec.base import BaseLibrarySpecPacker
 
 
 class TkinterPacker(BaseLibrarySpecPacker):
-    def pack(self, target: BuildTarget):
+    def pack(self, lib: str, target: BuildTarget):
         if "tkinter" in target.extra:
             logging.info("打包tkinter依赖文件")
             shutil.unpack_archive(TKINTER_LIB_FILEPATH, target.dist_dir, "zip")

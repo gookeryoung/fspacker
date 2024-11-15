@@ -1,4 +1,4 @@
-from fspacker.packer.libspec.mixins import LibSpecPackerMixin
+from fspacker.packer.libspec.base import LibSpecPackerMixin
 
 
 class PySide2Packer(LibSpecPackerMixin):

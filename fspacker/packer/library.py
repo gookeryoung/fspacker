@@ -2,13 +2,16 @@ import logging
 
 from fspacker.common import BuildTarget
 from fspacker.packer.base import BasePacker
-from fspacker.packer.libspec.base import BaseLibrarySpecPacker
+from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packer.libspec.gui import PySide2Packer
 from fspacker.packer.libspec.tkinter import TkinterPacker
 
 __all__ = [
     "LibraryPacker",
 ]
+
+from fspacker.utils.repo import get_libs_repo
+from fspacker.utils.wheel import download_install_wheel
 
 
 class LibraryPacker(BasePacker):
@@ -22,10 +25,14 @@ class LibraryPacker(BasePacker):
 
     def pack(self, target: BuildTarget):
         packages_dir = target.packages_dir
+        libs_repo = get_libs_repo()
 
         if not packages_dir.exists():
             logging.info(f"创建包目录[{packages_dir}]")
             packages_dir.mkdir(parents=True)
 
         for libname in target.ast:
-            self.spec_packers.setdefault(libname, BaseLibrarySpecPacker()).pack(target=target)
+            if not libs_repo.get(libname):
+                download_install_wheel(libname, packages_dir)
+            else:
+                self.spec_packers.setdefault(libname, DefaultLibrarySpecPacker()).pack(libname, target=target)

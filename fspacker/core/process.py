@@ -5,7 +5,6 @@ from fspacker.packer.base import BasePacker
 from fspacker.packer.depends import DependsPacker
 from fspacker.packer.entry import EntryPacker
 from fspacker.packer.library import LibraryPacker
-from fspacker.packer.libspec.tkinter import TkinterPacker
 from fspacker.packer.runtime import RuntimePacker
 from fspacker.parser.folder import FolderParser
 from fspacker.parser.source import SourceParser
@@ -25,7 +24,6 @@ class Processor:
             runtime=RuntimePacker(),
             depends=DependsPacker(),
             library=LibraryPacker(),
-            tkinter=TkinterPacker(),
         )
 
     def run(self):
