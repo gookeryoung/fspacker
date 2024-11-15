@@ -1,6 +1,6 @@
 import pathlib
 
-from fspacker.common import BuildConfig
+from fspacker.common import PackConfig
 from fspacker.packer.base import BasePacker
 from fspacker.packer.depends import DependsPacker
 from fspacker.packer.entry import EntryPacker
@@ -12,7 +12,7 @@ from fspacker.parser.source import SourceParser
 
 class Processor:
     def __init__(self, root_dir: pathlib.Path):
-        self.config = BuildConfig(targets={})
+        self.config = PackConfig(targets={})
         self.root = root_dir
         self.parsers = dict(
             source=SourceParser(self.config, root_dir),

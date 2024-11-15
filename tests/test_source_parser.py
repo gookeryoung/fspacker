@@ -1,6 +1,6 @@
 import pytest
 
-from fspacker.common import BuildConfig
+from fspacker.common import PackConfig
 from fspacker.parser.source import SourceParser
 from tests.common import DIR_EXAMPLES
 
@@ -8,7 +8,7 @@ from tests.common import DIR_EXAMPLES
 class TestSourceParser:
     def test_ex01_source_parser(self):
         parser = SourceParser(
-            BuildConfig(targets={}),
+            PackConfig(targets={}),
             root_dir=DIR_EXAMPLES / "ex01_helloworld_console",
         )
         parser.parse(DIR_EXAMPLES / "ex01_helloworld_console" / "ex01_helloworld_console.py")
@@ -20,7 +20,7 @@ class TestSourceParser:
 
     def test_ex02_source_parser(self):
         parser = SourceParser(
-            BuildConfig(targets={}),
+            PackConfig(targets={}),
             root_dir=DIR_EXAMPLES / "ex02_hello_gui",
         )
         parser.parse(DIR_EXAMPLES / "ex02_hello_gui" / "ex02_hello_gui.py")
@@ -32,7 +32,7 @@ class TestSourceParser:
 
     def test_ex03_source_parser(self):
         parser = SourceParser(
-            BuildConfig(targets={}),
+            PackConfig(targets={}),
             root_dir=DIR_EXAMPLES / "ex03_pyside2_simple",
         )
         parser.parse(DIR_EXAMPLES / "ex03_pyside2_simple" / "ex03_pyside2_simple.py")

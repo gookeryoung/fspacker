@@ -1,7 +1,7 @@
 import logging
 import shutil
 
-from fspacker.common import BuildTarget
+from fspacker.common import PackTarget
 from fspacker.packer.base import BasePacker
 
 __all__ = [
@@ -10,7 +10,7 @@ __all__ = [
 
 
 class DependsPacker(BasePacker):
-    def pack(self, target: BuildTarget):
+    def pack(self, target: PackTarget):
         dst = target.dist_dir / "src"
         dst.mkdir(exist_ok=True, parents=True)
 

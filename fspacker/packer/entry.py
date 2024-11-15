@@ -2,7 +2,7 @@ import logging
 import shutil
 import string
 
-from fspacker.common import BuildTarget
+from fspacker.common import PackTarget
 from fspacker.config import GUI_LIBS, ASSETS_DIR
 from fspacker.packer.base import BasePacker
 
@@ -18,7 +18,7 @@ main()
 
 
 class EntryPacker(BasePacker):
-    def pack(self, target: BuildTarget):
+    def pack(self, target: PackTarget):
         is_gui = target.ast.union(target.extra).intersection(GUI_LIBS)
 
         exe_file = "gui.exe" if is_gui else "console.exe"

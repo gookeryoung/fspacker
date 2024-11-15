@@ -3,7 +3,7 @@ import logging
 import pathlib
 import time
 
-from fspacker.core.process import Processor
+from fspacker.process import Processor
 
 logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
 
@@ -29,7 +29,7 @@ def main():
         dest="directory",
         type=str,
         default=str(pathlib.Path.cwd()),
-        help="源代码路径",
+        help="Source directory",
     )
 
     args = parser.parse_args()
@@ -37,13 +37,13 @@ def main():
     directory = pathlib.Path(args.directory)
 
     t0 = time.perf_counter()
-    logging.info(f"启动打包, 模式: [{'' if zip_mode else '非'}压缩]")
-    logging.info(f"源代码路径: [{directory}]")
+    logging.info(f"Start packing, mode: [{'' if zip_mode else 'not-'}compress]")
+    logging.info(f"Source directory: [{directory}]")
 
     processor = Processor(directory)
     processor.run()
 
-    logging.info(f"打包完成, 总共用时: {time.perf_counter() - t0:.2f}s.")
+    logging.info(f"Packing done! Total used: {time.perf_counter() - t0:.2f}s.")
 
 
 if __name__ == "__main__":

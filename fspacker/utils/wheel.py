@@ -9,7 +9,7 @@ from fspacker.config import LIBS_REPO_DIR
 from fspacker.utils.repo import get_libs_repo
 
 
-def unzip_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]) -> None:
+def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]) -> None:
     info = get_libs_repo().get(libname)
 
     if info is not None:
@@ -21,20 +21,22 @@ def unzip_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str])
             }
 
         compiled_patterns = [re.compile(f".*{pattern}") for pattern in patterns]
-        print(compiled_patterns)
-
-        logging.info(f"Unpacking by pattern [{info.filepath.name}]->[{dest_dir}]")
+        logging.info(f"Unpacking by pattern [{info.filepath.name}]->[{dest_dir.name}]")
         with zipfile.ZipFile(info.filepath, "r") as zip_ref:
             for file in zip_ref.namelist():
                 if any(pattern.match(file) for pattern in compiled_patterns):
                     zip_ref.extract(file, dest_dir)
 
+        deps = get_wheel_dependencies(info.filepath)
+        for dep in deps:
+            unpack_wheel(dep, dest_dir, {})
+
 
 def download_install_wheel(libname: str, dst: pathlib.Path):
     """Download a wheel using pip."""
-    download_wheel(libname)
+    filepath = download_wheel(libname)
 
-    logging.info(f"Install wheel for {libname}")
+    logging.info(f"Install wheel for {libname}, using {filepath.name}")
     subprocess.call(
         [
             "python",
@@ -51,7 +53,7 @@ def download_install_wheel(libname: str, dst: pathlib.Path):
     )
 
 
-def download_wheel(libname):
+def download_wheel(libname) -> pathlib.Path:
     lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
     if not lib_files:
         logging.warning(f"No wheel for {libname}, start downloading.")
@@ -70,8 +72,8 @@ def download_wheel(libname):
 
     if len(lib_files):
         return lib_files[0]
-    else:
-        return None
+
+    raise FileNotFoundError(f"No wheel file for {libname}")
 
 
 def get_wheel_dependencies(wheel_file: pathlib.Path) -> typing.Set[str]:
@@ -91,6 +93,6 @@ def get_wheel_dependencies(wheel_file: pathlib.Path) -> typing.Set[str]:
     for line in metadata.splitlines():
         if line.startswith("Requires-Dist:"):
             dependency = line.split(":", 1)[1].strip()
-            dependencies.add(dependency)
+            dependencies.add(dependency.split(" ")[0])
 
     return dependencies

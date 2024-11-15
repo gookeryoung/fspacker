@@ -11,7 +11,7 @@ from fspacker.config import PYTHON_VER_SHORT, TKINTER_LIBS
 from fspacker.parser.base import BaseParser
 
 import ast
-from fspacker.common import BuildTarget
+from fspacker.common import PackTarget
 
 __std_libs: typing.Set[str] = set()
 
@@ -24,7 +24,7 @@ class SourceParser(BaseParser):
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
                 ast_tree, extra = self._parse_ast(code, entry)
-                self.config.targets[entry.stem] = BuildTarget(
+                self.config.targets[entry.stem] = PackTarget(
                     src=entry,
                     deps=set(),
                     ast=ast_tree,

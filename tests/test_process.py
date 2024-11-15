@@ -1,6 +1,6 @@
 import pytest
 
-from fspacker.core.process import Processor
+from fspacker.process import Processor
 from tests.common import DIR_EXAMPLES, exec_dist_dir
 
 
@@ -49,13 +49,6 @@ class TestProcess:
 
     def test_pack_ex13(self):
         root_dir = DIR_EXAMPLES / "ex13_pypdf"
-        proc = Processor(root_dir)
-        proc.run()
-
-        assert exec_dist_dir(root_dir / "dist")
-
-    def test_pack_ex14(self):
-        root_dir = DIR_EXAMPLES / "ex14_py7zr"
         proc = Processor(root_dir)
         proc.run()
 

@@ -1,6 +1,6 @@
 import logging
 
-from fspacker.common import BuildTarget
+from fspacker.common import PackTarget
 from fspacker.packer.base import BasePacker
 from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
@@ -22,7 +22,7 @@ class LibraryPacker(BasePacker):
             pyside2=PySide2Packer(),
         )
 
-    def pack(self, target: BuildTarget):
+    def pack(self, target: PackTarget):
         packages_dir = target.packages_dir
         libs_repo = get_libs_repo()
 

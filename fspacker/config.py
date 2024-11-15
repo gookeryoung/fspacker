@@ -14,7 +14,6 @@ ASSETS_DIR = pathlib.Path(__file__).parent / "assets"
 EMBED_REPO_DIR = CACHE_DIR / "embed-repo"
 EMBED_FILE_NAME = f"python-{PYTHON_VER}-embed-{MACHINE}.zip"
 EMBED_FILEPATH = EMBED_REPO_DIR / EMBED_FILE_NAME
-DEPENDS_FILEPATH = ASSETS_DIR / "depend_tree.toml"
 TKINTER_LIB_FILEPATH = ASSETS_DIR / "tkinter-lib.zip"
 TKINTER_FILEPATH = ASSETS_DIR / "tkinter.zip"
 

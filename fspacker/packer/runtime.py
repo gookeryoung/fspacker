@@ -9,7 +9,7 @@ from urllib.request import urlopen
 
 import requests
 
-from fspacker.common import BuildTarget
+from fspacker.common import PackTarget
 from fspacker.config import EMBED_FILEPATH, EMBED_FILE_NAME, PYTHON_VER
 from fspacker.config import EMBED_URL_PREFIX
 from fspacker.packer.base import BasePacker
@@ -95,7 +95,7 @@ def _check_embed_urls() -> str:
 
 
 class RuntimePacker(BasePacker):
-    def pack(self, target: BuildTarget):
+    def pack(self, target: PackTarget):
         dest = target.runtime_dir
         if not dest.exists():
             logging.info(f"创建项目运行时文件夹: [{dest}]")

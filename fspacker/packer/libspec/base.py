@@ -1,22 +1,22 @@
 import typing
 
-from fspacker.common import BuildTarget
-from fspacker.utils.wheel import unzip_wheel
+from fspacker.common import PackTarget
+from fspacker.utils.wheel import unpack_wheel
 
 
 class LibSpecPackerMixin:
     PATTERNS: typing.Dict[str, typing.Set[str]] = {}
 
-    def pack(self, lib: str, target: BuildTarget):
+    def pack(self, lib: str, target: PackTarget):
         for libname, patterns in self.PATTERNS.items():
-            unzip_wheel(libname.lower(), target.packages_dir, patterns)
+            unpack_wheel(libname.lower(), target.packages_dir, patterns)
 
 
 class BaseLibrarySpecPacker:
-    def pack(self, lib: str, target: BuildTarget):
+    def pack(self, lib: str, target: PackTarget):
         pass
 
 
 class DefaultLibrarySpecPacker(BaseLibrarySpecPacker):
-    def pack(self, lib: str, target: BuildTarget):
-        unzip_wheel(lib, target.packages_dir, {})
+    def pack(self, lib: str, target: PackTarget):
+        unpack_wheel(lib, target.packages_dir, {})
