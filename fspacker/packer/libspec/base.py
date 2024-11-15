@@ -13,8 +13,7 @@ class LibSpecPackerMixin:
 
 
 class BaseLibrarySpecPacker:
-    def pack(self, lib: str, target: PackTarget):
-        pass
+    def pack(self, lib: str, target: PackTarget): ...
 
 
 class DefaultLibrarySpecPacker(BaseLibrarySpecPacker):

@@ -26,10 +26,14 @@ class PySide2Packer(LibSpecPackerMixin):
         six={},
     )
 
+    def pack(self, lib: str, target: PackTarget):
+        logging.info("Using [pyside2] pack spec")
+        super().pack(lib, target)
+
 
 class TkinterPacker(BaseLibrarySpecPacker):
     def pack(self, lib: str, target: PackTarget):
         if "tkinter" in target.extra:
-            logging.info("打包tkinter依赖文件")
+            logging.info("Using [tkinter] pack spec")
             shutil.unpack_archive(TKINTER_LIB_FILEPATH, target.dist_dir, "zip")
             shutil.unpack_archive(TKINTER_FILEPATH, target.packages_dir, "zip")

@@ -18,6 +18,7 @@ class LibraryPacker(BasePacker):
         super().__init__()
 
         self.spec_packers = dict(
+            default=DefaultLibrarySpecPacker(),
             tkinter=TkinterPacker(),
             pyside2=PySide2Packer(),
         )
@@ -34,4 +35,7 @@ class LibraryPacker(BasePacker):
             if not libs_repo.get(libname):
                 download_install_wheel(libname, packages_dir)
             else:
-                self.spec_packers.setdefault(libname, DefaultLibrarySpecPacker()).pack(libname, target=target)
+                self.spec_packers.setdefault(libname, self.spec_packers["default"]).pack(libname, target=target)
+
+        for libname in target.extra:
+            self.spec_packers.setdefault(libname, self.spec_packers["default"]).pack(libname, target=target)
