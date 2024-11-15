@@ -11,11 +11,7 @@ class TestSourceParser:
             BuildConfig(targets={}),
             root_dir=DIR_EXAMPLES / "ex01_helloworld_console",
         )
-        parser.parse(
-            DIR_EXAMPLES
-            / "ex01_helloworld_console"
-            / "ex01_helloworld_console.py"
-        )
+        parser.parse(DIR_EXAMPLES / "ex01_helloworld_console" / "ex01_helloworld_console.py")
         assert "ex01_helloworld_console" in parser.config.targets.keys()
 
         target = parser.config.targets["ex01_helloworld_console"]
@@ -39,9 +35,7 @@ class TestSourceParser:
             BuildConfig(targets={}),
             root_dir=DIR_EXAMPLES / "ex03_pyside2_simple",
         )
-        parser.parse(
-            DIR_EXAMPLES / "ex03_pyside2_simple" / "ex03_pyside2_simple.py"
-        )
+        parser.parse(DIR_EXAMPLES / "ex03_pyside2_simple" / "ex03_pyside2_simple.py")
         assert "ex03_pyside2_simple" in parser.config.targets.keys()
 
         target = parser.config.targets["ex03_pyside2_simple"]

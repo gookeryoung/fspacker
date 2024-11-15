@@ -23,10 +23,7 @@ class BuildTarget:
     code: str
 
     def __repr__(self):
-        return (
-            f"[src={self.src.name}, ast={self.ast}, "
-            f"deps={self.deps}], extra={self.extra}"
-        )
+        return f"[src={self.src.name}, ast={self.ast}, " f"deps={self.deps}], extra={self.extra}"
 
     @cached_property
     def dist_dir(self) -> pathlib.Path:
@@ -62,9 +59,7 @@ class LibraryInfo:
 
     @staticmethod
     def from_path(path: pathlib.Path):
-        package_name, *version, build_tag, abi_tag, platform_tag = (
-            path.stem.split("-")
-        )
+        package_name, *version, build_tag, abi_tag, platform_tag = path.stem.split("-")
         return LibraryInfo(
             package_name=package_name,
             version=version,
@@ -87,7 +82,4 @@ class DependsInfo:
             files = [*self.files[:MAX_SHOWN_FILES], "..."]
         else:
             files = self.files
-        return (
-            f"[name={self.name}, files={files}, "
-            f"folders={self.folders}], depends={self.depends}"
-        )
+        return f"[name={self.name}, files={files}, " f"folders={self.folders}], depends={self.depends}"

@@ -20,8 +20,6 @@ class DependsPacker(BasePacker):
         for dep in target.deps:
             dep_target = list(_ for _ in target.src.parent.glob(f"{dep}*"))[0]
             if dep_target.is_dir():
-                shutil.copytree(
-                    dep_target, str(dst / dep_target.stem), dirs_exist_ok=True
-                )
+                shutil.copytree(dep_target, str(dst / dep_target.stem), dirs_exist_ok=True)
             elif dep_target.is_file():
                 shutil.copy(dep_target, str(dst / dep_target.name))
