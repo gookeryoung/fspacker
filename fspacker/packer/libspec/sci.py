@@ -45,3 +45,24 @@ class NumbaSpecPacker(ChildLibSpecPacker):
         llvmlite=set(),
         pycparser=set(),
     )
+
+
+class TorchSpecPacker(ChildLibSpecPacker):
+    PATTERNS = dict(
+        torch={"torch"},
+        fsspec=set(),
+        filelock=set(),
+        jinja2=set(),
+        MarkupSafe=set(),
+        sympy=set(),
+        typing_extensions=set(),
+    )
+
+
+class TorchVisionSpecPacker(ChildLibSpecPacker):
+    PATTERNS = dict(
+        torchvision={"torchvision"},
+        torch=set(),
+        numpy=set(),
+        pillow=set(),
+    )

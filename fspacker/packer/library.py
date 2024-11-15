@@ -4,7 +4,13 @@ from fspacker.common import PackTarget
 from fspacker.packer.base import BasePacker
 from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
-from fspacker.packer.libspec.sci import MatplotlibSpecPacker, PillowSpecPacker, NumbaSpecPacker
+from fspacker.packer.libspec.sci import (
+    MatplotlibSpecPacker,
+    PillowSpecPacker,
+    NumbaSpecPacker,
+    TorchSpecPacker,
+    TorchVisionSpecPacker,
+)
 from fspacker.utils.repo import get_libs_repo
 from fspacker.utils.wheel import download_install_wheel
 
@@ -24,6 +30,8 @@ class LibraryPacker(BasePacker):
             pillow=PillowSpecPacker(self),
             pyside2=PySide2Packer(self),
             tkinter=TkinterPacker(self),
+            torch=TorchSpecPacker(self),
+            torchvision=TorchVisionSpecPacker(self),
         )
 
     def pack(self, target: PackTarget):
