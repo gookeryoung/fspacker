@@ -38,7 +38,9 @@ class LibraryPacker(BasePacker):
             if not libs_repo.get(lib):
                 download_install_wheel(lib, packages_dir)
             else:
+                logging.info(f"Packing [{lib}]")
                 self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)
 
         for lib in target.extra:
+            logging.info(f"Packing [{lib}]")
             self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)

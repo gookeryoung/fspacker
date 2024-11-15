@@ -29,9 +29,11 @@ def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]
                     zip_ref.extract(file, dest_dir)
 
         deps = get_wheel_dependencies(info.filepath)
-        for dep in deps:
-            if dep not in folders:
-                unpack_wheel(dep, dest_dir, {})
+        if len(deps):
+            logging.info(f"Found {len(deps)} dependencies: [{deps}]")
+            for dep in deps:
+                if dep not in folders:
+                    unpack_wheel(dep, dest_dir, {})
 
 
 def download_install_wheel(libname: str, dst: pathlib.Path):
