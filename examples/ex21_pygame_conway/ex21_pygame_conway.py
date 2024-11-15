@@ -22,9 +22,7 @@ import pygame as pg
 
 
 class Cells:
-    PREDICT_ARR = np.array(
-        [list("000100000"), list("001100000")], dtype=np.uint8
-    )
+    PREDICT_ARR = np.array([list("000100000"), list("001100000")], dtype=np.uint8)
 
     def __init__(self, nx: int, ny: int, screen_width: int):
         self.nx, self.ny = nx, ny
@@ -53,9 +51,7 @@ class Cells:
         for row in range(len(self.cells)):
             for col in range(len(self.cells[0])):
                 total = self.count_neighbours(col, row)
-                new_cells[row][col] = self.predict_life(
-                    self.cells[row][col], total
-                )
+                new_cells[row][col] = self.predict_life(self.cells[row][col], total)
         self.cells = new_cells
 
     def draw(self, surface: pg.Surface):

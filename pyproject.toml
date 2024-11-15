@@ -39,7 +39,7 @@ dev-dependencies = [
 fspacker = { workspace = true }
 
 [tool.ruff]
-line-length = 80 # 代码最大行宽
+line-length = 120 # 代码最大行宽
 select = [# 选择的规则
     "F",
     "E",
