@@ -23,6 +23,10 @@ class PackTarget:
         return f"[src={self.src.name}, ast={self.ast}, " f"deps={self.deps}], extra={self.extra}"
 
     @cached_property
+    def root_dir(self) -> pathlib.Path:
+        return self.src.parent
+
+    @cached_property
     def dist_dir(self) -> pathlib.Path:
         return self.src.parent / "dist"
 

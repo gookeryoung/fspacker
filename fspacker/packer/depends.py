@@ -14,7 +14,7 @@ class DependsPacker(BasePacker):
         dst = target.dist_dir / "src"
         dst.mkdir(exist_ok=True, parents=True)
 
-        logging.info(f"复制源文件[{target.src}]->[{dst}]")
+        logging.info(f"Copy source file: [{target.src}]->[{dst}]")
         shutil.copy(str(target.src), str(dst))
 
         for dep in target.deps:

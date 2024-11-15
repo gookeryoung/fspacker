@@ -6,11 +6,11 @@ from fspacker.parser.base import BaseParser
 
 
 class FolderParser(BaseParser):
-    """文件夹分析"""
+    """Parser for folders"""
 
     def parse(self, entry: pathlib.Path):
         if entry.stem.lower() in IGNORE_SYMBOLS:
-            logging.info(f"Skip folder: [{entry.stem}]")
+            logging.info(f"Skip parsing folder: [{entry.stem}]")
             return
 
         for k, v in self.config.targets.items():

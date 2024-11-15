@@ -17,16 +17,13 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
 
     if not len(__libs_repo):
         lib_files = list(_ for _ in LIBS_REPO_DIR.rglob("*") if _.suffix in (".whl", ".tar.gz"))
-        logging.info(f"获取库文件, 总数: {len(lib_files)}")
+        logging.info(f"Fetching local library, total: [{len(lib_files)}]")
         for lib_file in lib_files:
             try:
                 info = LibraryInfo.from_path(lib_file)
                 __libs_repo.setdefault(info.package_name.lower(), info)
 
-                if len(info.version) > 1:
-                    logging.info(f"库文件[{lib_file.stem}]包含多个版本: [{info.version}]")
-
             except ValueError as e:
-                logging.error(f"分析库文件[{lib_file.stem}]出错, 信息: [{e}]")
+                logging.error(f"Parsing [{lib_file.stem}] error, message: [{e}]")
 
     return __libs_repo

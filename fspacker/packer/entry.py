@@ -6,8 +6,8 @@ from fspacker.common import PackTarget
 from fspacker.config import GUI_LIBS, ASSETS_DIR
 from fspacker.packer.base import BasePacker
 
-# int 文件模板
-TEMPLATE = string.Template(
+# int file template
+INT_TEMPLATE = string.Template(
     """\
 import sys, os
 sys.path.append(os.path.join(os.getcwd(), "src"))
@@ -26,16 +26,16 @@ class EntryPacker(BasePacker):
         dst = target.dist_dir / f"{target.src.stem}.exe"
 
         if not dst.exists():
-            logging.info(f"分析为[{'窗体' if is_gui else '控制台'}]目标")
-            logging.info(f"拷贝可执行文件[{src}]->[{dst}]")
+            logging.info(f"Target is [{'GUI' if is_gui else 'CONSOLE'}]")
+            logging.info(f"Copy executable file: [{src}]->[{dst}]")
             shutil.copy(src, dst)
         else:
-            logging.info(f"入口文件[{dst}]已存在, 跳过")
+            logging.info(f"Entry file [{dst.relative_to(target.root_dir)}] already exist, skip")
 
         name = target.src.stem
         dst = target.dist_dir / f"{name}.int"
 
-        logging.info(f"创建int文件[{name}.int]->[{dst}]")
-        content = TEMPLATE.substitute(SRC=f"src.{name}")
+        logging.info(f"Create int file: [{name}.int]->[{dst.relative_to(target.root_dir)}]")
+        content = INT_TEMPLATE.substitute(SRC=f"src.{name}")
         with open(dst, "w") as f:
             f.write(content)

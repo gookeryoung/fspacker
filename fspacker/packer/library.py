@@ -27,7 +27,7 @@ class LibraryPacker(BasePacker):
         libs_repo = get_libs_repo()
 
         if not packages_dir.exists():
-            logging.info(f"创建包目录[{packages_dir}]")
+            logging.info(f"Create packages folder [{packages_dir}]")
             packages_dir.mkdir(parents=True)
 
         for libname in target.ast:

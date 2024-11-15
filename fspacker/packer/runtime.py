@@ -8,7 +8,6 @@ import typing
 from urllib.request import urlopen
 
 import requests
-
 from fspacker.common import PackTarget
 from fspacker.config import EMBED_FILEPATH, EMBED_FILE_NAME, PYTHON_VER
 from fspacker.config import EMBED_URL_PREFIX
@@ -16,12 +15,12 @@ from fspacker.packer.base import BasePacker
 
 
 def _calc_checksum(filepath: pathlib.Path, algorithm="md5", block_size=4096) -> str:
-    """计算文件校验和.
+    """Calculate checksum of filepath.
 
     Args:
-        filepath (pathlib.Path): 输入文件路径.
-        algorithm (str, optional): 校验算法, 默认为 "md5".
-        block_size (int, optional): 读取块长度, 默认为 4096.
+        filepath (pathlib.Path): input filepath.
+        algorithm (str, optional): checksum algorithm, default by "md5".
+        block_size (int, optional): read block size, default by 4096.
     """
     if algorithm == "md5":
         hasher = hashlib.md5()
@@ -30,13 +29,13 @@ def _calc_checksum(filepath: pathlib.Path, algorithm="md5", block_size=4096) -> 
     elif algorithm == "sha256":
         hasher = hashlib.sha256()
     else:
-        raise ValueError(f"不支持的校验和算法: [{algorithm}]")
+        raise ValueError(f"Unsupported algorithm: [{algorithm}]")
 
-    logging.info(f"计算文件[{filepath}]校验和")
+    logging.info(f"Calculate checksum for: [{filepath.name}]")
     with open(filepath, "rb") as file:
         for chunk in iter(lambda: file.read(block_size), b""):
             hasher.update(chunk)
-    logging.info(f"计算值[{hasher.hexdigest()}]")
+    logging.info(f"Checksum is: [{hasher.hexdigest()}]")
     return hasher.hexdigest()
 
 
@@ -67,21 +66,21 @@ def _update_json_values(filepath: pathlib.Path, updates: typing.Dict[str, typing
 
 
 def _check_url_access_time(url: str) -> float:
-    """检查 url 访问是否超时"""
+    """Check access time for url"""
     start = time.perf_counter()
     try:
         response = requests.get(url, timeout=2)
         response.raise_for_status()
         time_used = time.perf_counter() - start
-        logging.info(f"{url} 访问用时: {time_used:.2f}s")
+        logging.info(f"Access time [{time_used:.2f}]s for [{url}]")
         return time_used
     except requests.exceptions.RequestException:
-        logging.info(f"{url} 访问超时")
+        logging.info(f"Access time out, url: [{url}]")
         return -1
 
 
-def _check_embed_urls() -> str:
-    """检查可用镜像"""
+def _check_fastest_url() -> str:
+    """Check fastest url for embed python."""
     min_time, fastest_url = 10.0, ""
     for name, embed_url in EMBED_URL_PREFIX.items():
         time_used = _check_url_access_time(embed_url)
@@ -90,7 +89,7 @@ def _check_embed_urls() -> str:
                 fastest_url = embed_url
                 min_time = time_used
 
-    logging.info(f"找到最快镜像地址: {fastest_url}")
+    logging.info(f"Found fastest url: [{fastest_url}]")
     return fastest_url
 
 
@@ -98,23 +97,23 @@ class RuntimePacker(BasePacker):
     def pack(self, target: PackTarget):
         dest = target.runtime_dir
         if not dest.exists():
-            logging.info(f"创建项目运行时文件夹: [{dest}]")
+            logging.info(f"Create runtime folder: [{dest}]")
             dest.mkdir(parents=True)
 
         if not EMBED_FILEPATH.exists():
             self.fetch_runtime()
 
-        logging.info(f"解压运行时文件[{EMBED_FILEPATH.name}]->[{dest}]")
+        logging.info(f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest}]")
         try:
             shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
             return True
         except ValueError as e:
-            logging.error(f"解压失败, 信息: {e}")
+            logging.error(f"Unpack failed, message: {e}")
             return False
 
     @staticmethod
     def fetch_runtime():
-        """获取python运行时"""
+        """Fetch runtime zip file"""
         from fspacker.config import EMBED_FILEPATH as EMBED, EMBED_REPO_DIR
         from fspacker.config import CONFIG_FILEPATH as CFG
 
@@ -122,27 +121,25 @@ class RuntimePacker(BasePacker):
             EMBED_REPO_DIR.mkdir(parents=True)
 
         if EMBED.exists():
-            logging.info(f"比较[{EMBED.name}]文件和配置文件[{CFG.name}]校验和")
+            logging.info(f"Compare file [{EMBED.name}] with local config [{CFG.name}] checksum")
             src_checksum = _get_json_value(CFG, "embed_file_checksum")
             dst_checksum = _calc_checksum(EMBED)
             if src_checksum == dst_checksum:
-                logging.info("校验和相同, 运行时文件检查成功!")
+                logging.info("Checksum matches!")
                 return
 
-        logging.info("获取 embed python 最佳下载地址")
-        fastest_url = _check_embed_urls()
-        logging.info(f"已获取地址: [{fastest_url}]")
+        logging.info("Fetch fastest embed python url")
+        fastest_url = _check_fastest_url()
         archive_url = f"{fastest_url}{PYTHON_VER}/{EMBED_FILE_NAME}"
-        logging.info(f"获取压缩包地址: {archive_url}")
         with urlopen(archive_url) as url:
             runtime_files = url.read()
 
-        logging.info(f"从地址[{fastest_url}]下载运行时")
+        logging.info(f"Download embed runtime from [{fastest_url}]")
         t0 = time.perf_counter()
         with open(EMBED, "wb") as f:
             f.write(runtime_files)
-        logging.info(f"下载完成, 用时: {time.perf_counter() - t0:.2f}s.")
+        logging.info(f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s.")
 
         checksum = _calc_checksum(EMBED)
-        logging.info(f"写入校验和[{checksum}]到配置文件{CFG}")
+        logging.info(f"Write checksum [{checksum}] into config file [{CFG}]")
         _update_json_values(CFG, dict(embed_file_checksum=checksum))

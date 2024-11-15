@@ -11,13 +11,18 @@ from fspacker.config import PYTHON_VER_SHORT, TKINTER_LIBS
 from fspacker.parser.base import BaseParser
 
 import ast
-from fspacker.common import PackTarget
-
-__std_libs: typing.Set[str] = set()
+from fspacker.common import PackTarget, PackConfig
 
 
 class SourceParser(BaseParser):
     """Parse by source code"""
+
+    STD_LIBS: typing.Set[str] = set()
+
+    def __init__(self, config: PackConfig, root_dir: pathlib.Path):
+        super().__init__(config, root_dir)
+
+        self._parse_std_libs()
 
     def parse(self, entry: pathlib.Path):
         with open(entry, encoding="utf-8") as f:
@@ -31,34 +36,29 @@ class SourceParser(BaseParser):
                     extra=extra,
                     code=code,
                 )
-                logging.info(f"增加打包目标{self.config.targets[entry.stem]}")
+                logging.info(f"Add pack target{self.config.targets[entry.stem]}")
 
-    @staticmethod
-    def _parse_ast(content: str, filepath: pathlib.Path) -> typing.Set[str]:
-        """分析引用的库"""
+    def _parse_ast(self, content: str, filepath: pathlib.Path) -> typing.Set[str]:
+        """Analyse ast tree from source code"""
+
         tree = ast.parse(content, filename=filepath)
-        std_libs = _parse_std_libs()
         imports = set()
         extra = set()
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
                 import_name = node.module.split(".")[0].lower()
-                if import_name not in std_libs:
+                if import_name not in self.STD_LIBS:
                     imports.add(import_name)
             elif isinstance(node, ast.Import):
                 for alias in node.names:
                     import_name = alias.name.split(".")[0].lower()
-                    if import_name not in std_libs:
+                    if import_name not in self.STD_LIBS:
                         imports.add(import_name)
                     if import_name in TKINTER_LIBS:
                         extra.add("tkinter")
         return imports, extra
 
-
-def _parse_std_libs() -> typing.Set[str]:
-    global __std_libs
-
-    if not len(__std_libs):
-        __std_libs = stdlib_list.stdlib_list(PYTHON_VER_SHORT)
-        logging.info(f"获取内置库[{len(__std_libs)}]个")
-    return __std_libs
+    def _parse_std_libs(self) -> typing.Set[str]:
+        if not len(self.STD_LIBS):
+            self.STD_LIBS = stdlib_list.stdlib_list(PYTHON_VER_SHORT)
+            logging.info(f"Parse std libs: total=[{len(self.STD_LIBS)}]")
