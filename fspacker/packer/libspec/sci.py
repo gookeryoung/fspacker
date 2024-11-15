@@ -35,3 +35,13 @@ class PillowSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         pillow={"PIL"},
     )
+
+
+class NumbaSpecPacker(ChildLibSpecPacker):
+    PATTERNS = dict(
+        numba=set(),
+        cffi={"cffi", "_cffi_backend.cp38-win_amd64"},
+        importlib_metadata=set(),
+        llvmlite=set(),
+        pycparser=set(),
+    )
