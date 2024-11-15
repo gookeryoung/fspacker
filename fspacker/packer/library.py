@@ -3,8 +3,7 @@ import logging
 from fspacker.common import BuildTarget
 from fspacker.packer.base import BasePacker
 from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
-from fspacker.packer.libspec.gui import PySide2Packer
-from fspacker.packer.libspec.tkinter import TkinterPacker
+from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
 
 __all__ = [
     "LibraryPacker",
