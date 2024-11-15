@@ -9,9 +9,7 @@ from fspacker.utils.wheel import unpack_wheel
 class LibSpecPackerMixin:
     PATTERNS: typing.Dict[str, typing.Set[str]] = {}
 
-    def pack(self, lib: str, target: PackTarget):
-        for libname, patterns in self.PATTERNS.items():
-            unpack_wheel(libname.lower(), target.packages_dir, patterns)
+    def pack(self, lib: str, target: PackTarget): ...
 
 
 class ChildLibSpecPacker(LibSpecPackerMixin):

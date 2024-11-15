@@ -33,6 +33,7 @@ dev-dependencies = [
     "numpy>=1.24.4",
     "matplotlib>=3.7.5",
     "py7zr>=0.22.0",
+    "setuptools>=75.3.0",
 ]
 
 [tool.uv.sources]

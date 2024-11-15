@@ -28,10 +28,10 @@ class SourceParser(BaseParser):
         with open(entry, encoding="utf-8") as f:
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
-                ast_tree, extra = self._parse_ast(code, entry)
+                ast_tree, extra, deps = self._parse_ast(code, entry)
                 self.config.targets[entry.stem] = PackTarget(
                     src=entry,
-                    deps=set(),
+                    deps=deps,
                     ast=ast_tree,
                     extra=extra,
                     code=code,
@@ -42,21 +42,29 @@ class SourceParser(BaseParser):
         """Analyse ast tree from source code"""
 
         tree = ast.parse(content, filename=filepath)
+        entries = list(_.stem for _ in filepath.parent.iterdir())
         imports = set()
         extra = set()
+        deps = set()
+
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
                 import_name = node.module.split(".")[0].lower()
-                if import_name not in self.STD_LIBS:
+                if import_name in entries:
+                    deps.add(import_name)
+                elif import_name not in self.STD_LIBS:
                     imports.add(import_name)
             elif isinstance(node, ast.Import):
                 for alias in node.names:
                     import_name = alias.name.split(".")[0].lower()
-                    if import_name not in self.STD_LIBS:
+                    if import_name in entries:
+                        deps.add(import_name)
+                    elif import_name not in self.STD_LIBS:
                         imports.add(import_name)
-                    if import_name in TKINTER_LIBS:
+                    elif import_name in TKINTER_LIBS:
                         extra.add("tkinter")
-        return imports, extra
+
+        return imports, extra, deps
 
     def _parse_std_libs(self) -> typing.Set[str]:
         if not len(self.STD_LIBS):
