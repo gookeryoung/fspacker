@@ -2,7 +2,7 @@ import pytest
 
 from fspacker.common import BuildConfig
 from fspacker.parser.source import SourceParser
-from fspacker.tests.common import DIR_EXAMPLES
+from tests.common import DIR_EXAMPLES
 
 
 class TestSourceParser:

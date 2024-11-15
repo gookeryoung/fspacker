@@ -6,7 +6,7 @@ import subprocess
 from fspacker.config import TEST_CALL_TIMEOUT
 
 CWD = pathlib.Path(__file__).parent
-DIR_EXAMPLES = CWD.parent.parent.parent / "examples"
+DIR_EXAMPLES = CWD.parent / "examples"
 
 
 def exec_dist_dir(dist_dir: pathlib.Path):

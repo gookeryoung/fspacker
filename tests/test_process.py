@@ -1,7 +1,7 @@
 import pytest
 
 from fspacker.core.process import Processor
-from fspacker.tests.common import DIR_EXAMPLES, exec_dist_dir
+from tests.common import DIR_EXAMPLES, exec_dist_dir
 
 
 class TestProcess:
