@@ -3,10 +3,10 @@ import shutil
 
 from fspacker.common import PackTarget
 from fspacker.config import TKINTER_LIB_FILEPATH, TKINTER_FILEPATH
-from fspacker.packer.libspec.base import LibSpecPackerMixin, BaseLibrarySpecPacker
+from fspacker.packer.libspec.base import ChildLibSpecPacker
 
 
-class PySide2Packer(LibSpecPackerMixin):
+class PySide2Packer(ChildLibSpecPacker):
     PATTERNS = dict(
         pyside2={
             "PySide2/__init__.py",
@@ -22,8 +22,8 @@ class PySide2Packer(LibSpecPackerMixin):
             "plugins/imageformats/.*.dll",
             "plugins/platforms/.*.dll",
         },
-        shiboken2={},
-        six={},
+        shiboken2=set(),
+        six=set(),
     )
 
     def pack(self, lib: str, target: PackTarget):
@@ -31,7 +31,7 @@ class PySide2Packer(LibSpecPackerMixin):
         super().pack(lib, target)
 
 
-class TkinterPacker(BaseLibrarySpecPacker):
+class TkinterPacker(ChildLibSpecPacker):
     def pack(self, lib: str, target: PackTarget):
         if "tkinter" in target.extra:
             logging.info("Using [tkinter] pack spec")

@@ -1,9 +1,12 @@
 import logging
+import typing
 
 from fspacker.common import PackTarget
 
 
 class BasePacker:
+    SPECS: typing.Dict[str, typing.Any] = {}
+
     def pack(self, target: PackTarget):
         dirs = list(_ for _ in (target.dist_dir, target.runtime_dir, target.packages_dir) if not _.exists())
 

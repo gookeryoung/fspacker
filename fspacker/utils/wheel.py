@@ -11,6 +11,7 @@ from fspacker.utils.repo import get_libs_repo
 
 def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]) -> None:
     info = get_libs_repo().get(libname)
+    folders = list(_.name for _ in dest_dir.iterdir() if _.is_dir())
 
     if info is not None:
         if not len(patterns):
@@ -29,7 +30,8 @@ def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]
 
         deps = get_wheel_dependencies(info.filepath)
         for dep in deps:
-            unpack_wheel(dep, dest_dir, {})
+            if dep not in folders:
+                unpack_wheel(dep, dest_dir, {})
 
 
 def download_install_wheel(libname: str, dst: pathlib.Path):

@@ -4,23 +4,25 @@ from fspacker.common import PackTarget
 from fspacker.packer.base import BasePacker
 from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
+from fspacker.packer.libspec.sci import MatplotlibSpecPacker, PillowSpecPacker
+from fspacker.utils.repo import get_libs_repo
+from fspacker.utils.wheel import download_install_wheel
 
 __all__ = [
     "LibraryPacker",
 ]
-
-from fspacker.utils.repo import get_libs_repo
-from fspacker.utils.wheel import download_install_wheel
 
 
 class LibraryPacker(BasePacker):
     def __init__(self):
         super().__init__()
 
-        self.spec_packers = dict(
+        self.SPECS = dict(
             default=DefaultLibrarySpecPacker(),
-            tkinter=TkinterPacker(),
-            pyside2=PySide2Packer(),
+            tkinter=TkinterPacker(self),
+            pyside2=PySide2Packer(self),
+            matplotlib=MatplotlibSpecPacker(self),
+            pillow=PillowSpecPacker(self),
         )
 
     def pack(self, target: PackTarget):
@@ -31,11 +33,11 @@ class LibraryPacker(BasePacker):
             logging.info(f"Create packages folder [{packages_dir}]")
             packages_dir.mkdir(parents=True)
 
-        for libname in target.ast:
-            if not libs_repo.get(libname):
-                download_install_wheel(libname, packages_dir)
+        for lib in target.ast:
+            if not libs_repo.get(lib):
+                download_install_wheel(lib, packages_dir)
             else:
-                self.spec_packers.setdefault(libname, self.spec_packers["default"]).pack(libname, target=target)
+                self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)
 
-        for libname in target.extra:
-            self.spec_packers.setdefault(libname, self.spec_packers["default"]).pack(libname, target=target)
+        for lib in target.extra:
+            self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)
