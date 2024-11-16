@@ -32,6 +32,8 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
 
 
 def get_builtin_lib_repo() -> typing.Set[str]:
+    """Analyse and return names of built-in libraries"""
+
     global __builtin_lib_repo
 
     if not len(__builtin_lib_repo):

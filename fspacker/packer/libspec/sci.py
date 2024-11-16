@@ -7,10 +7,9 @@ from fspacker.packer.libspec.base import ChildLibSpecPacker
 class MatplotlibSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         matplotlib={
-            "matplotlib",
-            "matplotlib.libs",
-            "mpl_toolkits",
-            "matplotlib-3.7.5-py3.8-nspkg.pth",
+            "matplotlib/",
+            "matplotlib.libs/",
+            "mpl_toolkits/",
             "pylab.py",
         },
         contourpy=set(),
@@ -21,7 +20,7 @@ class MatplotlibSpecPacker(ChildLibSpecPacker):
         pillow=set(),
         pyparsing=set(),
         python_dateutil={
-            "dateutil",
+            "^dateutil",
         },
         zipp=set(),
     )

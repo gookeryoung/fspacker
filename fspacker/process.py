@@ -20,9 +20,9 @@ class Processor:
         )
         self.packers = dict(
             base=BasePacker(),
+            depends=DependsPacker(),
             entry=EntryPacker(),
             runtime=RuntimePacker(),
-            depends=DependsPacker(),
             library=LibraryPacker(),
         )
 

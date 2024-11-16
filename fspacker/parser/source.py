@@ -1,17 +1,14 @@
+import ast
 import logging
 import pathlib
 import typing
 
-
-__all__ = ("SourceParser",)
-
-
+from fspacker.common import PackTarget
 from fspacker.config import TKINTER_LIBS
 from fspacker.parser.base import BaseParser
-
-import ast
-from fspacker.common import PackTarget
 from fspacker.utils.repo import get_builtin_lib_repo
+
+__all__ = ("SourceParser",)
 
 
 class SourceParser(BaseParser):
