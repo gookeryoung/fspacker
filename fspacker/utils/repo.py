@@ -1,4 +1,5 @@
 import logging
+import pathlib
 import typing
 
 import stdlib_list
@@ -10,6 +11,7 @@ __builtin_lib_repo: typing.Set[str] = set()
 
 __all__ = [
     "get_libs_repo",
+    "update_libs_repo",
     "get_builtin_lib_repo",
 ]
 
@@ -29,6 +31,11 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
                 logging.error(f"Parsing [{lib_file.stem}] error, message: [{e}]")
 
     return __libs_repo
+
+
+def update_libs_repo(lib: str, filepath: pathlib.Path) -> None:
+    libs_repo = get_libs_repo()
+    libs_repo[lib] = filepath
 
 
 def get_builtin_lib_repo() -> typing.Set[str]:
