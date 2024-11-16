@@ -1,14 +1,16 @@
 import logging
 import typing
 
+import stdlib_list
 from fspacker.common import LibraryInfo
-from fspacker.config import LIBS_REPO_DIR
+from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT
 
 __libs_repo: typing.Dict[str, LibraryInfo] = {}
-
+__builtin_lib_repo: typing.Set[str] = set()
 
 __all__ = [
     "get_libs_repo",
+    "get_builtin_lib_repo",
 ]
 
 
@@ -27,3 +29,13 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
                 logging.error(f"Parsing [{lib_file.stem}] error, message: [{e}]")
 
     return __libs_repo
+
+
+def get_builtin_lib_repo() -> typing.Set[str]:
+    global __builtin_lib_repo
+
+    if not len(__builtin_lib_repo):
+        __builtin_lib_repo = stdlib_list.stdlib_list(PYTHON_VER_SHORT)
+        logging.info(f"Parse built-in libs: total=[{len(__builtin_lib_repo)}]")
+
+    return __builtin_lib_repo

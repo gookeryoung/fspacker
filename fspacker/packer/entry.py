@@ -28,7 +28,7 @@ class EntryPacker(BasePacker):
 
         if not dst.exists():
             logging.info(f"Target is [{'GUI' if is_gui else 'CONSOLE'}]")
-            logging.info(f"Copy executable file: [{src.relative_to(root)}]->[{dst.relative_to(root)}]")
+            logging.info(f"Copy executable file: [{src.name}]->[{dst.relative_to(root)}]")
             shutil.copy(src, dst)
         else:
             logging.info(f"Entry file [{dst.relative_to(root)}] already exist, skip")
