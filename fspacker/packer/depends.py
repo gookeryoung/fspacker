@@ -14,7 +14,8 @@ class DependsPacker(BasePacker):
         dst = target.dist_dir / "src"
         dst.mkdir(exist_ok=True, parents=True)
 
-        logging.info(f"Copy source file: [{target.src}]->[{dst}]")
+        root = target.root_dir
+        logging.info(f"Copy source file: [{target.src.name}]->[{dst.relative_to(root)}]")
         shutil.copy(str(target.src), str(dst))
 
         for dep in target.deps:

@@ -103,7 +103,7 @@ class RuntimePacker(BasePacker):
         if not EMBED_FILEPATH.exists():
             self.fetch_runtime()
 
-        logging.info(f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest}]")
+        logging.info(f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]")
         try:
             shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
             return True

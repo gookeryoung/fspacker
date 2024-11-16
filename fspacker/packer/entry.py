@@ -23,19 +23,20 @@ class EntryPacker(BasePacker):
 
         exe_file = "gui.exe" if is_gui else "console.exe"
         src = ASSETS_DIR / exe_file
+        root = target.root_dir
         dst = target.dist_dir / f"{target.src.stem}.exe"
 
         if not dst.exists():
             logging.info(f"Target is [{'GUI' if is_gui else 'CONSOLE'}]")
-            logging.info(f"Copy executable file: [{src}]->[{dst}]")
+            logging.info(f"Copy executable file: [{src.relative_to(root)}]->[{dst.relative_to(root)}]")
             shutil.copy(src, dst)
         else:
-            logging.info(f"Entry file [{dst.relative_to(target.root_dir)}] already exist, skip")
+            logging.info(f"Entry file [{dst.relative_to(root)}] already exist, skip")
 
         name = target.src.stem
         dst = target.dist_dir / f"{name}.int"
 
-        logging.info(f"Create int file: [{name}.int]->[{dst.relative_to(target.root_dir)}]")
+        logging.info(f"Create int file: [{name}.int]->[{dst.relative_to(root)}]")
         content = INT_TEMPLATE.substitute(SRC=f"src.{name}")
         with open(dst, "w") as f:
             f.write(content)

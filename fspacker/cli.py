@@ -29,7 +29,7 @@ def main():
         dest="directory",
         type=str,
         default=str(pathlib.Path.cwd()),
-        help="Source directory",
+        help="Source root directory",
     )
 
     args = parser.parse_args()
@@ -38,7 +38,7 @@ def main():
 
     t0 = time.perf_counter()
     logging.info(f"Start packing, mode: [{'' if zip_mode else 'No-'}Zip]")
-    logging.info(f"Source directory: [{directory}]")
+    logging.info(f"Source root directory: [{directory}]")
 
     processor = Processor(directory)
     processor.run()
