@@ -53,8 +53,15 @@ class LibraryPacker(BasePacker):
                 target.union_ast(ast_tree)
 
         logging.info(f"After updating target ast tree: {target}")
-        for lib in target.ast:
-            self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)
+        logging.info("Start packing with specs")
+        for k, v in self.SPECS.items():
+            if k in target.ast:
+                self.SPECS[k].pack(lib, target=target)
+                target.ast.remove(k)
+            if k in target.extra:
+                self.SPECS[k].pack(lib, target=target)
 
-        for lib in target.extra:
-            self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)
+        logging.info("Start packing with default")
+        for lib in target.ast:
+            if lib in libs_repo.keys():
+                self.SPECS["default"].pack(lib, target=target)

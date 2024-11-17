@@ -107,6 +107,5 @@ def get_dependencies(package_name: str, depth: int) -> typing.Set[str]:
             names = names.union(get_dependencies(name, depth + 1))
 
         return names
-    except PackageNotFoundError as e:
-        logging.info(f"Error processing package {package_name}: {e}")
+    except PackageNotFoundError:
         return set()
