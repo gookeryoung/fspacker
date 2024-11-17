@@ -3,6 +3,7 @@ import pathlib
 import typing
 
 import stdlib_list
+
 from fspacker.common import LibraryInfo
 from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT
 
@@ -35,7 +36,7 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
 
 def update_libs_repo(lib: str, filepath: pathlib.Path) -> None:
     libs_repo = get_libs_repo()
-    libs_repo[lib] = filepath
+    libs_repo[lib] = LibraryInfo.from_path(filepath)
 
 
 def get_builtin_lib_repo() -> typing.Set[str]:

@@ -96,6 +96,10 @@ def _check_fastest_url() -> str:
 class RuntimePacker(BasePacker):
     def pack(self, target: PackTarget):
         dest = target.runtime_dir
+        if dest.exists():
+            logging.info("Runtime folder exists, skip")
+            return
+
         if not dest.exists():
             logging.info(f"Create runtime folder: [{dest}]")
             dest.mkdir(parents=True)

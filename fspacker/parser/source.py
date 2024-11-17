@@ -44,10 +44,12 @@ class SourceParser(BaseParser):
                 if node.module is not None:
                     import_name = node.module.split(".")[0].lower()
 
-                if import_name in entries:
-                    deps.add(import_name)
-                elif import_name not in builtins:
-                    imports.add(import_name)
+                    # import from local files or package folders
+                    if import_name in entries:
+                        deps.add(import_name)
+                    # imports ast
+                    elif import_name not in builtins:
+                        imports.add(import_name)
             elif isinstance(node, ast.Import):
                 for alias in node.names:
                     import_name = alias.name.split(".")[0].lower()
