@@ -105,5 +105,13 @@ def test_pack_ex24(disable_gc):
     assert exec_dist_dir(root_dir / "dist")
 
 
+def test_pack_ex25(disable_gc):
+    root_dir = DIR_EXAMPLES / "ex25_pytorch"
+    proc = Processor(root_dir)
+    proc.run()
+
+    assert exec_dist_dir(root_dir / "dist")
+
+
 if __name__ == "__main__":
     pytest.main()
