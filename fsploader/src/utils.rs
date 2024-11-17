@@ -1,11 +1,13 @@
-use std::env::{current_dir, current_exe, set_var};
+use std::env::{current_dir, current_exe, set_current_dir, set_var};
 use std::ffi::{CString, OsString};
+use std::io::Error;
 use std::os::windows::ffi::OsStrExt;
 use winapi::shared::minwindef::{FARPROC, HINSTANCE};
 use winapi::shared::windef::HWND;
 use winapi::um::errhandlingapi::GetLastError;
 use winapi::um::libloaderapi::{GetProcAddress, LoadLibraryW};
 use winapi::um::winuser::{MessageBoxW, MB_OK};
+
 
 type PyMain = extern "system" fn(i32, *mut *mut i8) -> i32;
 
@@ -47,10 +49,10 @@ pub fn check_env() -> bool {
     set_var("FSPLOADER", current_exe().unwrap());
     set_var("FSPLOADER_HOME", current_dir().unwrap());
     set_var("FSPLOADER_RUNTIME", runtime_dir.to_str().unwrap());
-    // set_var("PYTHONHOME", runtime_dir.to_str().unwrap());
-    // set_var("PYTHONPATH", current_exe().unwrap());
-    // set_var("PYTHONIOENCODING", "utf-8");
-    // set_var("LC_ALL", "en_US.UTF-8");
+    set_var("PYTHONHOME", runtime_dir.to_str().unwrap());
+    set_var("PYTHONPATH", current_exe().unwrap());
+    set_var("PYTHONIOENCODING", "utf-8");
+    set_var("LC_ALL", "en_US.UTF-8");
     true
 }
 
@@ -91,6 +93,19 @@ pub fn call_func(h_module: HINSTANCE, function_name: &str) -> FARPROC {
     }
 }
 
+pub fn load_python() -> Result<FARPROC, Error> {
+    let cur_dir = current_dir()?;
+    let runtime_dir = cur_dir.join("runtime");
+    set_current_dir(runtime_dir).expect("Failed to set current dir");
+
+    let dll_file = load_dll("python3.dll");
+    let py_main = call_func(dll_file, "Py_Main");
+
+    set_current_dir(cur_dir)?;
+    Ok(py_main)
+}
+
+
 pub fn run_py_string(py_main_addr: FARPROC, script: &str) {
     let cur_dir = current_dir().unwrap();
     let python_exe_file = cur_dir.join("runtime").join("python.exe");
@@ -115,12 +130,12 @@ pub fn run_py_string(py_main_addr: FARPROC, script: &str) {
     // set_current_dir(cur_dir).expect("Failed to set current working directory");
     let hr = py_main(argv.len() as i32, argv.as_mut_ptr());
     println!("py_main returned : {}", hr);
-    // unsafe {
-    //     for arg in &argv {
-    //         let s = CString::from_raw(*arg);
-    //         println!("{}", s.to_string_lossy());
-    //     }
-    // }
+    unsafe {
+        for arg in &argv {
+            let s = CString::from_raw(*arg);
+            println!("{}", s.to_string_lossy());
+        }
+    }
 }
 
 pub fn detect_python_script() {
