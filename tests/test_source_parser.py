@@ -2,7 +2,7 @@ import pytest
 
 from fspacker.common import PackConfig
 from fspacker.parser.source import SourceParser
-from tests.common import DIR_EXAMPLES
+from tests.utils import DIR_EXAMPLES
 
 
 def test_ex01_source_parser():
@@ -15,7 +15,7 @@ def test_ex01_source_parser():
 
     target = parser.config.targets["ex01_helloworld_console"]
     assert len(target.ast) == 0
-    assert len(target.deps) == 0
+    assert len(target.deps) == 2
 
 
 def test_ex02_source_parser():

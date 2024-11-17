@@ -15,6 +15,9 @@ from fspacker.utils.repo import get_libs_repo
 def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]) -> None:
     info = get_libs_repo().get(libname)
 
+    if info is None or not info.filepath.exists():
+        download_wheel(libname)
+
     if info is not None:
         if not len(patterns):
             patterns = {
@@ -48,32 +51,7 @@ def download_wheel(libname) -> pathlib.Path:
         )
         lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
 
-    if len(lib_files):
-        return lib_files[0]
-
-    raise FileNotFoundError(f"No wheel file for {libname}")
-
-
-def get_wheel_dependencies(wheel_file: pathlib.Path) -> typing.Set[str]:
-    """Get dependencies from a wheel file"""
-    with zipfile.ZipFile(wheel_file, "r") as zip_ref:
-        metadata_file = next(
-            (name for name in zip_ref.namelist() if name.endswith("METADATA")),
-            None,
-        )
-        if not metadata_file:
-            raise FileNotFoundError("METADATA file not found in the wheel file")
-
-        with zip_ref.open(metadata_file) as f:
-            metadata = f.read().decode("utf-8")
-
-    dependencies = set()
-    for line in metadata.splitlines():
-        if line.startswith("Requires-Dist:"):
-            dependency = line.split(":", 1)[1].strip()
-            dependencies.add(dependency.split(" ")[0])
-
-    return dependencies
+    return lib_files[0]
 
 
 def _normalize_libname(lib_str: str) -> str:

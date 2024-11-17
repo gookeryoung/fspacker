@@ -14,23 +14,15 @@ from fspacker.config import EMBED_FILE_NAME, EMBED_FILEPATH, EMBED_URL_PREFIX, P
 from fspacker.packer.base import BasePacker
 
 
-def _calc_checksum(filepath: pathlib.Path, algorithm="md5", block_size=4096) -> str:
-    """Calculate checksum of filepath.
+def _calc_checksum(filepath: pathlib.Path, block_size=4096) -> str:
+    """Calculate checksum of filepath, using md5 algorithm.
 
     Args:
         filepath (pathlib.Path): input filepath.
-        algorithm (str, optional): checksum algorithm, default by "md5".
         block_size (int, optional): read block size, default by 4096.
     """
-    if algorithm == "md5":
-        hasher = hashlib.md5()
-    elif algorithm == "sha1":
-        hasher = hashlib.sha1()
-    elif algorithm == "sha256":
-        hasher = hashlib.sha256()
-    else:
-        raise ValueError(f"Unsupported algorithm: [{algorithm}]")
 
+    hasher = hashlib.md5()
     logging.info(f"Calculate checksum for: [{filepath.name}]")
     with open(filepath, "rb") as file:
         for chunk in iter(lambda: file.read(block_size), b""):
@@ -100,20 +92,9 @@ class RuntimePacker(BasePacker):
             logging.info("Runtime folder exists, skip")
             return
 
-        if not dest.exists():
-            logging.info(f"Create runtime folder: [{dest}]")
-            dest.mkdir(parents=True)
-
-        if not EMBED_FILEPATH.exists():
-            self.fetch_runtime()
-
+        self.fetch_runtime()
         logging.info(f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]")
-        try:
-            shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
-            return True
-        except ValueError as e:
-            logging.error(f"Unpack failed, message: {e}")
-            return False
+        shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
 
     @staticmethod
     def fetch_runtime():

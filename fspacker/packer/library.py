@@ -35,12 +35,7 @@ class LibraryPacker(BasePacker):
         )
 
     def pack(self, target: PackTarget):
-        packages_dir = target.packages_dir
         libs_repo = get_libs_repo()
-
-        if not packages_dir.exists():
-            logging.info(f"Create packages folder [{packages_dir}]")
-            packages_dir.mkdir(parents=True)
 
         for lib in target.ast:
             lib_info = libs_repo.get(lib)
@@ -56,10 +51,10 @@ class LibraryPacker(BasePacker):
         logging.info("Start packing with specs")
         for k, v in self.SPECS.items():
             if k in target.ast:
-                self.SPECS[k].pack(lib, target=target)
+                self.SPECS[k].pack(k, target=target)
                 target.ast.remove(k)
             if k in target.extra:
-                self.SPECS[k].pack(lib, target=target)
+                self.SPECS[k].pack(k, target=target)
 
         logging.info("Start packing with default")
         for lib in target.ast:

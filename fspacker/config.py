@@ -3,12 +3,19 @@ import pathlib
 import platform
 import typing
 
-__libs_env = os.getenv("FSPACKER_LIB_DIR")
+__cache_env = os.getenv("FSPACKER_CACHE")
 
 PYTHON_VER = platform.python_version()
 PYTHON_VER_SHORT = ".".join(PYTHON_VER.split(".")[:2])
 MACHINE = platform.machine().lower()
-CACHE_DIR = pathlib.Path("~").expanduser() / ".cache" / "fspacker"
+
+if __cache_env:
+    CACHE_DIR = pathlib.Path(__cache_env)
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+else:
+    CACHE_DIR = pathlib.Path("~").expanduser() / ".cache" / "fspacker"
+
+LIBS_REPO_DIR = CACHE_DIR / "libs-repo"
 CONFIG_FILEPATH = CACHE_DIR / "config.json"
 ASSETS_DIR = pathlib.Path(__file__).parent / "assets"
 EMBED_REPO_DIR = CACHE_DIR / "embed-repo"
@@ -17,18 +24,13 @@ EMBED_FILEPATH = EMBED_REPO_DIR / EMBED_FILE_NAME
 TKINTER_LIB_FILEPATH = ASSETS_DIR / "tkinter-lib.zip"
 TKINTER_FILEPATH = ASSETS_DIR / "tkinter.zip"
 
-if __libs_env and pathlib.Path(__libs_env).expanduser().exists():
-    pathlib.Path(__libs_env).expanduser()
-else:
-    LIBS_REPO_DIR = CACHE_DIR / "libs-repo"
-
-# python 镜像
+# python mirrors
 EMBED_URL_PREFIX: typing.Dict[str, str] = dict(
     official="https://www.python.org/ftp/python/",
     huawei="https://mirrors.huaweicloud.com/python/",
 )
 
-# 打包对象资源及库判定规则
+# ignore symbols for folders
 IGNORE_SYMBOLS = (
     "dist-info",
     "__pycache__",
