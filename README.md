@@ -4,15 +4,19 @@ Fast & Simple Packer toolset for python.
 
 Main features:
 
-- [ ] 10-100x faster than existing deploy libs (such as Py2exe, PyInstaller, Nuitka...)
-- [x] Supports windows 7 ~ 11, linux and macOS
+- [x] 10-100x faster than existing deploy libs (such as Py2exe, PyInstaller, Nuitka...)
+- [x] Supports Windows 7 ~ 11, linux and macOS
 - [ ] Supports multi-project deployment
 - [ ] Supports archiving with zip or 7z
 - [ ] Supports compilation with nuitka
 
-## Table of contents
+Support fast and small packing for:
 
-[Getting Started](#getting-started)
+- [x] tkinter(Windows only)
+- [x] pyside2
+- [x] matplotlib
+- [ ] pandas
+- [ ] pytorch
 
 ## Getting Started
 
@@ -20,23 +24,46 @@ Usage:
 
 ```bash
 pip install fspacker
-fsp myapp.py
+cd [directory/of/app.py]
+fsp
 ```
 
-## Examples
+> **!!!NOTICE!!!**
+> 
+> 'app.py' must contain 'main' function as entry.
 
-### GUI Dev
+Example:
 
-#### PyQt Project
+Python project structure:
 
-#### Tk Project
+```bash
+ex01_helloworld_console/
+|___ modules/
+    |____ __init__.py
+    |____ module_a.py
+    |____ module_b.py
+|___ ex01_helloworld_console.py
+|___ module_c.py
 
-#### GTK Project
+```
 
-### Scientific Dev
+```python
+# ex01_helloworld_console.py
+from modules.module_a import function_a  # import from
+from modules.module_b import function_b  # import from
+import module_c  # import
 
-#### Numpy
 
-#### Matplotlib + Numpy
+def main():
+    print("hello, world")
 
-#### Torch
+    function_a()
+    function_b()
+    module_c.function_c()
+```
+
+Run command:
+```bash
+cd .../ex01_helloworld_console
+fsp
+```
