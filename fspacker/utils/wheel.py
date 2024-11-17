@@ -5,8 +5,7 @@ import re
 import subprocess
 import typing
 import zipfile
-
-from importlib_metadata import requires
+from importlib.metadata import PackageNotFoundError, requires
 
 from fspacker.config import LIBS_REPO_DIR
 from fspacker.utils.repo import get_libs_repo
@@ -77,13 +76,17 @@ def get_dependencies(package_name: str, depth: int) -> typing.Set[str]:
     if depth >= 2:
         return set()
 
-    requires_ = requires(package_name)
-    names = set()
-    if requires_:
-        for req in requires_:
-            names.add(_normalize_libname(req))
+    try:
+        requires_ = requires(package_name)
+        names = set()
+        if requires_:
+            for req in requires_:
+                names.add(_normalize_libname(req))
 
-    for name in names:
-        names = names.union(get_dependencies(name, depth + 1))
+        for name in names:
+            names = names.union(get_dependencies(name, depth + 1))
 
-    return names
+        return names
+    except PackageNotFoundError:
+        logging.warning(f"Could not find package meta data for [{package_name}]")
+        return set()
