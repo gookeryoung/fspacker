@@ -17,8 +17,3 @@ class FolderParser(BaseParser):
             if entry.stem in v.code:
                 v.deps.add(entry.stem)
                 logging.info(f"Update pack target: {v}")
-
-            if entry.stem in v.ast:
-                v.deps.add(entry.stem)
-                v.ast.remove(entry.stem)
-                logging.info(f"Update pack target: {v}")

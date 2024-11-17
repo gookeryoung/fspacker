@@ -1,7 +1,7 @@
 import pytest
 
 from fspacker.process import Processor
-from tests.utils import exec_dist_dir, DIR_EXAMPLES
+from tests.utils import DIR_EXAMPLES, exec_dist_dir
 
 
 class TestProcess:
@@ -53,54 +53,26 @@ class TestProcess:
 
         assert exec_dist_dir(root_dir / "dist")
 
+    @pytest.mark.benchmark(group="office")
+    def test_pack_ex13(self):
+        root_dir = DIR_EXAMPLES / "ex13_pypdf"
+        proc = Processor(root_dir)
+        proc.run()
 
-# def test_pack_ex13():
-#     root_dir = DIR_EXAMPLES / "ex13_pypdf"
-#     proc = Processor(root_dir)
-#     proc.run()
+        assert exec_dist_dir(root_dir / "dist")
 
-#     assert exec_dist_dir(root_dir / "dist")
+    @pytest.mark.benchmark(group="game")
+    def test_pack_ex20(self):
+        root_dir = DIR_EXAMPLES / "ex20_pygame_snake"
+        proc = Processor(root_dir)
+        proc.run()
 
+        assert exec_dist_dir(root_dir / "dist")
 
-# def test_pack_ex20():
-#     root_dir = DIR_EXAMPLES / "ex20_pygame_snake"
-#     proc = Processor(root_dir)
-#     proc.run()
+    @pytest.mark.benchmark(group="sci")
+    def test_pack_ex22(self):
+        root_dir = DIR_EXAMPLES / "ex22_matplotlib"
+        proc = Processor(root_dir)
+        proc.run()
 
-#     assert exec_dist_dir(root_dir / "dist")
-
-
-# def test_pack_ex22():
-#     root_dir = DIR_EXAMPLES / "ex22_matplotlib"
-#     proc = Processor(root_dir)
-#     proc.run()
-
-#     assert exec_dist_dir(root_dir / "dist")
-
-
-# def test_pack_ex23():
-#     root_dir = DIR_EXAMPLES / "ex23_numba"
-#     proc = Processor(root_dir)
-#     proc.run()
-
-#     assert exec_dist_dir(root_dir / "dist")
-
-
-# def test_pack_ex24():
-#     root_dir = DIR_EXAMPLES / "ex24_pandas"
-#     proc = Processor(root_dir)
-#     proc.run()
-
-#     assert exec_dist_dir(root_dir / "dist")
-
-
-# def test_pack_ex25():
-#     root_dir = DIR_EXAMPLES / "ex25_pytorch"
-#     proc = Processor(root_dir)
-#     proc.run()
-
-#     assert exec_dist_dir(root_dir / "dist")
-
-
-# if __name__ == "__main__":
-#     pytest.main()
+        assert exec_dist_dir(root_dir / "dist")

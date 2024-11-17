@@ -2,16 +2,18 @@ import os
 import pathlib
 import shutil
 
-from tests.utils import DIR_EXAMPLES
-
 
 def pytest_sessionstart(session):
     os.environ["FSPACKER_CACHE"] = str(pathlib.Path.home() / "test-cache")
+    from fspacker.config import CACHE_DIR
+
     print("Set environment before pytest")
+    print(CACHE_DIR)
 
 
 def pytest_sessionfinish(session, exitstatus):
     from fspacker.config import CACHE_DIR
+    from tests.utils import DIR_EXAMPLES
 
     if CACHE_DIR.exists():
         shutil.rmtree(CACHE_DIR)

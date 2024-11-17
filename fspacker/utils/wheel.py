@@ -6,7 +6,7 @@ import subprocess
 import typing
 import zipfile
 
-from importlib_metadata import PackageNotFoundError, requires
+from importlib_metadata import requires
 
 from fspacker.config import LIBS_REPO_DIR
 from fspacker.utils.repo import get_libs_repo
@@ -51,7 +51,10 @@ def download_wheel(libname) -> pathlib.Path:
         )
         lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
 
-    return lib_files[0]
+    if len(lib_files):
+        return lib_files[0]
+    else:
+        raise FileNotFoundError(f"No wheel for {libname}")
 
 
 def _normalize_libname(lib_str: str) -> str:
@@ -71,19 +74,16 @@ def _normalize_libname(lib_str: str) -> str:
 
 @functools.lru_cache(maxsize=128)
 def get_dependencies(package_name: str, depth: int) -> typing.Set[str]:
-    if depth >= 3:
+    if depth >= 2:
         return set()
 
-    try:
-        requires_ = requires(package_name)
-        names = set()
-        if requires_:
-            for req in requires_:
-                names.add(_normalize_libname(req))
+    requires_ = requires(package_name)
+    names = set()
+    if requires_:
+        for req in requires_:
+            names.add(_normalize_libname(req))
 
-        for name in names:
-            names = names.union(get_dependencies(name, depth + 1))
+    for name in names:
+        names = names.union(get_dependencies(name, depth + 1))
 
-        return names
-    except PackageNotFoundError:
-        return set()
+    return names

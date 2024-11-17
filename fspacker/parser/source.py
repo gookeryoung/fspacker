@@ -47,6 +47,7 @@ class SourceParser(BaseParser):
                     # import from local files or package folders
                     if import_name in entries:
                         deps.add(import_name)
+
                     # imports ast
                     elif import_name not in builtins:
                         imports.add(import_name)

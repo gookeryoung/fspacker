@@ -1,6 +1,6 @@
-from module_c import function_c
-from modules.module_a import function_a
-from modules.module_b import function_b
+from modules.module_a import function_a  # import from
+from modules.module_b import function_b  # import from
+import module_c  # import
 
 
 def main():
@@ -8,4 +8,4 @@ def main():
 
     function_a()
     function_b()
-    function_c()
+    module_c.function_c()
