@@ -53,6 +53,7 @@ class TorchSpecPacker(ChildLibSpecPacker):
         filelock=set(),
         jinja2=set(),
         MarkupSafe=set(),
+        matplotlib=set(),
         sympy=set(),
         typing_extensions=set(),
     )

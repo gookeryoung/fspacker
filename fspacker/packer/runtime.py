@@ -8,9 +8,9 @@ import typing
 from urllib.request import urlopen
 
 import requests
+
 from fspacker.common import PackTarget
-from fspacker.config import EMBED_FILEPATH, EMBED_FILE_NAME, PYTHON_VER
-from fspacker.config import EMBED_URL_PREFIX
+from fspacker.config import EMBED_FILE_NAME, EMBED_FILEPATH, EMBED_URL_PREFIX, PYTHON_VER
 from fspacker.packer.base import BasePacker
 
 
@@ -114,8 +114,9 @@ class RuntimePacker(BasePacker):
     @staticmethod
     def fetch_runtime():
         """Fetch runtime zip file"""
-        from fspacker.config import EMBED_FILEPATH as EMBED, EMBED_REPO_DIR
         from fspacker.config import CONFIG_FILEPATH as CFG
+        from fspacker.config import EMBED_FILEPATH as EMBED
+        from fspacker.config import EMBED_REPO_DIR
 
         if not EMBED_REPO_DIR.exists():
             EMBED_REPO_DIR.mkdir(parents=True)

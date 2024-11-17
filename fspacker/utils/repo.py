@@ -44,7 +44,7 @@ def get_builtin_lib_repo() -> typing.Set[str]:
     global __builtin_lib_repo
 
     if not len(__builtin_lib_repo):
-        __builtin_lib_repo = stdlib_list.stdlib_list(PYTHON_VER_SHORT)
+        __builtin_lib_repo = set(stdlib_list.stdlib_list(PYTHON_VER_SHORT))
         logging.info(f"Parse built-in libs: total=[{len(__builtin_lib_repo)}]")
 
     return __builtin_lib_repo

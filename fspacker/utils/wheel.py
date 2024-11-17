@@ -33,7 +33,7 @@ def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]
             logging.info(f"Found {len(deps)} dependencies: [{deps}]")
             for dep in deps:
                 if dep not in folders:
-                    unpack_wheel(dep, dest_dir, {})
+                    unpack_wheel(dep, dest_dir, set())
 
 
 def download_install_wheel(libname: str, dst: pathlib.Path):

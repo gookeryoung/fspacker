@@ -29,7 +29,7 @@ class SourceParser(BaseParser):
                 logging.info(f"Add pack target{self.config.targets[entry.stem]}")
 
     @staticmethod
-    def _parse_ast(content: str, filepath: pathlib.Path) -> typing.Set[str]:
+    def _parse_ast(content: str, filepath: pathlib.Path) -> typing.Tuple[typing.Set[str], ...]:
         """Analyse ast tree from source code"""
 
         builtins = get_builtin_lib_repo()
@@ -41,7 +41,9 @@ class SourceParser(BaseParser):
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
-                import_name = node.module.split(".")[0].lower()
+                if node.module is not None:
+                    import_name = node.module.split(".")[0].lower()
+
                 if import_name in entries:
                     deps.add(import_name)
                 elif import_name not in builtins:

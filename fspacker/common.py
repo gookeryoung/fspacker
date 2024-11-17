@@ -14,13 +14,13 @@ from functools import cached_property
 @dataclasses.dataclass
 class PackTarget:
     src: pathlib.Path
-    deps: typing.List[pathlib.Path]
+    deps: typing.Set[str]
     ast: typing.Set[str]
     extra: typing.Set[str]
     code: str
 
     def __repr__(self):
-        return f"[src={self.src.name}, ast={self.ast}, " f"deps={self.deps}], extra={self.extra}"
+        return f"[src={self.src.name}, ast={self.ast}, deps={self.deps}], extra={self.extra}"
 
     @cached_property
     def root_dir(self) -> pathlib.Path:
@@ -49,14 +49,14 @@ class PackConfig:
 @dataclasses.dataclass
 class LibraryInfo:
     package_name: str
-    version: str
+    version: typing.List[str]
     build_tag: str
     abi_tag: str
     platform_tag: str
     filepath: pathlib.Path
 
     def __repr__(self):
-        return self.package_name
+        return f"{self.package_name}-{self.version}"
 
     @staticmethod
     def from_path(path: pathlib.Path):

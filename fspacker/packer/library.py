@@ -6,13 +6,13 @@ from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
 from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
-    PillowSpecPacker,
     NumbaSpecPacker,
+    PillowSpecPacker,
     TorchSpecPacker,
     TorchVisionSpecPacker,
 )
-from fspacker.utils.repo import get_libs_repo
-from fspacker.utils.wheel import download_install_wheel
+from fspacker.utils.repo import get_libs_repo, update_libs_repo
+from fspacker.utils.wheel import download_wheel
 
 __all__ = [
     "LibraryPacker",
@@ -44,10 +44,12 @@ class LibraryPacker(BasePacker):
 
         for lib in target.ast:
             if not libs_repo.get(lib):
-                download_install_wheel(lib, packages_dir)
-            else:
-                logging.info(f"Packing [{lib}]")
-                self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)
+                filepath = download_wheel(lib)
+                if filepath:
+                    update_libs_repo(lib, filepath)
+
+            logging.info(f"Packing [{lib}]")
+            self.SPECS.setdefault(lib, self.SPECS["default"]).pack(lib, target=target)
 
         for lib in target.extra:
             logging.info(f"Packing [{lib}]")

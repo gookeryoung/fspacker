@@ -34,8 +34,9 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
 class DefaultLibrarySpecPacker(LibSpecPackerMixin):
     def pack(self, lib: str, target: PackTarget):
         folders = list(_.name for _ in target.packages_dir.iterdir() if _.is_dir())
+
         if lib not in folders:
             logging.info("Using [default] lib spec")
-            unpack_wheel(lib, target.packages_dir, {})
+            unpack_wheel(lib, target.packages_dir, set())
         else:
             logging.info(f"Already packed, skip [{lib}]")

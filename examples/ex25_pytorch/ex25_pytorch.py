@@ -18,7 +18,8 @@ def main():
     # 2. 定义模型
     class Net(nn.Module):
         def __init__(self):
-            super(Net, self).__init__()
+            super().__init__()
+
             self.conv1 = nn.Conv2d(1, 32, kernel_size=5, stride=1, padding=2)
             self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
             self.conv2 = nn.Conv2d(32, 64, kernel_size=5, stride=1, padding=2)
