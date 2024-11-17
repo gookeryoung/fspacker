@@ -4,6 +4,7 @@ import platform
 import typing
 
 __cache_env = os.getenv("FSPACKER_CACHE")
+__libs_env = os.getenv("FSPACKER_LIBS")
 
 PYTHON_VER = platform.python_version()
 PYTHON_VER_SHORT = ".".join(PYTHON_VER.split(".")[:2])
@@ -15,7 +16,12 @@ if __cache_env:
 else:
     CACHE_DIR = pathlib.Path("~").expanduser() / ".cache" / "fspacker"
 
-LIBS_REPO_DIR = CACHE_DIR / "libs-repo"
+if __libs_env:
+    LIBS_REPO_DIR = pathlib.Path(__libs_env)
+    LIBS_REPO_DIR.mkdir()
+else:
+    LIBS_REPO_DIR = CACHE_DIR / "libs-repo"
+
 CONFIG_FILEPATH = CACHE_DIR / "config.json"
 ASSETS_DIR = pathlib.Path(__file__).parent / "assets"
 EMBED_REPO_DIR = CACHE_DIR / "embed-repo"

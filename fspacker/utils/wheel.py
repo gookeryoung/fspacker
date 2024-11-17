@@ -46,6 +46,10 @@ def download_wheel(libname) -> pathlib.Path:
                 libname,
                 "-d",
                 str(LIBS_REPO_DIR),
+                "--trusted-host",
+                "pypi.tuna.tsinghua.edu.cn",
+                "-i",
+                "https://pypi.tuna.tsinghua.edu.cn/simple/",
             ],
         )
         lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))

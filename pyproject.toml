@@ -1,6 +1,6 @@
 [project]
 name = "fspacker"
-version = "0.4"
+version = "0.4.2"
 description = "Fast & Simple Packer toolset for python."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -43,7 +43,7 @@ fspacker = { workspace = true }
 
 [tool.ruff]
 line-length = 120 # 代码最大行宽
-select = [# 选择的规则
+select = [ # 选择的规则
     "F",
     "E",
     "W",
