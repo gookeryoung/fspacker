@@ -36,6 +36,11 @@ def main():
     zip_mode = args.zip
     directory = pathlib.Path(args.directory)
 
+    if not directory.exists():
+        logging.info(f"Directory [{directory}] doesn't exist")
+        parser.print_help()
+        return
+
     t0 = time.perf_counter()
     logging.info(f"Start packing, mode: [{'' if zip_mode else 'No-'}Zip]")
     logging.info(f"Source root directory: [{directory}]")

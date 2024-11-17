@@ -22,6 +22,9 @@ class PackTarget:
     def __repr__(self):
         return f"[src={self.src.name}, ast={self.ast}, deps={self.deps}], extra={self.extra}"
 
+    def union_ast(self, ast_tree: typing.Set[str]):
+        self.ast = self.ast.union(ast_tree)
+
     @cached_property
     def root_dir(self) -> pathlib.Path:
         return self.src.parent

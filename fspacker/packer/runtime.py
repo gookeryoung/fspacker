@@ -96,7 +96,7 @@ def _check_fastest_url() -> str:
 class RuntimePacker(BasePacker):
     def pack(self, target: PackTarget):
         dest = target.runtime_dir
-        if dest.exists():
+        if (dest / "python.exe").exists():
             logging.info("Runtime folder exists, skip")
             return
 

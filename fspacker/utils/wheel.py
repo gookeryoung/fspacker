@@ -1,3 +1,4 @@
+import functools
 import logging
 import pathlib
 import re
@@ -5,13 +6,14 @@ import subprocess
 import typing
 import zipfile
 
+from importlib_metadata import PackageNotFoundError, requires
+
 from fspacker.config import LIBS_REPO_DIR
 from fspacker.utils.repo import get_libs_repo
 
 
 def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]) -> None:
     info = get_libs_repo().get(libname)
-    folders = list(_.name for _ in dest_dir.iterdir() if _.is_dir())
 
     if info is not None:
         if not len(patterns):
@@ -27,34 +29,6 @@ def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]
             for file in zip_ref.namelist():
                 if any(pattern.match(file) for pattern in compiled_patterns):
                     zip_ref.extract(file, dest_dir)
-
-        deps = get_wheel_dependencies(info.filepath)
-        if len(deps):
-            logging.info(f"Found {len(deps)} dependencies: [{deps}]")
-            for dep in deps:
-                if dep not in folders:
-                    unpack_wheel(dep, dest_dir, set())
-
-
-def download_install_wheel(libname: str, dst: pathlib.Path):
-    """Download a wheel using pip."""
-    filepath = download_wheel(libname)
-
-    logging.info(f"Install wheel for {libname}, using {filepath.name}")
-    subprocess.call(
-        [
-            "python",
-            "-m",
-            "pip",
-            "install",
-            libname,
-            "-t",
-            str(dst),
-            "--no-index",
-            "--find-links",
-            str(LIBS_REPO_DIR),
-        ],
-    )
 
 
 def download_wheel(libname) -> pathlib.Path:
@@ -100,3 +74,39 @@ def get_wheel_dependencies(wheel_file: pathlib.Path) -> typing.Set[str]:
             dependencies.add(dependency.split(" ")[0])
 
     return dependencies
+
+
+def _normalize_libname(lib_str: str) -> str:
+    lib_str = lib_str.split(";")[0].split(" ")[0]
+
+    if "<" in lib_str:
+        return lib_str.split("<")[0]
+    elif ">" in lib_str:
+        return lib_str.split(">")[0]
+    elif "!=" in lib_str:
+        return lib_str.split("!=")[0]
+    elif "==" in lib_str:
+        return lib_str.split("==")[0]
+    else:
+        return lib_str
+
+
+@functools.lru_cache(maxsize=128)
+def get_dependencies(package_name: str, depth: int) -> typing.Set[str]:
+    if depth >= 3:
+        return set()
+
+    try:
+        requires_ = requires(package_name)
+        names = set()
+        if requires_:
+            for req in requires_:
+                names.add(_normalize_libname(req))
+
+        for name in names:
+            names = names.union(get_dependencies(name, depth + 1))
+
+        return names
+    except PackageNotFoundError as e:
+        logging.info(f"Error processing package {package_name}: {e}")
+        return set()
