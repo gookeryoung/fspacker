@@ -4,11 +4,13 @@ import shutil
 
 
 def pytest_sessionstart(session):
-    os.environ["FSPACKER_CACHE"] = str(pathlib.Path.home() / "test-cache")
-    from fspacker.config import CACHE_DIR
+    for item in session.items:
+        if not item.get_closest_marker("no_cache"):
+            os.environ["FSPACKER_CACHE"] = str(pathlib.Path.home() / "test-cache")
+            from fspacker.config import CACHE_DIR
 
-    print("Set environment before pytest")
-    print(CACHE_DIR)
+            print("Set environment before pytest")
+            print(CACHE_DIR)
 
 
 def pytest_sessionfinish(session, exitstatus):

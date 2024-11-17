@@ -76,3 +76,11 @@ class TestProcess:
         proc.run()
 
         assert exec_dist_dir(root_dir / "dist")
+
+    @pytest.mark.no_cache
+    def test_pack_ex22_no_cache(self):
+        root_dir = DIR_EXAMPLES / "ex22_matplotlib"
+        proc = Processor(root_dir)
+        proc.run()
+
+        assert exec_dist_dir(root_dir / "dist")
