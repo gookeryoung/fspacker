@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "args": [
                 "-d",
-                "${workspaceFolder}/examples/ex22_matplotlib"
+                "${workspaceFolder}/examples/ex25_pytorch"
             ]
         }
     ]
