@@ -13,9 +13,9 @@ class TestProcess:
 
         assert exec_dist_dir(root_dir / "dist")
 
-    @pytest.mark.benchmark(group="gui")
+    @pytest.mark.benchmark(group="console")
     def test_pack_ex02(self):
-        root_dir = DIR_EXAMPLES / "ex02_hello_gui"
+        root_dir = DIR_EXAMPLES / "ex02_cross_import"
         proc = Processor(root_dir)
         proc.run()
 

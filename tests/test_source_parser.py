@@ -19,14 +19,14 @@ class TestSourcePacker:
     def test_ex02_source_parser(self):
         parser = SourceParser(
             PackConfig(targets={}),
-            root_dir=DIR_EXAMPLES / "ex02_hello_gui",
+            root_dir=DIR_EXAMPLES / "ex02_cross_import",
         )
-        parser.parse(DIR_EXAMPLES / "ex02_hello_gui" / "ex02_hello_gui.py")
-        assert "ex02_hello_gui" in parser.config.targets.keys()
+        parser.parse(DIR_EXAMPLES / "ex02_cross_import" / "ex02_cross_import.py")
+        assert "ex02_cross_import" in parser.config.targets.keys()
 
-        target = parser.config.targets["ex02_hello_gui"]
+        target = parser.config.targets["ex02_cross_import"]
         assert len(target.ast) == 0
-        assert len(target.deps) == 0
+        assert len(target.deps) == 2
 
     def test_ex03_source_parser(self):
         parser = SourceParser(
