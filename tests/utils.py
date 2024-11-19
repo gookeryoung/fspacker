@@ -17,11 +17,14 @@ def exec_dist_dir(dist_dir: pathlib.Path):
         return False
 
     try:
-        subprocess.run([exe_files[0]], timeout=TEST_CALL_TIMEOUT)
+        proc = subprocess.run([exe_files[0]], timeout=TEST_CALL_TIMEOUT)
+        return_code = proc.returncode
+        if return_code == 0:
+            return True
+        else:
+            return False
     except subprocess.CalledProcessError as e:
         logging.error(e)
         return False
     except subprocess.TimeoutExpired:
-        return True
-    else:
         return True
