@@ -5,7 +5,9 @@ Fast & Simple Packer toolset for python.
 Main features:
 
 - [x] 10-100x faster than existing deploy libs (such as Py2exe, PyInstaller, Nuitka...)
-- [x] Supports Windows 7 ~ 11, linux and macOS
+- [x] Supports Windows 7 ~ 11
+- [ ] Supports linux
+- [ ] Supports macOS
 - [ ] Supports multi-project deployment
 - [ ] Supports archiving with zip or 7z
 - [ ] Supports compilation with nuitka
@@ -29,7 +31,6 @@ fsp
 ```
 
 > **!!!NOTICE!!!**
-> 
 > 'app.py' must contain 'main' function as entry.
 
 Example:
@@ -63,6 +64,7 @@ def main():
 ```
 
 Run command:
+
 ```bash
 cd .../ex01_helloworld_console
 fsp
