@@ -8,6 +8,7 @@ from fspacker.utils.wheel import unpack_wheel
 
 class LibSpecPackerMixin:
     PATTERNS: typing.Dict[str, typing.Set[str]] = {}
+    EXCLUDES: typing.Dict[str, typing.Set[str]] = {}
 
     def pack(self, lib: str, target: PackTarget): ...
 
@@ -28,7 +29,7 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
             if libname in specs:
                 specs[libname].pack(libname, target=target)
             else:
-                unpack_wheel(libname.lower(), target.packages_dir, patterns)
+                unpack_wheel(libname.lower(), target.packages_dir, patterns, self.EXCLUDES.setdefault(libname, set()))
 
 
 class DefaultLibrarySpecPacker(LibSpecPackerMixin):
@@ -37,6 +38,6 @@ class DefaultLibrarySpecPacker(LibSpecPackerMixin):
 
         if lib not in folders:
             logging.info(f"Packing [{lib}], using [default] lib spec")
-            unpack_wheel(lib, target.packages_dir, set())
+            unpack_wheel(lib, target.packages_dir, set(), set())
         else:
             logging.info(f"Already packed, skip [{lib}]")
