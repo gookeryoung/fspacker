@@ -85,7 +85,7 @@ def get_dependencies(package_name: str, depth: int) -> typing.Set[str]:
         names = set()
         if requires_:
             for req in requires_:
-                names.add(_normalize_libname(req))
+                names.add(_normalize_libname(req).lower())
 
         for name in names:
             names = names.union(get_dependencies(name, depth + 1))

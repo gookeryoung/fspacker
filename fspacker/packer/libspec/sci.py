@@ -16,6 +16,7 @@ class MatplotlibSpecPacker(ChildLibSpecPacker):
         cycler=set(),
         importlib_resources=set(),
         numpy=set(),
+        kiwisolver=set(),
         packaging=set(),
         pillow=set(),
         pyparsing=set(),
@@ -32,7 +33,9 @@ class MatplotlibSpecPacker(ChildLibSpecPacker):
 
 class PillowSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
-        pillow={"PIL"},
+        pillow={
+            "PIL/",
+        },
     )
 
 

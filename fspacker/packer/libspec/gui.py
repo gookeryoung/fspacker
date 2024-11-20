@@ -2,7 +2,7 @@ import logging
 import shutil
 
 from fspacker.common import PackTarget
-from fspacker.config import TKINTER_LIB_FILEPATH, TKINTER_FILEPATH
+from fspacker.config import TKINTER_FILEPATH, TKINTER_LIB_FILEPATH
 from fspacker.packer.libspec.base import ChildLibSpecPacker
 
 

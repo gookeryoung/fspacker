@@ -57,12 +57,13 @@ class SourceParser(BaseParser):
                 # import from local files or package folders
                 if import_name in entries:
                     deps.add(import_name)
-                    if entries[import_name].is_file():
-                        with open(entries[import_name], encoding="utf-8") as f:
+                    if (entry_file := entries[import_name]).is_file():
+                        with open(entry_file, encoding="utf-8") as f:
                             code_text.write("".join(f.readlines()))
                 elif import_name not in builtins:
-                    imports.add(import_name)
+                    imports.add(import_name.lower())
 
+                # import_name needs tkinter
                 if import_name in TKINTER_LIBS:
                     extra.add("tkinter")
 

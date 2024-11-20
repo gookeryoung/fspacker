@@ -43,9 +43,9 @@ class LibraryPacker(BasePacker):
                 filepath = download_wheel(lib)
                 if filepath.exists():
                     update_libs_repo(lib, filepath)
-            else:
-                ast_tree = get_dependencies(lib, 0)
-                target.union_ast(ast_tree)
+
+            ast_tree = get_dependencies(lib, 0)
+            target.union_ast(ast_tree)
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")
