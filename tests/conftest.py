@@ -2,7 +2,10 @@ import os
 import pathlib
 import shutil
 
+import pytest
 
+
+@pytest.fixture(scope="session", autouse=True)
 def pytest_sessionstart(session):
     for item in session.items:
         if not item.get_closest_marker("no_cache"):
@@ -10,6 +13,7 @@ def pytest_sessionstart(session):
             os.environ["FSPACKER_LIBS"] = str(pathlib.Path.home() / "test-libs")
 
 
+@pytest.fixture(scope="session", autouse=True)
 def pytest_sessionfinish(session, exitstatus):
     from fspacker.config import CACHE_DIR
     from tests.utils import DIR_EXAMPLES
