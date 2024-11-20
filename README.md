@@ -2,25 +2,30 @@
 
 Fast & Simple Packer toolset for python.
 
-Main features:
+## Key Features
 
-- [x] 10-100x faster than existing deploy libs (such as Py2exe, PyInstaller, Nuitka...)
-- [x] Supports Windows 7 ~ 11
-- [ ] Supports linux
-- [ ] Supports macOS
+- [x] 10-100x faster than existing deploy libs such as Py2exe, PyInstaller, Nuitka...
 - [ ] Supports multi-project deployment
 - [ ] Supports archiving with zip or 7z
+- [ ] Supports depleyment with InnoSetup
 - [ ] Supports compilation with nuitka
+- [ ] Supports encryption with pyarmor
 
-Support fast and small packing for:
+## Support Platforms
+
+- [x] Windows 7 ~ 11
+- [ ] linux
+- [ ] macOS
+
+## Support Libraries
 
 - [x] tkinter(Windows only)
 - [x] pyside2
 - [x] matplotlib
-- [ ] pandas
-- [ ] pytorch
+- [x] pandas
+- [x] pytorch
 
-## Getting Started
+## Quick Start
 
 Usage:
 
