@@ -6,9 +6,11 @@ import subprocess
 import typing
 import zipfile
 from importlib.metadata import PackageNotFoundError, requires
+from urllib.parse import urlparse
 
-from fspacker.config import LIBS_REPO_DIR
+from fspacker.config import LIBS_REPO_DIR, PIP_URL_PREFIX
 from fspacker.utils.repo import get_libs_repo
+from fspacker.utils.url import get_fastest_url
 
 
 def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str], excludes: typing.Set[str]) -> None:
@@ -44,6 +46,9 @@ def download_wheel(libname) -> pathlib.Path:
     lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
     if not lib_files:
         logging.warning(f"No wheel for {libname}, start downloading.")
+
+        pip_url = get_fastest_url(PIP_URL_PREFIX)
+        net_loc = urlparse(pip_url).netloc
         subprocess.call(
             [
                 "python",
@@ -54,9 +59,9 @@ def download_wheel(libname) -> pathlib.Path:
                 "-d",
                 str(LIBS_REPO_DIR),
                 "--trusted-host",
-                "pypi.tuna.tsinghua.edu.cn",
+                net_loc,
                 "-i",
-                "https://pypi.tuna.tsinghua.edu.cn/simple/",
+                pip_url,
             ],
         )
         lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))

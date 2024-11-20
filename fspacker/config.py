@@ -36,6 +36,15 @@ EMBED_URL_PREFIX: typing.Dict[str, str] = dict(
     huawei="https://mirrors.huaweicloud.com/python/",
 )
 
+# pip mirrors
+PIP_URL_PREFIX: typing.Dict[str, str] = dict(
+    aliyun="https://mirrors.aliyun.com/pypi/simple/",
+    tsinghua="https://pypi.tuna.tsinghua.edu.cn/simple/",
+    douban="http://pypi.douban.com/simple/",
+    ustc="https://pypi.mirrors.ustc.edu.cn/simple/",
+    huawei="https://mirrors.huaweicloud.com/repository/pypi/simple/",
+)
+
 # ignore symbols for folders
 IGNORE_SYMBOLS = (
     "dist-info",
