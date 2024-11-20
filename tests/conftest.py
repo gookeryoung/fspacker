@@ -7,10 +7,7 @@ def pytest_sessionstart(session):
     for item in session.items:
         if not item.get_closest_marker("no_cache"):
             os.environ["FSPACKER_CACHE"] = str(pathlib.Path.home() / "test-cache")
-            from fspacker.config import CACHE_DIR
-
-            print("Set environment before pytest")
-            print(CACHE_DIR)
+            os.environ["FSPACKER_LIBS"] = str(pathlib.Path.home() / "test-libs")
 
 
 def pytest_sessionfinish(session, exitstatus):
