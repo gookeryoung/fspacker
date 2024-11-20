@@ -22,9 +22,9 @@ def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]
     if info is not None:
         if not len(patterns):
             patterns = {
-                rf"{libname}.*\.py[cdo]?$",
+                r".*\.py[cdo]?$",
                 rf"{libname}\/",
-                rf"{libname}-data\/",
+                rf"{libname}.*-data\/",
             }
             excludes = {
                 rf"{libname}.*-dist-info\/",
@@ -47,6 +47,7 @@ def download_wheel(libname) -> pathlib.Path:
     if not lib_files:
         logging.warning(f"No wheel for {libname}, start downloading.")
 
+        logging.info("Fetch fastest pip url")
         pip_url = get_fastest_url(PIP_URL_PREFIX)
         net_loc = urlparse(pip_url).netloc
         subprocess.call(

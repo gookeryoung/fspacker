@@ -42,6 +42,13 @@ class NumbaSpecPacker(ChildLibSpecPacker):
     )
 
 
+class SymPyPacker(ChildLibSpecPacker):
+    PATTERNS = dict(
+        sympy=set(),
+        mpmath=set(),
+    )
+
+
 class TorchSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         torch={"functorch/", "torch/", "torchgen/"},

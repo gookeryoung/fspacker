@@ -8,6 +8,7 @@ from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
     NumbaSpecPacker,
     PillowSpecPacker,
+    SymPyPacker,
     TorchSpecPacker,
     TorchVisionSpecPacker,
 )
@@ -30,6 +31,7 @@ class LibraryPacker(BasePacker):
             pillow=PillowSpecPacker(self),
             pyside2=PySide2Packer(self),
             tkinter=TkinterPacker(self),
+            sympy=SymPyPacker(self),
             torch=TorchSpecPacker(self),
             torchvision=TorchVisionSpecPacker(self),
         )
