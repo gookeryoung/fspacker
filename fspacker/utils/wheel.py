@@ -20,14 +20,9 @@ def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]
         download_wheel(libname)
 
     if info is not None:
-        if not len(patterns):
-            patterns = {
-                r".*\.py[cdo]?$",
-                rf"{libname}\/",
-                rf"{libname}.*-data\/",
-            }
+        if not len(excludes):
             excludes = {
-                rf"{libname}.*-dist-info\/",
+                "dist-info/",
             }
 
         compiled_patterns = [re.compile(f".*{p}") for p in patterns]
@@ -38,8 +33,11 @@ def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str]
                 if any(e.match(file) for e in compiled_excludes):
                     continue
 
-                if any(p.match(file) for p in compiled_patterns):
+                if len(patterns) and any(p.match(file) for p in compiled_patterns):
                     zip_ref.extract(file, dest_dir)
+                    continue
+
+                zip_ref.extract(file, dest_dir)
 
 
 def download_wheel(libname) -> pathlib.Path:

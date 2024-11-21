@@ -1,6 +1,3 @@
-import logging
-
-from fspacker.common import PackTarget
 from fspacker.packer.libspec.base import ChildLibSpecPacker
 
 
@@ -18,34 +15,8 @@ class MatplotlibSpecPacker(ChildLibSpecPacker):
         python_dateutil={"^dateutil"},
         zipp=set(),
     )
-
-    def pack(self, lib: str, target: PackTarget):
-        logging.info("Using [matplotlib] pack spec")
-        super().pack(lib, target)
-
-
-class PillowSpecPacker(ChildLibSpecPacker):
-    PATTERNS = dict(
-        pillow={
-            "PIL/",
-        },
-    )
-
-
-class NumbaSpecPacker(ChildLibSpecPacker):
-    PATTERNS = dict(
-        numba=set(),
-        cffi={"cffi", "_cffi_backend.cp38-win_amd64"},
-        importlib_metadata=set(),
-        llvmlite=set(),
-        pycparser=set(),
-    )
-
-
-class SymPyPacker(ChildLibSpecPacker):
-    PATTERNS = dict(
-        sympy=set(),
-        mpmath=set(),
+    EXCLUDES = dict(
+        matplotlib={"matplotlib-.*.pth"},
     )
 
 
@@ -70,15 +41,4 @@ class TorchSpecPacker(ChildLibSpecPacker):
             "torch/utils/data/dataset/",
             "torch/utils/data/dataloader/",
         }
-    )
-
-
-class TorchVisionSpecPacker(ChildLibSpecPacker):
-    PATTERNS = dict(
-        torchvision={
-            "torchvision/",
-        },
-        torch=set(),
-        numpy=set(),
-        pillow=set(),
     )

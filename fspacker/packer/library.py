@@ -4,16 +4,9 @@ from fspacker.common import PackTarget
 from fspacker.packer.base import BasePacker
 from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
-from fspacker.packer.libspec.office import (
-    PyMuPdfPacker,
-)
 from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
-    NumbaSpecPacker,
-    PillowSpecPacker,
-    SymPyPacker,
     TorchSpecPacker,
-    TorchVisionSpecPacker,
 )
 from fspacker.utils.repo import get_libs_repo, update_libs_repo
 from fspacker.utils.wheel import download_wheel, get_dependencies
@@ -34,13 +27,7 @@ class LibraryPacker(BasePacker):
             tkinter=TkinterPacker(self),
             # sci
             matplotlib=MatplotlibSpecPacker(self),
-            numba=NumbaSpecPacker(self),
-            pillow=PillowSpecPacker(self),
-            sympy=SymPyPacker(self),
             torch=TorchSpecPacker(self),
-            torchvision=TorchVisionSpecPacker(self),
-            # office
-            pymupdf=PyMuPdfPacker(self),
         )
 
     def pack(self, target: PackTarget):
@@ -62,6 +49,7 @@ class LibraryPacker(BasePacker):
             if k in target.ast:
                 self.SPECS[k].pack(k, target=target)
                 target.ast.remove(k)
+
             if k in target.extra:
                 self.SPECS[k].pack(k, target=target)
 
