@@ -23,6 +23,10 @@ def get_json_value(key: str) -> typing.Any:
             logging.info("Both json dict and file are not valid")
             return None
 
+    if key not in _json_dict:
+        logging.warning(f"Key [{key}] not found in json dict")
+        return None
+
     return _json_dict[key]
 
 

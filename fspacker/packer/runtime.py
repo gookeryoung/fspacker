@@ -46,14 +46,13 @@ class RuntimePacker(BasePacker):
         from fspacker.config import EMBED_FILEPATH as EMBED
 
         if EMBED.exists():
-            logging.info(f"Compare file [{EMBED.name}] with local config [{CFG.name}] checksum")
+            logging.info(f"Compare file [{EMBED.name}] with local config checksum")
             src_checksum = get_json_value("embed_file_checksum")
             dst_checksum = _calc_checksum(EMBED)
             if src_checksum == dst_checksum:
                 logging.info("Checksum matches!")
                 return
 
-        logging.info("Fetch fastest embed python url")
         fastest_url = get_fastest_embed_url()
         archive_url = f"{fastest_url}{PYTHON_VER}/{EMBED_FILE_NAME}"
         with urlopen(archive_url) as url:
@@ -66,5 +65,5 @@ class RuntimePacker(BasePacker):
         logging.info(f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s.")
 
         checksum = _calc_checksum(EMBED)
-        logging.info(f"Write checksum [{checksum}] into config file [{CFG}]")
+        logging.info(f"Write checksum [{checksum}] into config file")
         update_json_values(dict(embed_file_checksum=checksum))
