@@ -5,8 +5,8 @@ import typing
 from io import StringIO
 
 from fspacker.common import PackTarget
-from fspacker.config import TKINTER_LIB
 from fspacker.parser.base import BaseParser
+from fspacker.config import TKINTER_LIBS
 from fspacker.utils.repo import get_builtin_lib_repo
 
 __all__ = ("SourceParser",)
@@ -64,7 +64,7 @@ class SourceParser(BaseParser):
                     imports.add(import_name.lower())
 
                 # import_name needs tkinter
-                if import_name in TKINTER_LIB:
+                if import_name in TKINTER_LIBS:
                     extra.add("tkinter")
 
         return imports, extra, deps, code_text.getvalue()

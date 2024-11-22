@@ -4,8 +4,12 @@ import typing
 
 import requests
 
+from fspacker.config import PIP_URL_PREFIX, EMBED_URL_PREFIX
+from fspacker.utils.persist import get_json_value, update_json_values
+
 __all__ = [
-    "get_fastest_url",
+    "get_fastest_embed_url",
+    "get_fastest_pip_url",
 ]
 
 
@@ -23,7 +27,7 @@ def _check_url_access_time(url: str) -> float:
         return -1
 
 
-def get_fastest_url(urls: typing.Dict[str, str]) -> str:
+def _get_fastest_url(urls: typing.Dict[str, str]) -> str:
     """Check fastest url for embed python."""
     min_time, fastest_url = 10.0, ""
     for name, embed_url in urls.items():
@@ -35,3 +39,21 @@ def get_fastest_url(urls: typing.Dict[str, str]) -> str:
 
     logging.info(f"Found fastest url: [{fastest_url}]")
     return fastest_url
+
+
+def get_fastest_pip_url() -> str:
+    if fastest_url := get_json_value("fastest_pip_url"):
+        return fastest_url
+    else:
+        fastest_url = _get_fastest_url(PIP_URL_PREFIX)
+        update_json_values(dict(fastest_pip_url=fastest_url))
+        return fastest_url
+
+
+def get_fastest_embed_url() -> str:
+    if fastest_url := get_json_value("fastest_embed_url"):
+        return fastest_url
+    else:
+        fastest_url = _get_fastest_url(EMBED_URL_PREFIX)
+        update_json_values(dict(fastest_embed_url=fastest_url))
+        return fastest_url

@@ -1,16 +1,15 @@
 import hashlib
-import json
 import logging
 import pathlib
 import shutil
 import time
-import typing
 from urllib.request import urlopen
 
 from fspacker.common import PackTarget
-from fspacker.config import EMBED_FILE_NAME, EMBED_FILEPATH, PYTHON_VER, EMBED_URL_PREFIX
+from fspacker.config import EMBED_FILE_NAME, EMBED_FILEPATH, PYTHON_VER
 from fspacker.packer.base import BasePacker
-from fspacker.utils.url import get_fastest_url
+from fspacker.utils.persist import get_json_value, update_json_values
+from fspacker.utils.url import get_fastest_embed_url
 
 
 def _calc_checksum(filepath: pathlib.Path, block_size=4096) -> str:
@@ -30,32 +29,6 @@ def _calc_checksum(filepath: pathlib.Path, block_size=4096) -> str:
     return hasher.hexdigest()
 
 
-def _get_json_value(filepath: pathlib.Path, key: str) -> typing.Any:
-    with open(filepath) as f:
-        data = json.load(f)
-        return data.setdefault(key, None)
-
-
-def _update_json_values(filepath: pathlib.Path, updates: typing.Dict[str, typing.Any]):
-    """Update [key, value] in json file
-
-    Args:
-        filepath (pathlib.Path): Input file
-        updates (typing.Dict[str, typing.Any]): update values
-    """
-    if filepath.exists():
-        with open(filepath) as fr:
-            data = json.load(fr)
-    else:
-        data = {}
-
-    for key, value in updates.items():
-        data[key] = value
-
-    with open(filepath, "w") as fw:
-        json.dump(data, fw, indent=4, ensure_ascii=False)
-
-
 class RuntimePacker(BasePacker):
     def pack(self, target: PackTarget):
         dest = target.runtime_dir
@@ -70,7 +43,6 @@ class RuntimePacker(BasePacker):
     @staticmethod
     def fetch_runtime():
         """Fetch runtime zip file"""
-        from fspacker.config import CONFIG_FILEPATH as CFG
         from fspacker.config import EMBED_FILEPATH as EMBED
         from fspacker.config import EMBED_REPO_DIR
 
@@ -79,14 +51,14 @@ class RuntimePacker(BasePacker):
 
         if EMBED.exists():
             logging.info(f"Compare file [{EMBED.name}] with local config [{CFG.name}] checksum")
-            src_checksum = _get_json_value(CFG, "embed_file_checksum")
+            src_checksum = get_json_value("embed_file_checksum")
             dst_checksum = _calc_checksum(EMBED)
             if src_checksum == dst_checksum:
                 logging.info("Checksum matches!")
                 return
 
         logging.info("Fetch fastest embed python url")
-        fastest_url = get_fastest_url(EMBED_URL_PREFIX)
+        fastest_url = get_fastest_embed_url()
         archive_url = f"{fastest_url}{PYTHON_VER}/{EMBED_FILE_NAME}"
         with urlopen(archive_url) as url:
             runtime_files = url.read()
@@ -99,4 +71,4 @@ class RuntimePacker(BasePacker):
 
         checksum = _calc_checksum(EMBED)
         logging.info(f"Write checksum [{checksum}] into config file [{CFG}]")
-        _update_json_values(CFG, dict(embed_file_checksum=checksum))
+        update_json_values(dict(embed_file_checksum=checksum))

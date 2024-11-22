@@ -8,9 +8,9 @@ import zipfile
 from importlib.metadata import PackageNotFoundError, requires
 from urllib.parse import urlparse
 
-from fspacker.config import LIBS_REPO_DIR, PIP_URL_PREFIX
+from fspacker.config import LIBS_REPO_DIR
 from fspacker.utils.repo import get_libs_repo
-from fspacker.utils.url import get_fastest_url
+from fspacker.utils.url import get_fastest_pip_url
 
 
 def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str], excludes: typing.Set[str]) -> None:
@@ -46,7 +46,7 @@ def download_wheel(libname) -> pathlib.Path:
         logging.warning(f"No wheel for {libname}, start downloading.")
 
         logging.info("Fetch fastest pip url")
-        pip_url = get_fastest_url(PIP_URL_PREFIX)
+        pip_url = get_fastest_pip_url()
         net_loc = urlparse(pip_url).netloc
         subprocess.call(
             [
