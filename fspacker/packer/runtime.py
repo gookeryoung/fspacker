@@ -44,10 +44,6 @@ class RuntimePacker(BasePacker):
     def fetch_runtime():
         """Fetch runtime zip file"""
         from fspacker.config import EMBED_FILEPATH as EMBED
-        from fspacker.config import EMBED_REPO_DIR
-
-        if not EMBED_REPO_DIR.exists():
-            EMBED_REPO_DIR.mkdir(parents=True)
 
         if EMBED.exists():
             logging.info(f"Compare file [{EMBED.name}] with local config [{CFG.name}] checksum")
