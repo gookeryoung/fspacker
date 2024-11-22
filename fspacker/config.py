@@ -45,6 +45,12 @@ PIP_URL_PREFIX: typing.Dict[str, str] = dict(
     huawei="https://mirrors.huaweicloud.com/repository/pypi/simple/",
 )
 
+# resource files and folders
+RES_ENTRIES = (
+    "assets",
+    ".qrc",
+)
+
 # ignore symbols for folders
 IGNORE_SYMBOLS = (
     "dist-info",
