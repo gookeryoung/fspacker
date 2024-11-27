@@ -39,7 +39,7 @@ jobs:
           path: dist/
 
   pypi-publish:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs:
       - release-build
     permissions:
