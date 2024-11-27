@@ -37,9 +37,7 @@ class SourceParser(BaseParser):
 
         builtins = get_builtin_lib_repo()
         tree = ast.parse(content, filename=filepath)
-        entries: typing.Dict[str, pathlib.Path] = {
-            _.stem: _ for _ in filepath.parent.iterdir()
-        }
+        entries: typing.Dict[str, pathlib.Path] = {_.stem: _ for _ in filepath.parent.iterdir()}
         imports = set()
         extra = set()
         deps = set()

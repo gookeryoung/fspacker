@@ -13,7 +13,12 @@ from fspacker.utils.repo import get_libs_repo
 from fspacker.utils.url import get_fastest_pip_url
 
 
-def unpack_wheel(libname: str, dest_dir: pathlib.Path, patterns: typing.Set[str], excludes: typing.Set[str]) -> None:
+def unpack_wheel(
+    libname: str,
+    dest_dir: pathlib.Path,
+    patterns: typing.Set[str],
+    excludes: typing.Set[str],
+) -> None:
     info = get_libs_repo().get(libname)
 
     if info is None or not info.filepath.exists():

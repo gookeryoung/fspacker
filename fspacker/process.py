@@ -1,4 +1,5 @@
 import pathlib
+import typing
 
 from fspacker.packer.base import BasePacker
 from fspacker.packer.depends import DependsPacker
@@ -12,7 +13,7 @@ from fspacker.parser.target import PackTarget
 
 class Processor:
     def __init__(self, root_dir: pathlib.Path):
-        self.targets: typing.Set[PackTarget] = {}
+        self.targets: typing.Dict[str, PackTarget] = {}
         self.root = root_dir
         self.parsers = dict(
             source=SourceParser(self.targets, root_dir),

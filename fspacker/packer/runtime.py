@@ -37,9 +37,7 @@ class RuntimePacker(BasePacker):
             return
 
         self.fetch_runtime()
-        logging.info(
-            f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]"
-        )
+        logging.info(f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]")
         shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
 
     @staticmethod
@@ -64,9 +62,7 @@ class RuntimePacker(BasePacker):
         t0 = time.perf_counter()
         with open(EMBED, "wb") as f:
             f.write(runtime_files)
-        logging.info(
-            f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s."
-        )
+        logging.info(f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s.")
 
         checksum = _calc_checksum(EMBED)
         logging.info(f"Write checksum [{checksum}] into config file")

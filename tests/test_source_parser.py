@@ -4,12 +4,8 @@ from tests.utils import DIR_EXAMPLES
 
 class TestSourcePacker:
     def test_ex01_source_parser(self):
-        parser = SourceParser(
-            targets={}, root_dir=DIR_EXAMPLES / "ex01_helloworld_console"
-        )
-        parser.parse(
-            DIR_EXAMPLES / "ex01_helloworld_console" / "ex01_helloworld_console.py"
-        )
+        parser = SourceParser(targets={}, root_dir=DIR_EXAMPLES / "ex01_helloworld_console")
+        parser.parse(DIR_EXAMPLES / "ex01_helloworld_console" / "ex01_helloworld_console.py")
         assert "ex01_helloworld_console" in parser.targets.keys()
 
         target = parser.targets["ex01_helloworld_console"]
