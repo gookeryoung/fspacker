@@ -8,7 +8,7 @@ stages:
     steps:
       - step: build@python
         name: build_python
-        displayName: Python 构建
+        displayName: Python setup
         pythonVersion: '3.9'
         # 非必填字段，开启后表示将构建产物暂存，但不会上传到制品库中，7天后自动清除
         artifacts:
@@ -20,29 +20,30 @@ stages:
         commands:
           - python3 -m pip install --upgrade pip
           - pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-          - pip3 install -r requirements.txt
-          - python3 ./main.py
-      - step: publish@general_artifacts
-        name: publish_general_artifacts
-        displayName: 上传制品
-        # 上游构建任务定义的产物名，默认BUILD_ARTIFACT
-        dependArtifact: BUILD_ARTIFACT
-        # 上传到制品库时的制品命名，默认output
-        artifactName: output
-        dependsOn: build_python
-  - stage: 
-    name: release
-    displayName: 发布
-    steps:
-      - step: publish@release_artifacts
-        name: publish_release_artifacts
-        displayName: '发布'
-        # 上游上传制品任务的产出
-        dependArtifact: output
-        # 发布制品版本号
-        version: '1.0.0.0'
-        # 是否开启版本号自增，默认开启
-        autoIncrement: true
+          - pip3 install uv
+          - python3 -m uv sync
+#
+#      - step: publish@general_artifacts
+#        name: publish_general_artifacts
+#        displayName: 上传制品
+#        # 上游构建任务定义的产物名，默认BUILD_ARTIFACT
+#        dependArtifact: BUILD_ARTIFACT
+#        # 上传到制品库时的制品命名，默认output
+#        artifactName: output
+#        dependsOn: build_python
+#  - stage:
+#    name: release
+#    displayName: 发布
+#    steps:
+#      - step: publish@release_artifacts
+#        name: publish_release_artifacts
+#        displayName: '发布'
+#        # 上游上传制品任务的产出
+#        dependArtifact: output
+#        # 发布制品版本号
+#        version: '1.0.0.0'
+#        # 是否开启版本号自增，默认开启
+#        autoIncrement: true
 triggers:
   push:
     branches:
