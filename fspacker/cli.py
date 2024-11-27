@@ -3,6 +3,7 @@ import logging
 import pathlib
 import time
 
+from fspacker.config import __version
 from fspacker.process import Processor
 
 logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
@@ -10,6 +11,12 @@ logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-v",
+        "--version",
+        action="store_true",
+        help="Show version",
+    )
     parser.add_argument(
         "-z",
         "--zip",
@@ -35,6 +42,11 @@ def main():
     args = parser.parse_args()
     zip_mode = args.zip
     directory = pathlib.Path(args.directory)
+    show_version = args.version
+
+    if show_version:
+        logging.info(f"FSPacker ver {__version}")
+        return
 
     if not directory.exists():
         logging.info(f"Directory [{directory}] doesn't exist")

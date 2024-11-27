@@ -29,3 +29,6 @@ commands = [
     ["poetry", "publish", { replace = "posargs", extend = true }],
 ]
 allowlist_externals = ["rm"]
+
+[pytest]
+addopts = ["--benchmark-enable"]
