@@ -1,9 +1,9 @@
 import logging
 import shutil
 
-from fspacker.common import PackTarget
 from fspacker.config import TKINTER_FILEPATH, TKINTER_LIB_FILEPATH
 from fspacker.packer.libspec.base import ChildLibSpecPacker
+from fspacker.parser.target import PackTarget
 
 
 class PySide2Packer(ChildLibSpecPacker):
@@ -31,11 +31,13 @@ class TkinterPacker(ChildLibSpecPacker):
             logging.info("Use [tkinter] pack spec")
 
             if not (target.dist_dir / "lib").exists():
-                logging.info(f"Unpacking tkinter: [{TKINTER_FILEPATH.name}]->[{target.packages_dir.name}]")
+                logging.info(
+                    f"Unpacking tkinter: [{TKINTER_FILEPATH.name}]->[{target.packages_dir.name}]"
+                )
                 shutil.unpack_archive(TKINTER_LIB_FILEPATH, target.dist_dir, "zip")
             else:
                 logging.info("[tkinter][lib] already packed, skipping")
-                
+
             if not (target.packages_dir / "tkinter").exists():
                 shutil.unpack_archive(TKINTER_FILEPATH, target.packages_dir, "zip")
             else:

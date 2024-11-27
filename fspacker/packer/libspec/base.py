@@ -1,8 +1,8 @@
 import logging
 import typing
 
-from fspacker.common import PackTarget
 from fspacker.packer.base import BasePacker
+from fspacker.parser.target import PackTarget
 from fspacker.utils.wheel import unpack_wheel
 
 
@@ -31,7 +31,12 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
             if libname in specs:
                 specs[libname].pack(libname, target=target)
             else:
-                unpack_wheel(libname.lower(), target.packages_dir, patterns, self.EXCLUDES.setdefault(libname, set()))
+                unpack_wheel(
+                    libname.lower(),
+                    target.packages_dir,
+                    patterns,
+                    self.EXCLUDES.setdefault(libname, set()),
+                )
 
 
 class DefaultLibrarySpecPacker(LibSpecPackerMixin):

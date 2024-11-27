@@ -13,7 +13,7 @@ class FolderParser(BaseParser):
             logging.info(f"Skip parsing folder: [{entry.stem}]")
             return
 
-        for k, v in self.config.targets.items():
+        for k, v in self.targets.items():
             if entry.stem in v.code:
                 v.deps.add(entry.stem)
                 logging.info(f"Update pack target: {v}")

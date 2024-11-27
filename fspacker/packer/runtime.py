@@ -5,9 +5,9 @@ import shutil
 import time
 from urllib.request import urlopen
 
-from fspacker.common import PackTarget
 from fspacker.config import EMBED_FILE_NAME, EMBED_FILEPATH, PYTHON_VER
 from fspacker.packer.base import BasePacker
+from fspacker.parser.target import PackTarget
 from fspacker.utils.persist import get_json_value, update_json_values
 from fspacker.utils.url import get_fastest_embed_url
 
@@ -37,7 +37,9 @@ class RuntimePacker(BasePacker):
             return
 
         self.fetch_runtime()
-        logging.info(f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]")
+        logging.info(
+            f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]"
+        )
         shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
 
     @staticmethod
@@ -62,7 +64,9 @@ class RuntimePacker(BasePacker):
         t0 = time.perf_counter()
         with open(EMBED, "wb") as f:
             f.write(runtime_files)
-        logging.info(f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s.")
+        logging.info(
+            f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s."
+        )
 
         checksum = _calc_checksum(EMBED)
         logging.info(f"Write checksum [{checksum}] into config file")

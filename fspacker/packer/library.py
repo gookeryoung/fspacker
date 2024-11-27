@@ -1,6 +1,5 @@
 import logging
 
-from fspacker.common import PackTarget
 from fspacker.packer.base import BasePacker
 from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
@@ -8,6 +7,7 @@ from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
     TorchSpecPacker,
 )
+from fspacker.parser.target import PackTarget
 from fspacker.utils.repo import get_libs_repo, update_libs_repo
 from fspacker.utils.wheel import download_wheel, get_dependencies
 

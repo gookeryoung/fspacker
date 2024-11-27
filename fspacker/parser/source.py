@@ -4,9 +4,9 @@ import pathlib
 import typing
 from io import StringIO
 
-from fspacker.common import PackTarget
-from fspacker.parser.base import BaseParser
 from fspacker.config import TKINTER_LIBS
+from fspacker.parser.base import BaseParser
+from fspacker.parser.target import PackTarget
 from fspacker.utils.repo import get_builtin_lib_repo
 
 __all__ = ("SourceParser",)
@@ -20,14 +20,14 @@ class SourceParser(BaseParser):
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
                 ast_tree, extra, deps, text = self._parse_ast(code, entry)
-                self.config.targets[entry.stem] = PackTarget(
+                self.targets[entry.stem] = PackTarget(
                     src=entry,
                     deps=deps,
                     ast=ast_tree,
                     extra=extra,
                     code=f"{code}{text}",
                 )
-                logging.info(f"Add pack target{self.config.targets[entry.stem]}")
+                logging.info(f"Add pack target{self.targets[entry.stem]}")
 
     @staticmethod
     def _parse_ast(
@@ -37,7 +37,9 @@ class SourceParser(BaseParser):
 
         builtins = get_builtin_lib_repo()
         tree = ast.parse(content, filename=filepath)
-        entries: typing.Dict[str, pathlib.Path] = {_.stem: _ for _ in filepath.parent.iterdir()}
+        entries: typing.Dict[str, pathlib.Path] = {
+            _.stem: _ for _ in filepath.parent.iterdir()
+        }
         imports = set()
         extra = set()
         deps = set()
