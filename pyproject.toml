@@ -1,6 +1,6 @@
 [project]
 name = "fspacker"
-version = "0.4.5"
+version = "0.4.6"
 description = "Fast & Simple Packer toolset for python."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -37,14 +37,35 @@ dev-dependencies = [
     "pytest-benchmark>=4.0.0",
     "pysnooper>=1.2.1",
     "black>=24.8.0",
+    "tox>=4.23.2",
+    "poetry>=1.8.4",
 ]
 
 [tool.uv.sources]
 fspacker = { workspace = true }
 
+[tool.poetry]
+name = "fspacker"
+version = "0.4.6"
+description = "Fast & Simple Packer toolset for python."
+readme = "README.md"
+authors = ["Young <gooker_young@163.com>"]
+
+[tool.poetry.dependencies]
+python = "~3.8"
+requests = "^2.32.3"
+rtoml = "^0.11.0"
+stdlib-list = "0.10.0"
+types-requests = "^2.32.0.20241016"
+
+[[tool.poetry.source]]
+name = 'tuna'
+url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
+priority = "primary"
+
 [tool.ruff]
 line-length = 120 # 代码最大行宽
-select = [ # 选择的规则
+lint.select = [ # 选择的规则
     "F",
     "E",
     "W",
