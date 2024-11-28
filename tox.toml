@@ -1,6 +1,14 @@
 requires = ["tox>=4"]
 env_list = ["lint", "type", "build", "publish", "3.8"]
 
+[testenv]
+PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+deps = ["pytest"]
+commands = [["pytest", { replace = "posargs", default = ["tests"], extend = true }]]
+
+[pytest]
+addopts = ["--benchmark-enable"]
+
 [env_run_base]
 description = "run unit tests"
 deps = [
@@ -30,5 +38,4 @@ commands = [
 ]
 allowlist_externals = ["rm"]
 
-[pytest]
-addopts = ["--benchmark-enable"]
+

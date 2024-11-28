@@ -45,7 +45,7 @@ def main():
     show_version = args.version
 
     if show_version:
-        logging.info(f"FSPacker ver {__version}")
+        logging.info(f"fspacker ver {__version}")
         return
 
     if not directory.exists():
