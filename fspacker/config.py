@@ -85,8 +85,9 @@ TEST_CALL_TIMEOUT = 0.05
 
 # mapping between import name and real file name
 LIBNAME_MAPPER = dict(
-    PIL="Pillow",
+    pil="Pillow",
     docx="python-docx",
+    win32com="pywin32",
 )
 
 LIBNAME_MAPPER_REVERSE = {v: k for k, v in LIBNAME_MAPPER.items()}
