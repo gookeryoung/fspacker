@@ -99,6 +99,10 @@ def get_dependencies(package_name: pathlib.Path, depth: int) -> typing.Set[str]:
         return set()
 
     try:
+        if not package_name.suffix == ".whl":
+            logging.error(f"[!!!] Lib file [{package_name.name}] is not a wheel file")
+            return set()
+
         wheel = Wheel(package_name)
         requires_ = wheel.requires_dist
         names = set()
@@ -109,11 +113,7 @@ def get_dependencies(package_name: pathlib.Path, depth: int) -> typing.Set[str]:
         for name in names:
             lib_filepath = get_lib_filepath(name)
             if lib_filepath:
-                if lib_filepath.suffix == ".whl":
-                    names = names.union(get_dependencies(lib_filepath, depth + 1))
-                else:
-                    logging.error(f"[!!!] Lib file [{lib_filepath.name}] is not a wheel file")
-                    return set()
+                names = names.union(get_dependencies(lib_filepath, depth + 1))
 
         return names
     except PackageNotFoundError:

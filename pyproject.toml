@@ -1,6 +1,6 @@
 [project]
 name = "fspacker"
-version = "0.4.6"
+version = "0.4.7"
 description = "Fast & Simple Packer toolset for python."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -40,6 +40,7 @@ dev-dependencies = [
     "black>=24.8.0",
     "tox>=4.23.2",
     "poetry>=1.8.4",
+    "jieba>=0.42.1",
 ]
 
 [tool.uv.sources]

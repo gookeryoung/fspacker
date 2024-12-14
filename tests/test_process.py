@@ -45,6 +45,14 @@ class TestProcess:
 
         assert exec_dist_dir(root_dir / "dist")
 
+    @pytest.mark.benchmark(group="gui")
+    def test_pack_ex07(self):
+        root_dir = DIR_EXAMPLES / "ex07_tarfile"
+        proc = Processor(root_dir)
+        proc.run()
+
+        assert exec_dist_dir(root_dir / "dist")
+
     @pytest.mark.benchmark(group="web")
     def test_pack_ex12(self):
         root_dir = DIR_EXAMPLES / "ex12_web_bottle"
