@@ -15,11 +15,17 @@ __all__ = ("SourceParser",)
 class SourceParser(BaseParser):
     """Parse by source code"""
 
+    def __init__(self, targets: typing.Dict[str, PackTarget], root_dir: pathlib.Path):
+        super().__init__(targets, root_dir)
+
+        self.entries: typing.Dict[str, pathlib.Path] = {}
+        self.builtins = get_builtin_lib_repo()
+
     def parse(self, entry: pathlib.Path):
         with open(entry, encoding="utf-8") as f:
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
-                ast_tree, extra, deps, text = self._parse_ast(code, entry)
+                ast_tree, extra, deps, text = self._parse_ast(entry)
                 self.targets[entry.stem] = PackTarget(
                     src=entry,
                     deps=deps,
@@ -29,15 +35,16 @@ class SourceParser(BaseParser):
                 )
                 logging.info(f"Add pack target{self.targets[entry.stem]}")
 
-    @staticmethod
     def _parse_ast(
-        content: str, filepath: pathlib.Path
+        self, filepath: pathlib.Path
     ) -> typing.Tuple[typing.Set[str], typing.Set[str], typing.Set[str], str]:
         """Analyse ast tree from source code"""
+        with open(filepath, encoding="utf-8") as f:
+            content = "".join(f.readlines())
 
-        builtins = get_builtin_lib_repo()
         tree = ast.parse(content, filename=filepath)
-        entries: typing.Dict[str, pathlib.Path] = {_.stem: _ for _ in filepath.parent.iterdir()}
+        local_entries = {_.stem: _ for _ in filepath.parent.iterdir()}
+        self.entries.update(local_entries)
         imports = set()
         extra = set()
         deps = set()
@@ -55,13 +62,27 @@ class SourceParser(BaseParser):
 
             if import_name is not None:
                 # import from local files or package folders
-                if import_name in entries:
+                if import_name in local_entries:
                     deps.add(import_name)
-                    if (entry_file := entries[import_name]).is_file():
+                    entry_file = local_entries[import_name]
+
+                    if entry_file.is_file():
                         with open(entry_file, encoding="utf-8") as f:
                             code_text.write("".join(f.readlines()))
-                elif import_name not in builtins:
-                    imports.add(import_name.lower())
+                    elif entry_file.is_dir():
+                        files = list(_ for _ in entry_file.iterdir() if _.suffix == ".py")
+                        for file in files:
+                            vals = self._parse_ast(file)
+                            imports |= vals[0]
+                            extra |= vals[1]
+                            deps |= vals[2]
+                            code_text.write(vals[3])
+
+                elif import_name not in self.builtins:
+                    if import_name not in self.entries:
+                        imports.add(import_name.lower())
+                    else:
+                        deps.add(import_name.lower())
 
                 # import_name needs tkinter
                 if import_name in TKINTER_LIBS:

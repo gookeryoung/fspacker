@@ -1,4 +1,5 @@
 import dataclasses
+import logging
 import pathlib
 import typing
 
@@ -21,12 +22,16 @@ class LibraryInfo:
 
     @staticmethod
     def from_path(path: pathlib.Path):
-        package_name, *version, build_tag, abi_tag, platform_tag = path.stem.split("-")
-        return LibraryInfo(
-            package_name=package_name,
-            version=version,
-            build_tag=build_tag,
-            abi_tag=abi_tag,
-            platform_tag=platform_tag,
-            filepath=path,
-        )
+        try:
+            package_name, *version, build_tag, abi_tag, platform_tag = path.stem.split("-")
+            return LibraryInfo(
+                package_name=package_name,
+                version=version,
+                build_tag=build_tag,
+                abi_tag=abi_tag,
+                platform_tag=platform_tag,
+                filepath=path,
+            )
+        except ValueError as e:
+            logging.error(f"[!!!]Invalid path: {path}, error: {e}")
+            return None
