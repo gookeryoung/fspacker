@@ -5,7 +5,7 @@ import typing
 import stdlib_list
 
 from fspacker.common import LibraryInfo
-from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT
+from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT, LIBNAME_MAPPER
 
 __libs_repo: typing.Dict[str, LibraryInfo] = {}
 __builtin_lib_repo: typing.Set[str] = set()
@@ -14,6 +14,8 @@ __all__ = [
     "get_libs_repo",
     "update_libs_repo",
     "get_builtin_lib_repo",
+    "get_lib_filepath",
+    "map_libname"
 ]
 
 
@@ -46,3 +48,20 @@ def get_builtin_lib_repo() -> typing.Set[str]:
         logging.info(f"Parse built-in libs: total=[{len(__builtin_lib_repo)}]")
 
     return __builtin_lib_repo
+
+
+def get_lib_filepath(libname: str) -> typing.Optional[pathlib.Path]:
+    real_libname = map_libname(libname)
+    files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
+    if not len(files):
+        logging.info(f"Lib file not found: {real_libname}")
+        return None
+    else:
+        return files[0]
+
+
+def map_libname(libname: str) -> str:
+    if libname in LIBNAME_MAPPER:
+        return LIBNAME_MAPPER[libname].replace("-", "_")
+    else:
+        return libname.replace("-", "_")

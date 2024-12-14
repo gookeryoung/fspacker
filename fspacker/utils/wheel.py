@@ -5,11 +5,13 @@ import re
 import subprocess
 import typing
 import zipfile
-from importlib.metadata import PackageNotFoundError, requires
+from importlib.metadata import PackageNotFoundError
 from urllib.parse import urlparse
 
+from pkginfo import Wheel
+
 from fspacker.config import LIBS_REPO_DIR
-from fspacker.utils.repo import get_libs_repo
+from fspacker.utils.repo import get_libs_repo, get_lib_filepath, map_libname
 from fspacker.utils.url import get_fastest_pip_url
 
 
@@ -46,11 +48,11 @@ def unpack_wheel(
 
 
 def download_wheel(libname) -> pathlib.Path:
-    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
-    if not lib_files:
-        logging.warning(f"No wheel for {libname}, start downloading.")
+    real_libname = map_libname(libname)
 
-        logging.info("Fetch fastest pip url")
+    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
+    if not lib_files:
+        logging.warning(f"No wheel for {real_libname}, start downloading.")
         pip_url = get_fastest_pip_url()
         net_loc = urlparse(pip_url).netloc
         subprocess.call(
@@ -59,7 +61,7 @@ def download_wheel(libname) -> pathlib.Path:
                 "-m",
                 "pip",
                 "download",
-                libname,
+                real_libname,
                 "-d",
                 str(LIBS_REPO_DIR),
                 "--trusted-host",
@@ -68,7 +70,7 @@ def download_wheel(libname) -> pathlib.Path:
                 pip_url,
             ],
         )
-        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{libname}*"))
+        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
 
     if len(lib_files):
         return lib_files[0]
@@ -92,19 +94,22 @@ def _normalize_libname(lib_str: str) -> str:
 
 
 @functools.lru_cache(maxsize=128)
-def get_dependencies(package_name: str, depth: int) -> typing.Set[str]:
+def get_dependencies(package_name: pathlib.Path, depth: int) -> typing.Set[str]:
     if depth >= 2:
         return set()
 
     try:
-        requires_ = requires(package_name)
+        wheel = Wheel(package_name)
+        requires_ = wheel.requires_dist
         names = set()
         if requires_:
             for req in requires_:
                 names.add(_normalize_libname(req).lower())
 
         for name in names:
-            names = names.union(get_dependencies(name, depth + 1))
+            lib_filepath = get_lib_filepath(name)
+            if lib_filepath:
+                names = names.union(get_dependencies(lib_filepath, depth + 1))
 
         return names
     except PackageNotFoundError:

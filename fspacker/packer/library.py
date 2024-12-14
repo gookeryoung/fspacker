@@ -8,7 +8,7 @@ from fspacker.packer.libspec.sci import (
     TorchSpecPacker,
 )
 from fspacker.parser.target import PackTarget
-from fspacker.utils.repo import get_libs_repo, update_libs_repo
+from fspacker.utils.repo import get_libs_repo, update_libs_repo, map_libname
 from fspacker.utils.wheel import download_wheel, get_dependencies
 
 __all__ = [
@@ -34,13 +34,16 @@ class LibraryPacker(BasePacker):
         libs_repo = get_libs_repo()
 
         for lib in target.ast:
+            lib = map_libname(lib)
             lib_info = libs_repo.get(lib)
             if lib_info is None:
                 filepath = download_wheel(lib)
                 if filepath.exists():
                     update_libs_repo(lib, filepath)
+            else:
+                filepath = lib_info.filepath
 
-            ast_tree = get_dependencies(lib, 0)
+            ast_tree = get_dependencies(filepath, 0)
             target.union_ast(ast_tree)
 
         logging.info(f"After updating target ast tree: {target}")
@@ -55,5 +58,6 @@ class LibraryPacker(BasePacker):
 
         logging.info("Start packing with default")
         for lib in target.ast:
-            if lib in libs_repo.keys():
-                self.SPECS["default"].pack(lib, target=target)
+            real_libname = map_libname(lib)
+            if real_libname in libs_repo.keys():
+                self.SPECS["default"].pack(real_libname, target=target)

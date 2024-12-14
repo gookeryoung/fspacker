@@ -80,6 +80,13 @@ TKINTER_LIBS = (
     "matplotlib",
 )
 
-# 最多显示文件数
 MAX_SHOWN_FILES = 3
 TEST_CALL_TIMEOUT = 0.05
+
+# mapping between import name and real file name
+LIBNAME_MAPPER = dict(
+    PIL="Pillow",
+    docx="python-docx",
+)
+
+LIBNAME_MAPPER_REVERSE = {v: k for k, v in LIBNAME_MAPPER.items()}
