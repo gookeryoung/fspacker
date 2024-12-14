@@ -109,7 +109,11 @@ def get_dependencies(package_name: pathlib.Path, depth: int) -> typing.Set[str]:
         for name in names:
             lib_filepath = get_lib_filepath(name)
             if lib_filepath:
-                names = names.union(get_dependencies(lib_filepath, depth + 1))
+                if lib_filepath.suffix == ".whl":
+                    names = names.union(get_dependencies(lib_filepath, depth + 1))
+                else:
+                    logging.error(f"[!!!] Lib file [{lib_filepath.name}] is not a wheel file")
+                    return set()
 
         return names
     except PackageNotFoundError:

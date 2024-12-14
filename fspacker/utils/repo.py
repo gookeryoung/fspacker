@@ -1,5 +1,6 @@
 import logging
 import pathlib
+import time
 import typing
 
 import stdlib_list
@@ -10,13 +11,7 @@ from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT, LIBNAME_MAPPER
 __libs_repo: typing.Dict[str, LibraryInfo] = {}
 __builtin_lib_repo: typing.Set[str] = set()
 
-__all__ = [
-    "get_libs_repo",
-    "update_libs_repo",
-    "get_builtin_lib_repo",
-    "get_lib_filepath",
-    "map_libname"
-]
+__all__ = ["get_libs_repo", "update_libs_repo", "get_builtin_lib_repo", "get_lib_filepath", "map_libname"]
 
 
 def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
@@ -44,8 +39,11 @@ def get_builtin_lib_repo() -> typing.Set[str]:
     global __builtin_lib_repo
 
     if not len(__builtin_lib_repo):
+        t0 = time.perf_counter()
         __builtin_lib_repo = set(stdlib_list.stdlib_list(PYTHON_VER_SHORT))
-        logging.info(f"Parse built-in libs: total=[{len(__builtin_lib_repo)}]")
+        logging.info(
+            f"Parse built-in libs: total=[{len(__builtin_lib_repo)}], time used: {time.perf_counter() - t0:.5f}s"
+        )
 
     return __builtin_lib_repo
 
@@ -54,7 +52,6 @@ def get_lib_filepath(libname: str) -> typing.Optional[pathlib.Path]:
     real_libname = map_libname(libname)
     files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
     if not len(files):
-        logging.info(f"Lib file not found: {real_libname}")
         return None
     else:
         return files[0]

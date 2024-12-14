@@ -88,6 +88,7 @@ LIBNAME_MAPPER = dict(
     pil="Pillow",
     docx="python-docx",
     win32com="pywin32",
+    yaml="pyyaml",
 )
 
 LIBNAME_MAPPER_REVERSE = {v: k for k, v in LIBNAME_MAPPER.items()}
