@@ -3,6 +3,8 @@ import typing
 
 from fspacker.packer.base import BasePacker
 from fspacker.parser.target import PackTarget
+from fspacker.utils.archive import unpack_archive
+from fspacker.utils.repo import get_libs_repo
 from fspacker.utils.wheel import unpack_wheel
 
 
@@ -45,6 +47,10 @@ class DefaultLibrarySpecPacker(LibSpecPackerMixin):
 
         if lib not in folders:
             logging.info(f"Packing [{lib}], using [default] lib spec")
-            unpack_wheel(lib, target.packages_dir, set(), set())
+            info = get_libs_repo().get(lib)
+            if info.filepath.suffix == ".whl":
+                unpack_wheel(lib, target.packages_dir, set(), set())
+            elif info.filepath.suffix == ".gz":
+                unpack_archive(info.filepath, target.packages_dir)
         else:
             logging.info(f"Already packed, skip [{lib}]")

@@ -41,7 +41,7 @@ class LibraryInfo:
                     build_tag=None,
                     abi_tag=None,
                     platform_tag=None,
-                    filepath=path
+                    filepath=path,
                 )
             else:
                 raise ValueError(f"Unsupported file type: {path.suffix}")
