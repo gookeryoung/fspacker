@@ -1,5 +1,5 @@
-import jieba
+import scikit_umfpack
 
 
 def main():
-    print(jieba.__version__)
+    print(dir(scikit_umfpack))
