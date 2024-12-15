@@ -4,10 +4,7 @@ import typing
 from functools import cached_property
 
 
-__all__ = [
-    "DependInfo",
-    "PackTarget"
-]
+__all__ = ["DependInfo", "PackTarget"]
 
 
 @dataclasses.dataclass
@@ -20,22 +17,6 @@ class DependInfo:
         self.deps = set()
         self.ast = set()
         self.extra = set()
-
-    def __or__(self, other):
-        if not isinstance(other, DependInfo):
-            raise ValueError(f"object {other} is not instance of DependInfo")
-
-        self.deps |= other.deps
-        self.ast |= other.ast
-        self.extra |= other.extra
-
-    def __ior__(self, other):
-        if not isinstance(other, DependInfo):
-            raise ValueError(f"object {other} is not instance of DependInfo")
-
-        self.deps |= other.deps
-        self.ast |= other.ast
-        self.extra |= other.extra
 
 
 @dataclasses.dataclass

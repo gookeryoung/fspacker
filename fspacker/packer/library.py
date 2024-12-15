@@ -33,7 +33,7 @@ class LibraryPacker(BasePacker):
     def pack(self, target: PackTarget):
         libs_repo = get_libs_repo()
 
-        for lib in target.ast:
+        for lib in set(target.ast):
             lib = map_libname(lib)
             lib_info = libs_repo.get(lib)
             if lib_info is None:

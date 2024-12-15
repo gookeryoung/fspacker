@@ -4,7 +4,7 @@ import pathlib
 import typing
 from io import StringIO
 
-from fspacker.config import TKINTER_LIBS
+from fspacker.config import TKINTER_LIBS, RES_ENTRIES
 from fspacker.parser.base import BaseParser
 from fspacker.parser.target import PackTarget, DependInfo
 from fspacker.utils.repo import get_builtin_lib_repo
@@ -50,13 +50,24 @@ class SourceParser(BaseParser):
         tree = ast.parse(content, filename=filepath)
         local_entries = {_.stem: _ for _ in filepath.parent.iterdir()}
         self.entries.update(local_entries)
+        for entry in self.entries.values():
+            if entry.stem in RES_ENTRIES:
+                self.info.deps.add(entry.stem)
 
         for node in ast.walk(tree):
             import_name: typing.Optional[str] = None
 
             if isinstance(node, ast.ImportFrom):
                 if node.module is not None:
-                    import_name = node.module.split(".")[0].lower()
+                    imports = node.module.split(".")
+                    filepath_ = self.root.joinpath(*imports)
+                    if filepath_.is_dir():
+                        self._parse_folder(filepath_)
+                        self.info.deps.add(node.module.split(".")[0].lower())
+                    elif (source_path := filepath_.with_suffix(".py")).is_file():
+                        self._parse_content(source_path)
+                        self.info.deps.add(node.module.split(".")[0].lower())
+
             elif isinstance(node, ast.Import):
                 for alias in node.names:
                     import_name = alias.name.split(".")[0].lower()
