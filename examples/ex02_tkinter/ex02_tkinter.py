@@ -1,7 +1,11 @@
 import tkinter as tk
 
+from modules.module_a import function_a
+
 
 def main():
+    function_a()
+
     # 创建主窗口
     root = tk.Tk()
     root.title("输入框和文本框示例")

@@ -44,7 +44,7 @@ class LibraryPacker(BasePacker):
                 filepath = lib_info.filepath
 
             ast_tree = get_dependencies(filepath, 0)
-            target.union_ast(ast_tree)
+            target.ast |= ast_tree
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")

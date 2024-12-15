@@ -22,6 +22,7 @@ class SourceParser(BaseParser):
         self.entries: typing.Dict[str, pathlib.Path] = {}
         self.builtins = get_builtin_lib_repo()
         self.code_text = StringIO()
+        self.parsed: typing.Set[str] = set()
 
     @functools.lru_cache(maxsize=512)
     def parse(self, entry: pathlib.Path):
@@ -66,25 +67,28 @@ class SourceParser(BaseParser):
                 # import from local files or package folders
                 if import_name in self.entries:
                     deps.add(import_name)
-                    entry_file = self.entries.setdefault(import_name, None)
 
-                    if entry_file:
-                        if entry_file.is_file():
-                            with open(entry_file, encoding="utf-8") as f:
-                                self.code_text.write("".join(f.readlines()))
+                    entry_path = self.entries.setdefault(import_name, None)
+                    if entry_path and entry_path not in self.parsed:
+                        if entry_path.is_file():
+                            if entry_path not in self.parsed:
+                                with open(entry_path, encoding="utf-8") as f:
+                                    self.code_text.write("".join(f.readlines()))
 
-                            vals = self._parse_ast(entry_file)
-                            imports |= vals[0]
-                            extra |= vals[1]
-                            deps |= vals[2]
+                                vals = self._parse_ast(entry_path)
+                                imports |= vals[0]
+                                extra |= vals[1]
+                                deps |= vals[2]
 
-                        elif entry_file.is_dir():
-                            files = list(_ for _ in entry_file.iterdir() if _.suffix == ".py")
+                        elif entry_path.is_dir():
+                            files: typing.List[pathlib.Path] = list(_ for _ in entry_path.iterdir() if _.suffix == ".py")
                             for file in files:
                                 vals = self._parse_ast(file)
                                 imports |= vals[0]
                                 extra |= vals[1]
                                 deps |= vals[2]
+
+                        self.parsed.add(entry_path)
 
                 elif import_name not in self.builtins:
                     imports.add(import_name.lower())

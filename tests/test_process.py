@@ -13,9 +13,9 @@ class TestProcess:
 
         assert exec_dist_dir(root_dir / "dist")
 
-    @pytest.mark.benchmark(group="console")
+    @pytest.mark.benchmark(group="gui")
     def test_pack_ex02(self):
-        root_dir = DIR_EXAMPLES / "ex02_cross_import"
+        root_dir = DIR_EXAMPLES / "ex02_tkinter"
         proc = Processor(root_dir)
         proc.run()
 
@@ -32,14 +32,6 @@ class TestProcess:
     @pytest.mark.benchmark(group="gui")
     def test_pack_ex04(self):
         root_dir = DIR_EXAMPLES / "ex04_pyside_complex"
-        proc = Processor(root_dir)
-        proc.run()
-
-        assert exec_dist_dir(root_dir / "dist")
-
-    @pytest.mark.benchmark(group="gui")
-    def test_pack_ex05(self):
-        root_dir = DIR_EXAMPLES / "ex05_tkinter"
         proc = Processor(root_dir)
         proc.run()
 

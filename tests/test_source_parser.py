@@ -3,7 +3,7 @@ from tests.utils import DIR_EXAMPLES
 
 
 class TestSourcePacker:
-    def test_ex01_source_parser(self):
+    def test_ex01(self):
         parser = SourceParser(targets={}, root_dir=DIR_EXAMPLES / "ex01_helloworld_console")
         parser.parse(DIR_EXAMPLES / "ex01_helloworld_console" / "ex01_helloworld_console.py")
         assert "ex01_helloworld_console" in parser.targets.keys()
@@ -12,16 +12,18 @@ class TestSourcePacker:
         assert target.ast == {"lxml"}
         assert target.deps == {"modules", "module_c", "module_d", "core"}
 
-    def test_ex02_source_parser(self):
-        parser = SourceParser(targets={}, root_dir=DIR_EXAMPLES / "ex02_cross_import")
-        parser.parse(DIR_EXAMPLES / "ex02_cross_import" / "ex02_cross_import.py")
-        assert "ex02_cross_import" in parser.targets.keys()
+    def test_ex02(self):
+        root_dir = DIR_EXAMPLES / "ex02_tkinter"
+        parser = SourceParser(targets={}, root_dir=root_dir)
+        parser.parse(root_dir / "ex02_tkinter.py")
+        assert "ex02_tkinter" in parser.targets.keys()
 
-        target = parser.targets["ex02_cross_import"]
-        assert len(target.ast) == 0
-        assert len(target.deps) == 1
+        target = parser.targets["ex02_tkinter"]
+        assert target.ast == {"yaml"}
+        assert target.deps == {"modules"}
+        assert target.extra == {"tkinter"}
 
-    def test_ex03_source_parser(self):
+    def test_ex03(self):
         parser = SourceParser(targets={}, root_dir=DIR_EXAMPLES / "ex03_pyside2_simple")
         parser.parse(DIR_EXAMPLES / "ex03_pyside2_simple" / "ex03_pyside2_simple.py")
         assert "ex03_pyside2_simple" in parser.targets.keys()
