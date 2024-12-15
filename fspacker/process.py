@@ -12,9 +12,12 @@ from fspacker.parser.target import PackTarget
 
 
 class Processor:
-    def __init__(self, root_dir: pathlib.Path):
+    def __init__(
+        self, file: typing.Optional[pathlib.Path], root_dir: pathlib.Path
+    ):
         self.targets: typing.Dict[str, PackTarget] = {}
         self.root = root_dir
+        self.file = file
         self.parsers = dict(
             source=SourceParser(self.targets, root_dir),
             folder=FolderParser(self.targets, root_dir),
@@ -37,10 +40,14 @@ class Processor:
         )
 
     def run(self):
-        entries = sorted(
-            list(_ for _ in self.root.iterdir() if self._check_entry(_)),
-            key=lambda x: x.is_dir(),
-        )
+        if self.file:
+            entries = [self.file]
+        else:
+            entries = sorted(
+                list(_ for _ in self.root.iterdir() if self._check_entry(_)),
+                key=lambda x: x.is_dir(),
+            )
+
         for entry in entries:
             if entry.is_dir():
                 self.parsers.get("folder").parse(entry)

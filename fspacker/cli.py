@@ -11,6 +11,12 @@ logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "-f",
+        "--file",
+        nargs="?",
+        help="Input source file",
+    )
+    parser.add_argument(
         "-v",
         "--version",
         action="store_true",
@@ -39,6 +45,7 @@ def main():
     )
 
     args = parser.parse_args()
+    file = pathlib.Path(args.file) if args.file else None
     zip_mode = args.zip
     directory = pathlib.Path(args.directory)
     show_version = args.version
@@ -58,7 +65,7 @@ def main():
     logging.info(f"Start packing, mode: [{'' if zip_mode else 'No-'}Zip]")
     logging.info(f"Source root directory: [{directory}]")
 
-    processor = Processor(directory)
+    processor = Processor(file, directory)
     processor.run()
 
     logging.info(
