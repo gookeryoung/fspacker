@@ -1,4 +1,5 @@
 import ast
+import functools
 import logging
 import pathlib
 import typing
@@ -22,6 +23,7 @@ class SourceParser(BaseParser):
         self.builtins = get_builtin_lib_repo()
         self.code_text = StringIO()
 
+    @functools.lru_cache(maxsize=512)
     def parse(self, entry: pathlib.Path):
         with open(entry, encoding="utf-8") as f:
             code = "".join(f.readlines())
@@ -64,12 +66,18 @@ class SourceParser(BaseParser):
                 # import from local files or package folders
                 if import_name in self.entries:
                     deps.add(import_name)
-                    entry_file = local_entries.setdefault(import_name, None)
+                    entry_file = self.entries.setdefault(import_name, None)
 
                     if entry_file:
                         if entry_file.is_file():
                             with open(entry_file, encoding="utf-8") as f:
                                 self.code_text.write("".join(f.readlines()))
+
+                            vals = self._parse_ast(entry_file)
+                            imports |= vals[0]
+                            extra |= vals[1]
+                            deps |= vals[2]
+
                         elif entry_file.is_dir():
                             files = list(_ for _ in entry_file.iterdir() if _.suffix == ".py")
                             for file in files:

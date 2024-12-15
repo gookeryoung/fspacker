@@ -9,8 +9,8 @@ class TestSourcePacker:
         assert "ex01_helloworld_console" in parser.targets.keys()
 
         target = parser.targets["ex01_helloworld_console"]
-        assert len(target.ast) == 0
-        assert len(target.deps) == 2
+        assert target.ast == {"lxml"}
+        assert target.deps == {"modules", "module_c", "module_d", "core"}
 
     def test_ex02_source_parser(self):
         parser = SourceParser(targets={}, root_dir=DIR_EXAMPLES / "ex02_cross_import")
