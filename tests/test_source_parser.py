@@ -20,7 +20,7 @@ class TestSourcePacker:
 
         target = parser.targets["ex02_tkinter"]
         assert target.ast == {"yaml"}
-        assert target.deps == {"modules"}
+        assert target.deps == {"modules", "config"}
         assert target.extra == {"tkinter"}
 
     def test_ex03(self):

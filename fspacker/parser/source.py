@@ -1,5 +1,4 @@
 import ast
-import functools
 import logging
 import pathlib
 import typing
@@ -7,7 +6,7 @@ from io import StringIO
 
 from fspacker.config import TKINTER_LIBS
 from fspacker.parser.base import BaseParser
-from fspacker.parser.target import PackTarget
+from fspacker.parser.target import PackTarget, DependInfo
 from fspacker.utils.repo import get_builtin_lib_repo
 
 __all__ = ("SourceParser",)
@@ -22,26 +21,28 @@ class SourceParser(BaseParser):
         self.entries: typing.Dict[str, pathlib.Path] = {}
         self.builtins = get_builtin_lib_repo()
         self.code_text = StringIO()
-        self.parsed: typing.Set[str] = set()
+        self.info = DependInfo()
 
-    @functools.lru_cache(maxsize=512)
     def parse(self, entry: pathlib.Path):
         with open(entry, encoding="utf-8") as f:
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
-                ast_tree, extra, deps = self._parse_ast(entry)
+                self._parse_content(entry)
                 self.targets[entry.stem] = PackTarget(
                     src=entry,
-                    deps=deps,
-                    ast=ast_tree,
-                    extra=extra,
+                    deps=self.info.deps,
+                    ast=self.info.ast,
+                    extra=self.info.extra,
                     code=f"{code}{self.code_text.getvalue()}",
                 )
                 logging.info(f"Add pack target{self.targets[entry.stem]}")
 
-    def _parse_ast(
-        self, filepath: pathlib.Path
-    ) -> typing.Tuple[typing.Set[str], typing.Set[str], typing.Set[str]]:
+    def _parse_folder(self, filepath: pathlib.Path) -> DependInfo:
+        files: typing.List[pathlib.Path] = list(_ for _ in filepath.iterdir() if _.suffix == ".py")
+        for file in files:
+            self._parse_content(file)
+
+    def _parse_content(self, filepath: pathlib.Path) -> DependInfo:
         """Analyse ast tree from source code"""
         with open(filepath, encoding="utf-8") as f:
             content = "".join(f.readlines())
@@ -49,9 +50,6 @@ class SourceParser(BaseParser):
         tree = ast.parse(content, filename=filepath)
         local_entries = {_.stem: _ for _ in filepath.parent.iterdir()}
         self.entries.update(local_entries)
-        imports = set()
-        extra = set()
-        deps = set()
 
         for node in ast.walk(tree):
             import_name: typing.Optional[str] = None
@@ -66,35 +64,22 @@ class SourceParser(BaseParser):
             if import_name is not None:
                 # import from local files or package folders
                 if import_name in self.entries:
-                    deps.add(import_name)
+                    self.info.deps.add(import_name)
 
                     entry_path = self.entries.setdefault(import_name, None)
-                    if entry_path and entry_path not in self.parsed:
+                    if entry_path and filepath.parent.resolve() != entry_path.resolve():
                         if entry_path.is_file():
-                            if entry_path not in self.parsed:
+                            if entry_path.parent.stem not in self.info.deps:
                                 with open(entry_path, encoding="utf-8") as f:
                                     self.code_text.write("".join(f.readlines()))
-
-                                vals = self._parse_ast(entry_path)
-                                imports |= vals[0]
-                                extra |= vals[1]
-                                deps |= vals[2]
+                                self._parse_content(entry_path)
 
                         elif entry_path.is_dir():
-                            files: typing.List[pathlib.Path] = list(_ for _ in entry_path.iterdir() if _.suffix == ".py")
-                            for file in files:
-                                vals = self._parse_ast(file)
-                                imports |= vals[0]
-                                extra |= vals[1]
-                                deps |= vals[2]
-
-                        self.parsed.add(entry_path)
+                            self._parse_folder(entry_path)
 
                 elif import_name not in self.builtins:
-                    imports.add(import_name.lower())
+                    self.info.ast.add(import_name.lower())
 
                 # import_name needs tkinter
                 if import_name in TKINTER_LIBS:
-                    extra.add("tkinter")
-
-        return imports, extra, deps
+                    self.info.extra.add("tkinter")
