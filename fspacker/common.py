@@ -26,7 +26,9 @@ class LibraryInfo:
     def from_path(path: pathlib.Path):
         try:
             if path.suffix in ".whl":
-                package_name, *version, build_tag, abi_tag, platform_tag = path.stem.split("-")
+                package_name, *version, build_tag, abi_tag, platform_tag = (
+                    path.stem.split("-")
+                )
                 if package_name in LIBNAME_MAPPER_REVERSE:
                     package_name = LIBNAME_MAPPER_REVERSE[package_name]
 

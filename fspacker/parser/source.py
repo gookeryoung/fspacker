@@ -15,7 +15,9 @@ __all__ = ("SourceParser",)
 class SourceParser(BaseParser):
     """Parse by source code"""
 
-    def __init__(self, targets: typing.Dict[str, PackTarget], root_dir: pathlib.Path):
+    def __init__(
+        self, targets: typing.Dict[str, PackTarget], root_dir: pathlib.Path
+    ):
         super().__init__(targets, root_dir)
 
         self.entries: typing.Dict[str, pathlib.Path] = {}
@@ -30,15 +32,15 @@ class SourceParser(BaseParser):
                 self._parse_content(entry)
                 self.targets[entry.stem] = PackTarget(
                     src=entry,
-                    deps=self.info.sources,
-                    ast=self.info.libs,
-                    extra=self.info.extra,
+                    depends=self.info,
                     code=f"{code}{self.code_text.getvalue()}",
                 )
                 logging.info(f"Add pack target{self.targets[entry.stem]}")
 
     def _parse_folder(self, filepath: pathlib.Path) -> Dependency:
-        files: typing.List[pathlib.Path] = list(_ for _ in filepath.iterdir() if _.suffix == ".py")
+        files: typing.List[pathlib.Path] = list(
+            _ for _ in filepath.iterdir() if _.suffix == ".py"
+        )
         for file in files:
             self._parse_content(file)
 

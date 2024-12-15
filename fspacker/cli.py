@@ -61,7 +61,9 @@ def main():
     processor = Processor(directory)
     processor.run()
 
-    logging.info(f"Packing done! Total used: [{time.perf_counter() - t0:.2f}]s.")
+    logging.info(
+        f"Packing done! Total used: [{time.perf_counter() - t0:.2f}]s."
+    )
 
 
 if __name__ == "__main__":

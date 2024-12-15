@@ -20,7 +20,9 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
         self.parent = parent
 
     def pack(self, lib: str, target: PackTarget):
-        folders = list(_.name for _ in target.packages_dir.iterdir() if _.is_dir())
+        folders = list(
+            _.name for _ in target.packages_dir.iterdir() if _.is_dir()
+        )
         specs = {k: v for k, v in self.parent.SPECS.items() if k != lib}
 
         logging.info(f"Use [{self.__class__.__name__}] spec")
@@ -43,7 +45,9 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
 
 class DefaultLibrarySpecPacker(LibSpecPackerMixin):
     def pack(self, lib: str, target: PackTarget):
-        folders = list(_.name for _ in target.packages_dir.iterdir() if _.is_dir())
+        folders = list(
+            _.name for _ in target.packages_dir.iterdir() if _.is_dir()
+        )
 
         if lib not in folders:
             logging.info(f"Packing [{lib}], using [default] lib spec")

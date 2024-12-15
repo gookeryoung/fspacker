@@ -27,8 +27,20 @@ class Processor:
             library=LibraryPacker(),
         )
 
+    @staticmethod
+    def _check_entry(entry: pathlib.Path) -> bool:
+        return any(
+            (
+                entry.is_dir(),
+                entry.is_file() and entry.suffix in ".py",
+            )
+        )
+
     def run(self):
-        entries = sorted(list(self.root.iterdir()), key=lambda x: x.is_dir())
+        entries = sorted(
+            list(_ for _ in self.root.iterdir() if self._check_entry(_)),
+            key=lambda x: x.is_dir(),
+        )
         for entry in entries:
             if entry.is_dir():
                 self.parsers.get("folder").parse(entry)

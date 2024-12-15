@@ -37,7 +37,9 @@ class RuntimePacker(BasePacker):
             return
 
         self.fetch_runtime()
-        logging.info(f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]")
+        logging.info(
+            f"Unpack runtime zip file: [{EMBED_FILEPATH.name}]->[{dest.relative_to(target.root_dir)}]"
+        )
         shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
 
     @staticmethod
@@ -46,7 +48,9 @@ class RuntimePacker(BasePacker):
         from fspacker.config import EMBED_FILEPATH as EMBED
 
         if EMBED.exists():
-            logging.info(f"Compare file [{EMBED.name}] with local config checksum")
+            logging.info(
+                f"Compare file [{EMBED.name}] with local config checksum"
+            )
             src_checksum = get_json_value("embed_file_checksum")
             dst_checksum = _calc_checksum(EMBED)
             if src_checksum == dst_checksum:
@@ -62,7 +66,9 @@ class RuntimePacker(BasePacker):
         t0 = time.perf_counter()
         with open(EMBED, "wb") as f:
             f.write(runtime_files)
-        logging.info(f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s.")
+        logging.info(
+            f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s."
+        )
 
         checksum = _calc_checksum(EMBED)
         logging.info(f"Write checksum [{checksum}] into config file")

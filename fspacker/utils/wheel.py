@@ -34,13 +34,17 @@ def unpack_wheel(
 
         compiled_patterns = [re.compile(f".*{p}") for p in patterns]
         compiled_excludes = [re.compile(f".*{e}") for e in excludes]
-        logging.info(f"Unpacking by pattern [{info.filepath.name}]->[{dest_dir.name}]")
+        logging.info(
+            f"Unpacking by pattern [{info.filepath.name}]->[{dest_dir.name}]"
+        )
         with zipfile.ZipFile(info.filepath, "r") as zip_ref:
             for file in zip_ref.namelist():
                 if any(e.match(file) for e in compiled_excludes):
                     continue
 
-                if len(patterns) and any(p.match(file) for p in compiled_patterns):
+                if len(patterns) and any(
+                    p.match(file) for p in compiled_patterns
+                ):
                     zip_ref.extract(file, dest_dir)
                     continue
 
@@ -70,7 +74,11 @@ def download_wheel(libname) -> pathlib.Path:
                 pip_url,
             ],
         )
-        lib_files = list(_ for pattern in (libname, real_libname) for _ in LIBS_REPO_DIR.rglob(f"{pattern}*"))
+        lib_files = list(
+            _
+            for pattern in (libname, real_libname)
+            for _ in LIBS_REPO_DIR.rglob(f"{pattern}*")
+        )
 
     if len(lib_files):
         return lib_files[0]
@@ -104,7 +112,9 @@ def get_dependencies(package_name: pathlib.Path, depth: int) -> typing.Set[str]:
 
     try:
         if not package_name.suffix == ".whl":
-            logging.error(f"[!!!] Lib file [{package_name.name}] is not a wheel file")
+            logging.error(
+                f"[!!!] Lib file [{package_name.name}] is not a wheel file"
+            )
             return set()
 
         wheel = Wheel(package_name)
@@ -121,5 +131,7 @@ def get_dependencies(package_name: pathlib.Path, depth: int) -> typing.Set[str]:
 
         return names
     except PackageNotFoundError:
-        logging.warning(f"Could not find package meta data for [{package_name}]")
+        logging.warning(
+            f"Could not find package meta data for [{package_name}]"
+        )
         return set()

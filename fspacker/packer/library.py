@@ -33,7 +33,7 @@ class LibraryPacker(BasePacker):
     def pack(self, target: PackTarget):
         libs_repo = get_libs_repo()
 
-        for lib in set(target.ast):
+        for lib in set(target.libs):
             lib = map_libname(lib)
             lib_info = libs_repo.get(lib)
             if lib_info is None:
@@ -44,20 +44,20 @@ class LibraryPacker(BasePacker):
                 filepath = lib_info.filepath
 
             ast_tree = get_dependencies(filepath, 0)
-            target.ast |= ast_tree
+            target.depends.libs |= ast_tree
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")
         for k, v in self.SPECS.items():
-            if k in target.ast:
+            if k in target.libs:
                 self.SPECS[k].pack(k, target=target)
-                target.ast.remove(k)
+                target.libs.remove(k)
 
             if k in target.extra:
                 self.SPECS[k].pack(k, target=target)
 
         logging.info("Start packing with default")
-        for lib in target.ast:
+        for lib in target.libs:
             real_libname = map_libname(lib)
             if real_libname in libs_repo.keys():
                 self.SPECS["default"].pack(real_libname, target=target)

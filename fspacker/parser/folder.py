@@ -15,5 +15,5 @@ class FolderParser(BaseParser):
 
         for k, v in self.targets.items():
             if entry.stem in v.code:
-                v.deps.add(entry.stem)
+                v.sources.add(entry.stem)
                 logging.info(f"Update pack target: {v}")

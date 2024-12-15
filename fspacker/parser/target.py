@@ -36,13 +36,23 @@ class Dependency:
 @dataclasses.dataclass
 class PackTarget:
     src: pathlib.Path
-    deps: typing.Set[str]
-    ast: typing.Set[str]
-    extra: typing.Set[str]
+    depends: Dependency
     code: str
 
     def __repr__(self):
-        return f"[src={self.src.name}, ast={self.ast}, deps={self.deps}], extra={self.extra}"
+        return f"[src={self.src.name}, sources={self.sources}, libs={self.sources}], extra={self.extra}"
+
+    @property
+    def sources(self):
+        return self.depends.sources
+
+    @property
+    def libs(self):
+        return self.depends.libs
+
+    @property
+    def extra(self):
+        return self.depends.extra
 
     @cached_property
     def root_dir(self) -> pathlib.Path:

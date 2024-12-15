@@ -6,7 +6,9 @@ import shutil
 def pytest_sessionstart(session):
     for item in session.items:
         if not item.get_closest_marker("no_cache"):
-            os.environ["FSPACKER_CACHE"] = str(pathlib.Path.home() / "test-cache")
+            os.environ["FSPACKER_CACHE"] = str(
+                pathlib.Path.home() / "test-cache"
+            )
             os.environ["FSPACKER_LIBS"] = str(pathlib.Path.home() / "test-libs")
 
 

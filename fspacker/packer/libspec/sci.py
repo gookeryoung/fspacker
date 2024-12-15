@@ -3,7 +3,12 @@ from fspacker.packer.libspec.base import ChildLibSpecPacker
 
 class MatplotlibSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
-        matplotlib={"matplotlib/", "matplotlib.libs/", "mpl_toolkits/", "pylab.py"},
+        matplotlib={
+            "matplotlib/",
+            "matplotlib.libs/",
+            "mpl_toolkits/",
+            "pylab.py",
+        },
         contourpy=set(),
         cycler=set(),
         importlib_resources=set(),
