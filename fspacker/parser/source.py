@@ -48,6 +48,7 @@ class SourceParser(BaseParser):
             content = "".join(f.readlines())
 
         tree = ast.parse(content, filename=filepath)
+
         local_entries = {_.stem: _ for _ in filepath.parent.iterdir()}
         self.entries.update(local_entries)
         for entry in self.entries.values():
@@ -55,42 +56,30 @@ class SourceParser(BaseParser):
                 self.info.deps.add(entry.stem)
 
         for node in ast.walk(tree):
-            import_name: typing.Optional[str] = None
-
             if isinstance(node, ast.ImportFrom):
                 if node.module is not None:
-                    imports = node.module.split(".")
-                    filepath_ = self.root.joinpath(*imports)
-                    if filepath_.is_dir():
-                        self._parse_folder(filepath_)
-                        self.info.deps.add(node.module.split(".")[0].lower())
-                    elif (source_path := filepath_.with_suffix(".py")).is_file():
-                        self._parse_content(source_path)
-                        self.info.deps.add(node.module.split(".")[0].lower())
-
+                    self._parse_import_str(node.module)
             elif isinstance(node, ast.Import):
                 for alias in node.names:
-                    import_name = alias.name.split(".")[0].lower()
+                    self._parse_import_str(alias.name)
 
-            if import_name is not None:
-                # import from local files or package folders
-                if import_name in self.entries:
-                    self.info.deps.add(import_name)
+    def _parse_import_str(self, import_str: str):
+        imports = import_str.split(".")
+        filepath_ = self.root.joinpath(*imports)
+        if filepath_.is_dir():
+            # deps folder
+            self._parse_folder(filepath_)
+            self.info.deps.add(import_str.split(".")[0].lower())
+        elif (source_path := filepath_.with_suffix(".py")).is_file():
+            # deps file
+            self._parse_content(source_path)
+            self.info.deps.add(import_str.split(".")[0].lower())
+        else:
+            import_name = import_str.split(".")[0].lower()
+            if import_name not in self.builtins:
+                # ast lib
+                self.info.ast.add(import_name.lower())
 
-                    entry_path = self.entries.setdefault(import_name, None)
-                    if entry_path and filepath.parent.resolve() != entry_path.resolve():
-                        if entry_path.is_file():
-                            if entry_path.parent.stem not in self.info.deps:
-                                with open(entry_path, encoding="utf-8") as f:
-                                    self.code_text.write("".join(f.readlines()))
-                                self._parse_content(entry_path)
-
-                        elif entry_path.is_dir():
-                            self._parse_folder(entry_path)
-
-                elif import_name not in self.builtins:
-                    self.info.ast.add(import_name.lower())
-
-                # import_name needs tkinter
-                if import_name in TKINTER_LIBS:
-                    self.info.extra.add("tkinter")
+            # import_name needs tkinter
+            if import_name in TKINTER_LIBS:
+                self.info.extra.add("tkinter")

@@ -20,7 +20,7 @@ class TestSourcePacker:
 
         target = parser.targets["ex02_tkinter"]
         assert target.ast == {"yaml"}
-        assert target.deps == {"modules", "config"}
+        assert target.deps == {"modules", "config", "assets"}
         assert target.extra == {"tkinter"}
 
     def test_ex03(self):
@@ -29,5 +29,5 @@ class TestSourcePacker:
         assert "ex03_pyside2_simple" in parser.targets.keys()
 
         target = parser.targets["ex03_pyside2_simple"]
-        assert len(target.ast) == 1
-        assert len(target.deps) == 0
+        assert target.ast == {"pyside2"}
+        assert target.deps == set()
