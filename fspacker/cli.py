@@ -3,7 +3,6 @@ import logging
 import pathlib
 import time
 
-from fspacker.config import __version
 from fspacker.process import Processor
 
 logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
@@ -45,7 +44,9 @@ def main():
     show_version = args.version
 
     if show_version:
-        logging.info(f"fspacker ver {__version}")
+        from fspacker import __version__
+
+        logging.info(f"fspacker {__version__}")
         return
 
     if not directory.exists():
