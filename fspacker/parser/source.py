@@ -69,16 +69,16 @@ class SourceParser(BaseParser):
         if filepath_.is_dir():
             # deps folder
             self._parse_folder(filepath_)
-            self.info.deps.add(import_str.split(".")[0].lower())
+            self.info.deps.add(import_str.split(".")[0])
         elif (source_path := filepath_.with_suffix(".py")).is_file():
             # deps file
             self._parse_content(source_path)
-            self.info.deps.add(import_str.split(".")[0].lower())
+            self.info.deps.add(import_str.split(".")[0])
         else:
             import_name = import_str.split(".")[0].lower()
             if import_name not in self.builtins:
                 # ast lib
-                self.info.ast.add(import_name.lower())
+                self.info.ast.add(import_name)
 
             # import_name needs tkinter
             if import_name in TKINTER_LIBS:

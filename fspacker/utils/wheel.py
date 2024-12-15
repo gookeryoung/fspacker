@@ -48,7 +48,7 @@ def unpack_wheel(
 
 
 def download_wheel(libname) -> pathlib.Path:
-    real_libname = map_libname(libname)
+    real_libname = _normalize_libname(map_libname(libname))
 
     lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
     if not lib_files:
@@ -70,7 +70,7 @@ def download_wheel(libname) -> pathlib.Path:
                 pip_url,
             ],
         )
-        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
+        lib_files = list(_ for pattern in (libname, real_libname) for _ in LIBS_REPO_DIR.rglob(f"{pattern}*"))
 
     if len(lib_files):
         return lib_files[0]
@@ -89,6 +89,10 @@ def _normalize_libname(lib_str: str) -> str:
         return lib_str.split("!=")[0]
     elif "==" in lib_str:
         return lib_str.split("==")[0]
+    elif "~=" in lib_str:
+        return lib_str.split("~=")[0]
+    elif "[" in lib_str and "]" in lib_str:
+        return lib_str.split("[")[0]
     else:
         return lib_str
 

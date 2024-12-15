@@ -3,7 +3,7 @@ import pathlib
 import platform
 import typing
 
-__version = "0.4.8"
+__version = "0.4.9"
 __cache_env = os.getenv("FSPACKER_CACHE")
 __libs_env = os.getenv("FSPACKER_LIBS")
 
@@ -89,6 +89,7 @@ LIBNAME_MAPPER = dict(
     docx="python-docx",
     win32com="pywin32",
     yaml="pyyaml",
+    zstd="zstandard",
 )
 
 LIBNAME_MAPPER_REVERSE = {v: k for k, v in LIBNAME_MAPPER.items()}

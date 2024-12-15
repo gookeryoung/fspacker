@@ -61,4 +61,7 @@ def map_libname(libname: str) -> str:
     if libname in LIBNAME_MAPPER:
         return LIBNAME_MAPPER[libname].replace("-", "_")
     else:
-        return libname.replace("-", "_")
+        libs_repo = get_libs_repo()
+        if libname in libs_repo:
+            return libname
+        return libname.replace("-", "_").replace(".", "_")
