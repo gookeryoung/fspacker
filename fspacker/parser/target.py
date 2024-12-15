@@ -4,18 +4,32 @@ import typing
 from functools import cached_property
 
 
-__all__ = ["DependInfo", "PackTarget"]
+__all__ = ["Dependency", "PackTarget"]
 
 
 @dataclasses.dataclass
-class DependInfo:
-    deps: typing.Set[str]
-    ast: typing.Set[str]
+class Dependency:
+    """Dependency data of the project, including:
+
+    Attributes
+    ----------
+    libs: typing.Set[str]
+        External libraries.
+    sources: typing.Set[str]
+        Source files and folders.
+    extra: typing.Set[str]
+        Extra specific info.
+    """
+
+    libs: typing.Set[str]
+    sources: typing.Set[str]
     extra: typing.Set[str]
 
+    __slots__ = ("libs", "sources", "extra")
+
     def __init__(self):
-        self.deps = set()
-        self.ast = set()
+        self.libs = set()
+        self.sources = set()
         self.extra = set()
 
 
