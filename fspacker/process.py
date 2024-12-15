@@ -13,7 +13,9 @@ from fspacker.parser.target import PackTarget
 
 class Processor:
     def __init__(
-        self, file: typing.Optional[pathlib.Path], root_dir: pathlib.Path
+        self,
+        root_dir: pathlib.Path,
+        file: typing.Optional[pathlib.Path] = None,
     ):
         self.targets: typing.Dict[str, PackTarget] = {}
         self.root = root_dir

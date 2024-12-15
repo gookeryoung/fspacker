@@ -5,9 +5,9 @@ Fast & Simple Packer toolset for python.
 ## Key Features
 
 - [x] 10-100x faster than existing deploy libs such as Py2exe, PyInstaller, Nuitka...
-- [ ] Supports multi-project deployment
+- [x] Supports multi-project deployment
 - [ ] Supports archiving with zip or 7z
-- [ ] Supports depleyment with InnoSetup
+- [ ] Supports deployment with InnoSetup
 - [ ] Supports compilation with nuitka
 - [ ] Supports encryption with pyarmor
 

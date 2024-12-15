@@ -65,7 +65,7 @@ def main():
     logging.info(f"Start packing, mode: [{'' if zip_mode else 'No-'}Zip]")
     logging.info(f"Source root directory: [{directory}]")
 
-    processor = Processor(file, directory)
+    processor = Processor(directory, file)
     processor.run()
 
     logging.info(
