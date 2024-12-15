@@ -81,7 +81,7 @@ TKINTER_LIBS = (
 )
 
 MAX_SHOWN_FILES = 3
-TEST_CALL_TIMEOUT = 0.05
+TEST_CALL_TIMEOUT = 0.1
 
 # mapping between import name and real file name
 LIBNAME_MAPPER = dict(
