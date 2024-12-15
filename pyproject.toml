@@ -68,7 +68,7 @@ url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
 priority = "primary"
 
 [tool.ruff]
-line-length = 120 # 代码最大行宽
+line-length = 80 # 代码最大行宽
 lint.select = [ # 选择的规则
     "F",
     "E",
