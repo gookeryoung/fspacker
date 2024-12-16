@@ -7,7 +7,7 @@ import zipfile
 from urllib.parse import urlparse
 
 from fspacker.config import LIBS_REPO_DIR
-from fspacker.utils.repo import get_libs_repo, map_libname
+from fspacker.utils.repo import get_libs_repo
 from fspacker.utils.url import get_fastest_pip_url
 
 
@@ -31,7 +31,7 @@ def unpack_wheel(
         compiled_patterns = [re.compile(f".*{p}") for p in patterns]
         compiled_excludes = [re.compile(f".*{e}") for e in excludes]
         logging.info(
-            f"Unpacking by pattern [{info.filepath.name}]->[{dest_dir.name}]"
+            f"Unpacking by pattern [{info.meta_data.name}]->[{dest_dir.name}]"
         )
         with zipfile.ZipFile(info.filepath, "r") as zip_ref:
             for file in zip_ref.namelist():
@@ -81,22 +81,3 @@ def download_wheel(libname: str) -> pathlib.Path:
         return lib_files[0]
     else:
         raise FileNotFoundError(f"No wheel for {libname}")
-
-
-def _normalize_libname(lib_str: str) -> str:
-    lib_str = lib_str.split(";")[0].split(" ")[0]
-
-    if "<" in lib_str:
-        return lib_str.split("<")[0]
-    elif ">" in lib_str:
-        return lib_str.split(">")[0]
-    elif "!=" in lib_str:
-        return lib_str.split("!=")[0]
-    elif "==" in lib_str:
-        return lib_str.split("==")[0]
-    elif "~=" in lib_str:
-        return lib_str.split("~=")[0]
-    elif "[" in lib_str and "]" in lib_str:
-        return lib_str.split("[")[0]
-    else:
-        return lib_str

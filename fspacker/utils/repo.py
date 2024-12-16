@@ -3,6 +3,7 @@ import pathlib
 import time
 import typing
 
+import pkginfo
 import stdlib_list
 
 from fspacker.common import LibraryInfo
@@ -15,7 +16,6 @@ __all__ = [
     "get_libs_repo",
     "update_libs_repo",
     "get_builtin_lib_repo",
-    "get_lib_filepath",
     "map_libname",
 ]
 
@@ -31,15 +31,19 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
         )
         logging.info(f"Fetching local library, total: [{len(lib_files)}]")
         for lib_file in lib_files:
-            info = LibraryInfo.from_path(lib_file)
-            __libs_repo.setdefault(info.package_name.lower(), info)
+            meta_data = pkginfo.get_metadata(str(lib_file))
+            __libs_repo.setdefault(
+                meta_data.name,
+                LibraryInfo(meta_data=meta_data, filepath=lib_file),
+            )
 
     return __libs_repo
 
 
 def update_libs_repo(lib: str, filepath: pathlib.Path) -> None:
     libs_repo = get_libs_repo()
-    libs_repo[lib] = LibraryInfo.from_path(filepath)
+    meta_data = pkginfo.get_metadata(str(filepath))
+    libs_repo[lib] = LibraryInfo(meta_data=meta_data, filepath=filepath)
     logging.info(f"Update libs repo: {libs_repo[lib]}")
 
 
@@ -56,15 +60,6 @@ def get_builtin_lib_repo() -> typing.Set[str]:
         )
 
     return __builtin_lib_repo
-
-
-def get_lib_filepath(libname: str) -> typing.Optional[pathlib.Path]:
-    real_libname = map_libname(libname)
-    files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
-    if not len(files):
-        return None
-    else:
-        return files[0]
 
 
 def map_libname(libname: str) -> str:
