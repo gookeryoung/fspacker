@@ -1,6 +1,7 @@
 import logging
 import pathlib
 import re
+import shutil
 import subprocess
 import typing
 import zipfile
@@ -48,12 +49,8 @@ def unpack_wheel(
 
 
 def download_wheel(libname: str) -> pathlib.Path:
-    """
-    Download wheel file for lib name, if not found in lib repo.
+    """Download wheel file for lib name, if not found in lib repo."""
 
-    :param libname: Lib name.
-    :return: Downloaded file path.
-    """
     match_name = "*".join(re.split(r"[-_]", libname))
     lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
     if not lib_files:
@@ -77,7 +74,15 @@ def download_wheel(libname: str) -> pathlib.Path:
         )
         lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
 
-    if len(lib_files):
-        return lib_files[0]
-    else:
-        raise FileNotFoundError(f"No wheel for {libname}")
+    assert len(lib_files)
+    return lib_files[0]
+
+
+def remove_wheel(libname: str) -> None:
+    """Remove wheel file in repo."""
+
+    info = get_libs_repo().get(libname)
+    if info is not None:
+        if info.filepath.exists():
+            info.filepath.unlink()
+            logging.info(f"Remove wheel file [{info.filepath.name}]")
