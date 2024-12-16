@@ -1,5 +1,5 @@
-import scikit_umfpack
+import ordered_set
 
 
 def main():
-    print(dir(scikit_umfpack))
+    print(dir(ordered_set))

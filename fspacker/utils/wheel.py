@@ -47,12 +47,17 @@ def unpack_wheel(
                 zip_ref.extract(file, dest_dir)
 
 
-def download_wheel(libname) -> pathlib.Path:
-    real_libname = _normalize_libname(map_libname(libname))
+def download_wheel(libname: str) -> pathlib.Path:
+    """
+    Download wheel file for lib name, if not found in lib repo.
 
-    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{real_libname}*"))
+    :param libname: Lib name.
+    :return: Downloaded file path.
+    """
+    match_name = "*".join(re.split(r"[-_]", libname))
+    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
     if not lib_files:
-        logging.warning(f"No wheel for {real_libname}, start downloading.")
+        logging.warning(f"No wheel for {libname}, start downloading.")
         pip_url = get_fastest_pip_url()
         net_loc = urlparse(pip_url).netloc
         subprocess.call(
@@ -61,7 +66,7 @@ def download_wheel(libname) -> pathlib.Path:
                 "-m",
                 "pip",
                 "download",
-                real_libname,
+                libname,
                 "-d",
                 str(LIBS_REPO_DIR),
                 "--trusted-host",
@@ -70,11 +75,7 @@ def download_wheel(libname) -> pathlib.Path:
                 pip_url,
             ],
         )
-        lib_files = list(
-            _
-            for pattern in (libname, real_libname)
-            for _ in LIBS_REPO_DIR.rglob(f"{pattern}*")
-        )
+        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
 
     if len(lib_files):
         return lib_files[0]
