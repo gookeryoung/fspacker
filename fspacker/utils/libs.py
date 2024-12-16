@@ -15,7 +15,7 @@ def get_lib_name(filepath: pathlib.Path) -> str:
     if hasattr(meta_data, "name"):
         return meta_data.name
     else:
-        raise ValueError(f"Lib name not found in {filepath.name}")
+        raise ValueError(f"Lib name not found in {filepath}")
 
 
 def get_lib_depends(filepath: pathlib.Path) -> typing.Set[str]:
@@ -24,4 +24,4 @@ def get_lib_depends(filepath: pathlib.Path) -> typing.Set[str]:
     if hasattr(meta_data, "requires_dist"):
         return set(list(x.split(" ")[0] for x in meta_data.requires_dist))
     else:
-        raise ValueError(f"No requires for {filepath.name}")
+        raise ValueError(f"No requires for {filepath}")
