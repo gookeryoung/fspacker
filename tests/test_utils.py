@@ -11,7 +11,7 @@ class TestUtilsLibs:
         "zstandard",
     ]
 
-    def test_download_wheel(self):
+    def test_parse_download_libname(self):
         for libname in self.LIBS:
             filepath = download_wheel(libname)
             parse_name = parse_libname(filepath)
