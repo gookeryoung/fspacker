@@ -1,17 +1,15 @@
-import functools
 import logging
 import pathlib
 import re
 import subprocess
 import typing
 import zipfile
-from importlib.metadata import PackageNotFoundError
 from urllib.parse import urlparse
 
-from pkginfo import Wheel
+import pkginfo
 
 from fspacker.config import LIBS_REPO_DIR
-from fspacker.utils.repo import get_libs_repo, get_lib_filepath, map_libname
+from fspacker.utils.repo import get_libs_repo, map_libname
 from fspacker.utils.url import get_fastest_pip_url
 
 
@@ -105,33 +103,9 @@ def _normalize_libname(lib_str: str) -> str:
         return lib_str
 
 
-@functools.lru_cache(maxsize=128)
-def get_dependencies(package_name: pathlib.Path, depth: int) -> typing.Set[str]:
-    if depth >= 2:
-        return set()
-
-    try:
-        if not package_name.suffix == ".whl":
-            logging.error(
-                f"[!!!] Lib file [{package_name.name}] is not a wheel file"
-            )
-            return set()
-
-        wheel = Wheel(package_name)
-        requires_ = wheel.requires_dist
-        names = set()
-        if requires_:
-            for req in requires_:
-                names.add(_normalize_libname(req).lower())
-
-        for name in names:
-            lib_filepath = get_lib_filepath(name)
-            if lib_filepath:
-                names = names.union(get_dependencies(lib_filepath, depth + 1))
-
-        return names
-    except PackageNotFoundError:
-        logging.warning(
-            f"Could not find package meta data for [{package_name}]"
-        )
-        return set()
+def get_wheel_depends(filepath: pathlib.Path) -> typing.Set[str]:
+    meta_data = pkginfo.get_metadata(str(filepath))
+    if hasattr(meta_data, "requires_dist"):
+        return set(list(x.split(" ")[0] for x in meta_data.requires_dist))
+    else:
+        raise ValueError(f"No requires for {filepath.name}")

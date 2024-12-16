@@ -1,5 +1,5 @@
 from fspacker.utils.libs import parse_libname
-from fspacker.utils.wheel import download_wheel
+from fspacker.utils.wheel import download_wheel, get_wheel_depends
 
 
 class TestUtilsLibs:
@@ -26,3 +26,8 @@ class TestUtilsWheel:
 
         assert "python_docx" in filepath.stem
         assert "python-docx" == libname
+
+    def test_get_wheel_depends(self):
+        filepath = download_wheel("python-docx")
+        requires = get_wheel_depends(filepath)
+        assert requires == {"lxml", "typing-extensions"}

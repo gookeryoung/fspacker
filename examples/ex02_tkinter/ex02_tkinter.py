@@ -32,3 +32,7 @@ def main():
 
     # 进入主循环
     root.mainloop()
+
+
+if __name__ == '__main__':
+    main()

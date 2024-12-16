@@ -1,5 +1,5 @@
 from fspacker.parser.source import SourceParser
-from utils import DIR_EXAMPLES
+from tests.utils import DIR_EXAMPLES
 
 
 class TestSourceParser:
