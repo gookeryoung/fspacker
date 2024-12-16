@@ -6,8 +6,6 @@ import typing
 import zipfile
 from urllib.parse import urlparse
 
-import pkginfo
-
 from fspacker.config import LIBS_REPO_DIR
 from fspacker.utils.repo import get_libs_repo, map_libname
 from fspacker.utils.url import get_fastest_pip_url
@@ -101,11 +99,3 @@ def _normalize_libname(lib_str: str) -> str:
         return lib_str.split("[")[0]
     else:
         return lib_str
-
-
-def get_wheel_depends(filepath: pathlib.Path) -> typing.Set[str]:
-    meta_data = pkginfo.get_metadata(str(filepath))
-    if hasattr(meta_data, "requires_dist"):
-        return set(list(x.split(" ")[0] for x in meta_data.requires_dist))
-    else:
-        raise ValueError(f"No requires for {filepath.name}")

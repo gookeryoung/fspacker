@@ -9,7 +9,8 @@ from fspacker.packer.libspec.sci import (
 )
 from fspacker.parser.target import PackTarget
 from fspacker.utils.repo import get_libs_repo, update_libs_repo, map_libname
-from fspacker.utils.wheel import download_wheel, get_wheel_depends
+from fspacker.utils.wheel import download_wheel
+from fspacker.utils.libs import get_lib_depends
 
 __all__ = [
     "LibraryPacker",
@@ -43,7 +44,7 @@ class LibraryPacker(BasePacker):
             else:
                 filepath = lib_info.filepath
 
-            ast_tree = get_wheel_depends(filepath)
+            ast_tree = get_lib_depends(filepath)
             target.depends.libs |= ast_tree
 
         logging.info(f"After updating target ast tree: {target}")
