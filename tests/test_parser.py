@@ -1,8 +1,8 @@
 from fspacker.parser.source import SourceParser
-from tests.utils import DIR_EXAMPLES
+from utils import DIR_EXAMPLES
 
 
-class TestSourcePacker:
+class TestSourceParser:
     def test_ex01(self):
         parser = SourceParser(
             targets={}, root_dir=DIR_EXAMPLES / "ex01_helloworld_console"

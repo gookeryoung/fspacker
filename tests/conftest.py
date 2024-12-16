@@ -2,27 +2,27 @@ import os
 import pathlib
 import shutil
 
+import pytest
+
+TEST_CACHE_DIR = pathlib.Path.home() / "test-cache"
+TEST_LIB_DIR = pathlib.Path.home() / "test-libs"
+
 
 def pytest_sessionstart(session):
-    for item in session.items:
-        if not item.get_closest_marker("no_cache"):
-            os.environ["FSPACKER_CACHE"] = str(
-                pathlib.Path.home() / "test-cache"
-            )
-            os.environ["FSPACKER_LIBS"] = str(pathlib.Path.home() / "test-libs")
+    """Start before pytest session"""
+    print(f"\nStart environment, {session=}")
+    os.environ["FSPACKER_CACHE"] = str(TEST_CACHE_DIR)
+    os.environ["FSPACKER_LIBS"] = str(TEST_LIB_DIR)
 
 
 def pytest_sessionfinish(session, exitstatus):
-    from fspacker.config import CACHE_DIR
-    from tests.utils import DIR_EXAMPLES
+    print(f"\nClear environment, {session=}, {exitstatus=}")
 
-    if CACHE_DIR.exists():
-        shutil.rmtree(CACHE_DIR)
 
-    os.environ.pop("FSPACKER_CACHE", None)
+@pytest.fixture
+def clear_cache():
+    for dir_ in (TEST_CACHE_DIR, TEST_LIB_DIR):
+        if dir_.exists():
+            shutil.rmtree(dir_)
 
-    dist_dirs = (_ for _ in DIR_EXAMPLES.rglob("dist"))
-    for dist_dir in dist_dirs:
-        shutil.rmtree(dist_dir)
-
-    print("\nClear environment")
+    print(f"\nClear cache and libs")
