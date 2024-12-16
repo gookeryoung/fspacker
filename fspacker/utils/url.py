@@ -4,7 +4,7 @@ import typing
 
 import requests
 
-from fspacker.config import PIP_URL_PREFIX, EMBED_URL_PREFIX
+from fspacker.config import EMBED_URL_PREFIX, PIP_URL_PREFIX
 from fspacker.utils.persist import get_json_value, update_json_values
 
 __all__ = [
