@@ -20,15 +20,11 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
         self.parent = parent
 
     def pack(self, lib: str, target: PackTarget):
-        folders = list(
-            _.name for _ in target.packages_dir.iterdir() if _.is_dir()
-        )
         specs = {k: v for k, v in self.parent.SPECS.items() if k != lib}
 
         logging.info(f"Use [{self.__class__.__name__}] spec")
-
         for libname, patterns in self.PATTERNS.items():
-            if libname in folders:
+            if libname in target.lib_folders:
                 logging.info(f"Lib [{libname}] already packed, skipping")
                 continue
 
@@ -45,11 +41,7 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
 
 class DefaultLibrarySpecPacker(LibSpecPackerMixin):
     def pack(self, lib: str, target: PackTarget):
-        folders = list(
-            _.name for _ in target.packages_dir.iterdir() if _.is_dir()
-        )
-
-        if lib not in folders:
+        if lib not in target.lib_folders:
             logging.info(f"Packing [{lib}], using [default] lib spec")
             info = get_libs_repo().get(lib)
             if info.filepath.suffix == ".whl":

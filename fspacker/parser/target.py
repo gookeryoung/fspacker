@@ -55,6 +55,11 @@ class PackTarget:
         return self.depends.extra
 
     @cached_property
+    def lib_folders(self):
+        """Library entries already exists in packages dir"""
+        return list(x for x in self.packages_dir.iterdir() if x.is_dir())
+
+    @cached_property
     def root_dir(self) -> pathlib.Path:
         return self.src.parent
 

@@ -16,9 +16,11 @@ class SourceParser(BaseParser):
     """Parse by source code"""
 
     def __init__(
-        self, targets: typing.Dict[str, PackTarget], root_dir: pathlib.Path
+        self,
+        root_dir: pathlib.Path,
+        targets: typing.Dict[str, PackTarget] = None,
     ):
-        super().__init__(targets, root_dir)
+        super().__init__(root_dir, targets)
 
         self.entries: typing.Dict[str, pathlib.Path] = {}
         self.builtins = get_builtin_lib_repo()
@@ -50,7 +52,6 @@ class SourceParser(BaseParser):
             content = "".join(f.readlines())
 
         tree = ast.parse(content, filename=filepath)
-
         local_entries = {_.stem: _ for _ in filepath.parent.iterdir()}
         self.entries.update(local_entries)
         for entry in self.entries.values():

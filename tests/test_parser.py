@@ -4,9 +4,7 @@ from tests.utils import DIR_EXAMPLES
 
 class TestSourceParser:
     def test_ex01(self):
-        parser = SourceParser(
-            targets={}, root_dir=DIR_EXAMPLES / "ex01_helloworld_console"
-        )
+        parser = SourceParser(root_dir=DIR_EXAMPLES / "ex01_helloworld_console")
         parser.parse(
             DIR_EXAMPLES
             / "ex01_helloworld_console"
@@ -20,7 +18,7 @@ class TestSourceParser:
 
     def test_ex02(self):
         root_dir = DIR_EXAMPLES / "ex02_tkinter"
-        parser = SourceParser(targets={}, root_dir=root_dir)
+        parser = SourceParser(root_dir=root_dir)
         parser.parse(root_dir / "ex02_tkinter.py")
         assert "ex02_tkinter" in parser.targets.keys()
 
@@ -30,9 +28,7 @@ class TestSourceParser:
         assert target.extra == {"tkinter"}
 
     def test_ex03(self):
-        parser = SourceParser(
-            targets={}, root_dir=DIR_EXAMPLES / "ex03_pyside2_simple"
-        )
+        parser = SourceParser(root_dir=DIR_EXAMPLES / "ex03_pyside2_simple")
         parser.parse(
             DIR_EXAMPLES / "ex03_pyside2_simple" / "ex03_pyside2_simple.py"
         )

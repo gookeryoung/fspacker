@@ -1,3 +1,4 @@
+import os
 import pathlib
 
 from fspacker.utils.libs import get_lib_depends, get_lib_name, unpack_zipfile
@@ -63,11 +64,7 @@ class TestUtilsWheel:
 
     def test_re_download_wheel(self):
         remove_wheel("python-docx")
-        lib_file = download_wheel("python-docx")
-        lib_name = get_lib_name(lib_file)
-
-        assert "python_docx" in lib_file.stem
-        assert "python-docx" == lib_name
+        self.test_download_wheel()
 
 
 class TestUrl:
@@ -84,7 +81,4 @@ class TestUrl:
                 fastest_embed_url=None,
             )
         )
-        pip_url = get_fastest_pip_url()
-        embed_url = get_fastest_embed_url()
-        assert "aliyun" in pip_url
-        assert "huawei" in embed_url
+        self.test_get_fastest_urls_from_json()

@@ -21,8 +21,8 @@ class Processor:
         self.root = root_dir
         self.file = file
         self.parsers = dict(
-            source=SourceParser(self.targets, root_dir),
-            folder=FolderParser(self.targets, root_dir),
+            source=SourceParser(root_dir, self.targets),
+            folder=FolderParser(root_dir, self.targets),
         )
         self.packers = dict(
             base=BasePacker(),

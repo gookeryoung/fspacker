@@ -4,6 +4,8 @@ import shutil
 
 import pytest
 
+CWD = pathlib.Path(__file__).parent
+DIR_EXAMPLES = CWD.parent / "examples"
 TEST_CACHE_DIR = pathlib.Path.home() / "test-cache"
 TEST_LIB_DIR = pathlib.Path.home() / "test-libs"
 
@@ -26,3 +28,8 @@ def clear_cache():
             shutil.rmtree(dir_)
 
     print(f"\nClear cache and libs")
+
+
+@pytest.fixture
+def ex02():
+    return DIR_EXAMPLES / "ex02_tkinter"
