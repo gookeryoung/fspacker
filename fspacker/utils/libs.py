@@ -1,4 +1,6 @@
+import logging
 import pathlib
+import subprocess
 import typing
 
 import pkginfo
@@ -25,3 +27,21 @@ def get_lib_depends(filepath: pathlib.Path) -> typing.Set[str]:
         return set(list(x.split(" ")[0] for x in meta_data.requires_dist))
     else:
         raise ValueError(f"No requires for {filepath}")
+
+
+def unpack_zipfile(filepath: pathlib.Path, dest_dir: pathlib.Path):
+    logging.info(f"Unpacking zip file [{filepath.name}] -> [{dest_dir}]")
+    subprocess.call(
+        [
+            "python",
+            "-m",
+            "pip",
+            "install",
+            str(filepath),
+            "-t",
+            str(dest_dir),
+            "--no-index",
+            "--find-links",
+            str(filepath.parent),
+        ],
+    )

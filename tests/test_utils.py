@@ -1,14 +1,16 @@
-from fspacker.utils.libs import get_lib_depends, get_lib_name
+import pathlib
+
+from fspacker.utils.libs import get_lib_depends, get_lib_name, unpack_zipfile
+from fspacker.utils.persist import update_json_values
 from fspacker.utils.url import (
     get_fastest_embed_url,
     get_fastest_pip_url,
 )
 from fspacker.utils.wheel import download_wheel, remove_wheel
-from fspacker.utils.persist import update_json_values
 
 
 class TestUtilsLibs:
-    LIBS = [
+    LIB_NAMES = [
         "orderedset",
         "python-docx",
         "PyYAML",
@@ -17,49 +19,55 @@ class TestUtilsLibs:
     ]
 
     def test_get_lib_name(self):
-        for libname in self.LIBS:
-            filepath = download_wheel(libname)
-            parse_name = get_lib_name(filepath)
+        for lib_name in self.LIB_NAMES:
+            lib_file = download_wheel(lib_name)
+            parse_name = get_lib_name(lib_file)
 
-            assert parse_name == libname
+            assert parse_name == lib_name
 
     def test_get_lib_name_fail(self):
         try:
-            libname = get_lib_name(filepath=None)
+            lib_name = get_lib_name(filepath=None)
         except ValueError:
             pass
         else:
-            assert libname is None
+            assert lib_name is None
 
     def test_get_lib_depends(self):
-        filepath = download_wheel("python-docx")
-        requires = get_lib_depends(filepath)
+        lib_file = download_wheel("python-docx")
+        requires = get_lib_depends(lib_file)
         assert requires == {"lxml", "typing-extensions"}
 
     def test_get_lib_depends_fail(self):
         try:
-            libname = get_lib_depends(filepath=None)
+            lib_name = get_lib_depends(filepath=None)
         except ValueError:
             pass
         else:
-            assert libname is None
+            assert lib_name is None
+
+    def test_unpack_zipfile(self, tmpdir):
+        lib_file = download_wheel("orderedset")
+        unpack_zipfile(lib_file, tmpdir)
+        tmp_folder = pathlib.Path(tmpdir) / "orderedset"
+        assert tmp_folder.is_dir()
 
 
 class TestUtilsWheel:
     def test_download_wheel(self):
-        filepath = download_wheel("python-docx")
-        libname = get_lib_name(filepath)
+        lib_file = download_wheel("python-docx")
+        lib_name = get_lib_name(lib_file)
 
-        assert "python_docx" in filepath.stem
-        assert "python-docx" == libname
+        assert "python_docx" in lib_file.stem
+        assert "python-docx" == lib_name
 
     def test_re_download_wheel(self):
         remove_wheel("python-docx")
-        filepath = download_wheel("python-docx")
-        libname = get_lib_name(filepath)
+        lib_file = download_wheel("python-docx")
+        lib_name = get_lib_name(lib_file)
 
-        assert "python_docx" in filepath.stem
-        assert "python-docx" == libname
+        assert "python_docx" in lib_file.stem
+        assert "python-docx" == lib_name
 
 
 class TestUrl:
