@@ -31,7 +31,7 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
         )
         for lib_file in lib_files:
             info = LibraryInfo.from_filepath(lib_file)
-            __libs_repo.setdefault(info.meta_data.name, info)
+            __libs_repo.setdefault(info.meta_data.name.lower(), info)
         logging.info(f"Fetching local library, total: [{len(lib_files)}]")
 
     return __libs_repo

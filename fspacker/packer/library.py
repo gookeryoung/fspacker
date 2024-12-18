@@ -18,7 +18,7 @@ __all__ = [
 
 
 class LibraryPacker(BasePacker):
-    MAX_DEPEND_DEPTH = 1
+    MAX_DEPEND_DEPTH = 0
 
     def __init__(self):
         super().__init__()
@@ -50,9 +50,9 @@ class LibraryPacker(BasePacker):
             lib_depends = get_lib_meta_depends(filepath)
             target.depends.libs |= lib_depends
 
-            # if depth <= self.MAX_DEPEND_DEPTH:
-            #     for lib_depend in lib_depends:
-            #         self._update_lib_depends(lib_depend, target, depth + 1)
+            if depth <= self.MAX_DEPEND_DEPTH:
+                for lib_depend in lib_depends:
+                    self._update_lib_depends(lib_depend, target, depth + 1)
 
     def pack(self, target: PackTarget):
         for lib in set(target.libs):
@@ -70,7 +70,7 @@ class LibraryPacker(BasePacker):
 
         logging.info("Start packing with default")
         for lib in target.libs:
-            real_libname = map_libname(lib)
+            real_libname = map_libname(lib).lower()
             if real_libname in self.libs_repo.keys():
                 self.SPECS["default"].pack(real_libname, target=target)
             else:
