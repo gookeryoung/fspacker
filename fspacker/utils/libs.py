@@ -14,9 +14,9 @@ def get_zip_meta_data(filepath: pathlib.Path) -> typing.Tuple[str, str]:
         name, version = filepath.name.rsplit("-", 1)
     else:
         logging.error(f"[!!!] Lib file [{filepath.name}] not valid")
-        name, version = None, None
+        name, version = "", ""
 
-    return name, version
+    return name.lower(), version.lower()
 
 
 def get_lib_meta_name(filepath: pathlib.Path) -> str:
