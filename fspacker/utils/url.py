@@ -5,8 +5,8 @@ import typing
 import requests
 
 from fspacker.config import EMBED_URL_PREFIX, PIP_URL_PREFIX
-from fspacker.utils.persist import get_json_value, update_json_values
 from fspacker.utils.performance import perf_tracker
+from fspacker.utils.persist import get_json_value, update_json_values
 
 __all__ = [
     "get_fastest_embed_url",

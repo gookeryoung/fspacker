@@ -37,7 +37,7 @@ class PerformanceTracker:
         if cls.global_start_time is not None and cls.debug_mode:
             cls.update_total_time()
             logging.debug(
-                f"{'-'*20}Summary{'-'*20}\n[*] Total application runtime: {cls.total_time:.6f} seconds."
+                f"{'-' * 20}Summary{'-' * 20}\n[*] Total application runtime: {cls.total_time:.6f} seconds."
             )
             for func_name, elapsed_time in cls.function_times.items():
                 percentage = (

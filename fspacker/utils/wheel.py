@@ -1,16 +1,15 @@
 import logging
 import pathlib
 import re
-import shutil
 import subprocess
 import typing
 import zipfile
 from urllib.parse import urlparse
 
 from fspacker.config import LIBS_REPO_DIR
+from fspacker.utils.performance import perf_tracker
 from fspacker.utils.repo import get_libs_repo
 from fspacker.utils.url import get_fastest_pip_url
-from fspacker.utils.performance import perf_tracker
 
 
 @perf_tracker
@@ -21,6 +20,9 @@ def unpack_wheel(
     excludes: typing.Set[str],
 ) -> None:
     """Unpack wheel file into destination directory."""
+    if (dest_dir / libname).exists():
+        logging.info(f"Lib [{libname}] already unpacked, skip")
+        return
 
     info = get_libs_repo().get(libname)
     if info is not None:
@@ -29,9 +31,9 @@ def unpack_wheel(
         )
 
         # No rules, fast unpacking
-        if not len(excludes) and not len(patterns):
-            shutil.unpack_archive(info.filepath, dest_dir, "zip")
-            return
+        # if not len(excludes) and not len(patterns):
+        #     shutil.unpack_archive(info.filepath, dest_dir, "zip")
+        #     return
 
         # No exclude rules
         if not len(excludes):

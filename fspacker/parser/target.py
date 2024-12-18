@@ -1,11 +1,10 @@
 import dataclasses
 import pathlib
+import string
 import typing
 from functools import cached_property
-import string
 
 __all__ = ["Dependency", "PackTarget"]
-
 
 TARGET_TEMPLATE = string.Template("""
     src : [ ${SRC} ]

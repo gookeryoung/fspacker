@@ -1,8 +1,7 @@
 import logging
 import pathlib
-import time
 import typing
-import pkginfo
+
 import stdlib_list
 
 from fspacker.common import LibraryInfo
