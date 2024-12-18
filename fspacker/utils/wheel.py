@@ -35,14 +35,10 @@ def unpack_wheel(
         #     shutil.unpack_archive(info.filepath, dest_dir, "zip")
         #     return
 
-        # No exclude rules
-        if not len(excludes):
-            excludes = {
-                "dist-info/",
-            }
-
-        compiled_excludes = [re.compile(f".*{e}") for e in excludes]
-        compiled_patterns = [re.compile(f".*{p}") for p in patterns]
+        compiled_excludes = list(
+            re.compile(f".*{e}") for e in set(excludes) | {"dist-info/"}
+        )
+        compiled_patterns = list(re.compile(f".*{p}") for p in patterns)
 
         with zipfile.ZipFile(info.filepath, "r") as zip_ref:
             for file in zip_ref.namelist():

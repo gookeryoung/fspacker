@@ -23,20 +23,24 @@ class ChildLibSpecPacker(LibSpecPackerMixin):
         specs = {k: v for k, v in self.parent.SPECS.items() if k != lib}
 
         logging.info(f"Use [{self.__class__.__name__}] spec")
-        for libname, patterns in self.PATTERNS.items():
-            if libname in target.lib_folders:
-                logging.info(f"Lib [{libname}] already packed, skipping")
-                continue
-
-            if libname in specs:
-                specs[libname].pack(libname, target=target)
-            else:
-                unpack_wheel(
-                    libname.lower(),
-                    target.packages_dir,
-                    patterns,
-                    self.EXCLUDES.setdefault(libname, set()),
-                )
+        if len(self.PATTERNS):
+            for libname, patterns in self.PATTERNS.items():
+                if libname in specs:
+                    specs[libname].pack(libname, target=target)
+                else:
+                    unpack_wheel(
+                        libname.lower(),
+                        target.packages_dir,
+                        patterns,
+                        self.EXCLUDES.setdefault(libname, set()),
+                    )
+        else:
+            unpack_wheel(
+                lib,
+                target.packages_dir,
+                self.PATTERNS,
+                self.EXCLUDES.setdefault(lib, set()),
+            )
 
 
 class DefaultLibrarySpecPacker(LibSpecPackerMixin):

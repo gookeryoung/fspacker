@@ -31,6 +31,7 @@ class PygamePacker(ChildLibSpecPacker):
             "pygame/docs/",
             "pygame/examples/",
             "pygame/tests/",
+            "data/"
         },
     )
 
