@@ -25,6 +25,16 @@ class PySide2Packer(ChildLibSpecPacker):
     )
 
 
+class PygamePacker(ChildLibSpecPacker):
+    EXCLUDES = dict(
+        pygame={
+            "pygame/docs/",
+            "pygame/examples/",
+            "pygame/tests/",
+        },
+    )
+
+
 class TkinterPacker(ChildLibSpecPacker):
     def pack(self, lib: str, target: PackTarget):
         if "tkinter" in target.extra:

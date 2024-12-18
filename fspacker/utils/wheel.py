@@ -55,8 +55,8 @@ def unpack_wheel(
                         continue
                     else:
                         continue
-                else:
-                    zip_ref.extract(file, dest_dir)
+
+                zip_ref.extract(file, dest_dir)
 
 
 @perf_tracker

@@ -2,7 +2,11 @@ import logging
 
 from fspacker.packer.base import BasePacker
 from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
-from fspacker.packer.libspec.gui import PySide2Packer, TkinterPacker
+from fspacker.packer.libspec.gui import (
+    PySide2Packer,
+    PygamePacker,
+    TkinterPacker,
+)
 from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
     TorchSpecPacker,
@@ -27,6 +31,7 @@ class LibraryPacker(BasePacker):
             default=DefaultLibrarySpecPacker(),
             # gui
             pyside2=PySide2Packer(self),
+            pygame=PygamePacker(self),
             tkinter=TkinterPacker(self),
             # sci
             matplotlib=MatplotlibSpecPacker(self),
@@ -50,9 +55,9 @@ class LibraryPacker(BasePacker):
             lib_depends = get_lib_meta_depends(filepath)
             target.depends.libs |= lib_depends
 
-            if depth <= self.MAX_DEPEND_DEPTH:
-                for lib_depend in lib_depends:
-                    self._update_lib_depends(lib_depend, target, depth + 1)
+            # if depth <= self.MAX_DEPEND_DEPTH:
+            #     for lib_depend in lib_depends:
+            #         self._update_lib_depends(lib_depend, target, depth + 1)
 
     def pack(self, target: PackTarget):
         for lib in set(target.libs):
