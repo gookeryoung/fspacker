@@ -1,5 +1,6 @@
 import atexit
 import logging
+import os
 import time
 from functools import wraps
 from threading import Lock
@@ -12,6 +13,7 @@ class PerformanceTracker:
     function_times = {}
     total_time = 0.0
     lock = Lock()
+    debug_mode = False
 
     @classmethod
     def initialize(cls):
@@ -19,6 +21,11 @@ class PerformanceTracker:
             cls.global_start_time = time.perf_counter()
             cls.function_times = {}
             cls.total_time = 0.0
+            cls.debug_mode = os.getenv("DEBUG", "False").lower() in (
+                "true",
+                "1",
+                "t",
+            )
 
     @classmethod
     def update_total_time(cls):
@@ -27,7 +34,7 @@ class PerformanceTracker:
 
     @classmethod
     def finalize(cls):
-        if cls.global_start_time is not None:
+        if cls.global_start_time is not None and cls.debug_mode:
             cls.update_total_time()
             logging.debug(
                 f"{'-'*20}Summary{'-'*20}\n[*] Total application runtime: {cls.total_time:.6f} seconds."
@@ -51,25 +58,28 @@ def perf_tracker(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        elapsed_time = end_time - start_time
+        if PerformanceTracker.debug_mode:
+            start_time = time.perf_counter()
+            result = func(*args, **kwargs)
+            end_time = time.perf_counter()
+            elapsed_time = end_time - start_time
 
-        with PerformanceTracker.lock:
-            func_name = f"{func.__module__}.{func.__name__}"
-            PerformanceTracker.function_times[func_name] = (
-                PerformanceTracker.function_times.get(func_name, 0)
-                + elapsed_time
-            )
+            with PerformanceTracker.lock:
+                func_name = f"{func.__module__}.{func.__name__}"
+                PerformanceTracker.function_times[func_name] = (
+                    PerformanceTracker.function_times.get(func_name, 0)
+                    + elapsed_time
+                )
 
-        PerformanceTracker.update_total_time()
-        total_time = PerformanceTracker.total_time
-        if total_time > 0:
-            percentage = (elapsed_time / total_time) * 100
-            logging.debug(
-                f"Function '{func_name}' took {elapsed_time:.6f} seconds ({percentage:.2f}% of total runtime)."
-            )
+            PerformanceTracker.update_total_time()
+            total_time = PerformanceTracker.total_time
+            if total_time > 0:
+                percentage = (elapsed_time / total_time) * 100
+                logging.debug(
+                    f"Function '{func_name}' took {elapsed_time:.6f} seconds ({percentage:.2f}% of total runtime)."
+                )
+        else:
+            result = func(*args, **kwargs)
 
         return result
 

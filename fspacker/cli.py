@@ -1,9 +1,8 @@
 import argparse
 import logging
+import os
 import pathlib
 import time
-
-from fspacker.process import Processor
 
 
 def main():
@@ -55,6 +54,7 @@ def main():
         return
 
     if show_debug:
+        os.environ["DEBUG"] = "true"
         logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
     else:
         logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
@@ -67,6 +67,8 @@ def main():
     t0 = time.perf_counter()
     logging.info(f"Start packing, mode: [{'' if zip_mode else 'No-'}Zip]")
     logging.info(f"Source root directory: [{directory}]")
+
+    from fspacker.process import Processor
 
     processor = Processor(directory, file)
     processor.run()
