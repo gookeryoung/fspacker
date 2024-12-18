@@ -7,7 +7,7 @@ import stdlib_list
 
 from fspacker.common import LibraryInfo
 from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT, LIBNAME_MAPPER
-from fspacker.utils.performance import perf_timer
+from fspacker.utils.performance import perf_tracker
 
 __libs_repo: typing.Dict[str, LibraryInfo] = {}
 __builtin_lib_repo: typing.Set[str] = set()
@@ -20,7 +20,7 @@ __all__ = [
 ]
 
 
-@perf_timer
+@perf_tracker
 def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
     global __libs_repo
 
@@ -38,14 +38,14 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
     return __libs_repo
 
 
-@perf_timer
+@perf_tracker
 def update_libs_repo(lib: str, filepath: pathlib.Path) -> None:
     libs_repo = get_libs_repo()
     libs_repo[lib] = LibraryInfo.from_filepath(filepath)
     logging.info(f"Update libs repo: {libs_repo[lib]}")
 
 
-@perf_timer
+@perf_tracker
 def get_builtin_lib_repo() -> typing.Set[str]:
     """Analyse and return names of built-in libraries"""
 

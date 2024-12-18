@@ -5,8 +5,6 @@ import time
 
 from fspacker.process import Processor
 
-logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -31,8 +29,7 @@ def main():
     )
     parser.add_argument(
         "--debug",
-        type=bool,
-        default=False,
+        action="store_true",
         help="Debug mode, show detail information",
     )
     parser.add_argument(
@@ -49,12 +46,18 @@ def main():
     zip_mode = args.zip
     directory = pathlib.Path(args.directory)
     show_version = args.version
+    show_debug = args.debug
 
     if show_version:
         from fspacker import __version__
 
         logging.info(f"fspacker {__version__}")
         return
+
+    if show_debug:
+        logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
+    else:
+        logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
 
     if not directory.exists():
         logging.info(f"Directory [{directory}] doesn't exist")
