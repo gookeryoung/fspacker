@@ -1,5 +1,6 @@
 import logging
 import pathlib
+import re
 import subprocess
 import typing
 
@@ -9,7 +10,7 @@ import pkginfo
 def get_zip_meta_data(filepath: pathlib.Path) -> typing.Tuple[str, str]:
     if filepath.suffix == ".whl":
         name, version, *others = filepath.name.split("-")
-    elif filepath.suffix == ".tar.gz":
+    elif filepath.suffix == ".gz":
         name, version = filepath.name.rsplit("-", 1)
     else:
         logging.error(f"[!!!] Lib file [{filepath.name}] not valid")
@@ -36,7 +37,12 @@ def get_lib_meta_depends(filepath: pathlib.Path) -> typing.Set[str]:
     """Get requires dist of lib file"""
     meta_data = pkginfo.get_metadata(str(filepath))
     if hasattr(meta_data, "requires_dist"):
-        return set(list(x.split(" ")[0] for x in meta_data.requires_dist))
+        return set(
+            list(
+                re.split(r"[;<>!=()\[~]", x)[0].strip()
+                for x in meta_data.requires_dist
+            )
+        )
     else:
         raise ValueError(f"No requires for {filepath}")
 

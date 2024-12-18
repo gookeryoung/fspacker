@@ -42,7 +42,7 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
 def update_libs_repo(lib: str, filepath: pathlib.Path) -> None:
     libs_repo = get_libs_repo()
     libs_repo[lib] = LibraryInfo.from_filepath(filepath)
-    logging.info(f"Update libs repo: {libs_repo[lib]}")
+    logging.info(f"Update libs repo: [{libs_repo[lib]}]")
 
 
 @perf_tracker

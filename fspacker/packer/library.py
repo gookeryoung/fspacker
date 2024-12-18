@@ -8,9 +8,9 @@ from fspacker.packer.libspec.sci import (
     TorchSpecPacker,
 )
 from fspacker.parser.target import PackTarget
+from fspacker.utils.libs import get_lib_meta_depends
 from fspacker.utils.repo import get_libs_repo, update_libs_repo, map_libname
 from fspacker.utils.wheel import download_wheel
-from fspacker.utils.libs import get_lib_meta_depends
 
 __all__ = [
     "LibraryPacker",
@@ -18,6 +18,8 @@ __all__ = [
 
 
 class LibraryPacker(BasePacker):
+    MAX_DEPEND_DEPTH = 0
+
     def __init__(self):
         super().__init__()
 
@@ -30,22 +32,30 @@ class LibraryPacker(BasePacker):
             matplotlib=MatplotlibSpecPacker(self),
             torch=TorchSpecPacker(self),
         )
+        self.libs_repo = get_libs_repo()
+
+    def _update_lib_depends(
+        self, lib_name: str, target: PackTarget, depth: int = 0
+    ):
+        lib_info = self.libs_repo.get(lib_name)
+        if lib_info is None:
+            filepath = download_wheel(lib_name)
+            if filepath and filepath.exists():
+                update_libs_repo(lib_name, filepath)
+        else:
+            filepath = lib_info.filepath
+
+        if filepath and filepath.exists():
+            lib_depends = get_lib_meta_depends(filepath)
+            target.depends.libs |= lib_depends
+
+            if depth <= self.MAX_DEPEND_DEPTH:
+                for lib_depend in lib_depends:
+                    self._update_lib_depends(lib_depend, target, depth + 1)
 
     def pack(self, target: PackTarget):
-        libs_repo = get_libs_repo()
-
         for lib in set(target.libs):
-            lib = map_libname(lib)
-            lib_info = libs_repo.get(lib)
-            if lib_info is None:
-                filepath = download_wheel(lib)
-                if filepath.exists():
-                    update_libs_repo(lib, filepath)
-            else:
-                filepath = lib_info.filepath
-
-            ast_tree = get_lib_meta_depends(filepath)
-            target.depends.libs |= ast_tree
+            self._update_lib_depends(lib, target)
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")
@@ -60,7 +70,7 @@ class LibraryPacker(BasePacker):
         logging.info("Start packing with default")
         for lib in target.libs:
             real_libname = map_libname(lib)
-            if real_libname in libs_repo.keys():
+            if real_libname in self.libs_repo.keys():
                 self.SPECS["default"].pack(real_libname, target=target)
             else:
                 logging.error(
