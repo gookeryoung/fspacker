@@ -44,20 +44,20 @@ def main():
     file = pathlib.Path(args.file) if args.file else None
     zip_mode = args.zip
     directory = pathlib.Path(args.directory)
-    show_version = args.version
     show_debug = args.debug
-
-    if show_version:
-        from fspacker import __version__
-
-        logging.info(f"fspacker {__version__}")
-        return
+    show_version = args.version
 
     if show_debug:
         os.environ["DEBUG"] = "true"
         logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
     else:
         logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
+
+    if show_version:
+        from fspacker import __version__
+
+        logging.info(f"fspacker {__version__}")
+        return
 
     if not directory.exists():
         logging.info(f"Directory [{directory}] doesn't exist")

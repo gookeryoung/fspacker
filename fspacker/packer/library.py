@@ -18,7 +18,7 @@ __all__ = [
 
 
 class LibraryPacker(BasePacker):
-    MAX_DEPEND_DEPTH = 0
+    MAX_DEPEND_DEPTH = 1
 
     def __init__(self):
         super().__init__()
@@ -35,7 +35,7 @@ class LibraryPacker(BasePacker):
         self.libs_repo = get_libs_repo()
 
     def _update_lib_depends(
-        self, lib_name: str, target: PackTarget, depth: int = 0
+        self, lib_name: str, target: PackTarget, depth: int
     ):
         lib_name = map_libname(lib_name)
         lib_info = self.libs_repo.get(lib_name)
@@ -50,13 +50,13 @@ class LibraryPacker(BasePacker):
             lib_depends = get_lib_meta_depends(filepath)
             target.depends.libs |= lib_depends
 
-            if depth <= self.MAX_DEPEND_DEPTH:
-                for lib_depend in lib_depends:
-                    self._update_lib_depends(lib_depend, target, depth + 1)
+            # if depth <= self.MAX_DEPEND_DEPTH:
+            #     for lib_depend in lib_depends:
+            #         self._update_lib_depends(lib_depend, target, depth + 1)
 
     def pack(self, target: PackTarget):
         for lib in set(target.libs):
-            self._update_lib_depends(lib, target)
+            self._update_lib_depends(lib, target, 0)
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")

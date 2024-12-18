@@ -56,6 +56,7 @@ PIP_URL_PREFIX: typing.Dict[str, str] = dict(
 # resource files and folders
 RES_ENTRIES = (
     "assets",
+    "data",
     ".qrc",
 )
 
