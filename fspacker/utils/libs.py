@@ -39,7 +39,7 @@ def get_lib_meta_depends(filepath: pathlib.Path) -> typing.Set[str]:
     if hasattr(meta_data, "requires_dist"):
         return set(
             list(
-                re.split(r"[;<>!=()\[~]", x)[0].strip()
+                re.split(r"[;<>!=()\[~.]", x)[0].strip()
                 for x in meta_data.requires_dist
             )
         )
