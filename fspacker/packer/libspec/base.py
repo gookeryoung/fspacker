@@ -48,5 +48,7 @@ class DefaultLibrarySpecPacker(LibSpecPackerMixin):
                 unpack_wheel(lib, target.packages_dir, set(), set())
             elif info.filepath.suffix == ".gz":
                 unpack_zipfile(info.filepath, target.packages_dir)
+            else:
+                logging.error(f"[!!!] Lib {lib} not found!")
         else:
             logging.info(f"Already packed, skip [{lib}]")

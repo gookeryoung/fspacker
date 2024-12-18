@@ -1,8 +1,9 @@
 import dataclasses
 import pathlib
-import re
 
 from pkginfo import Distribution
+
+from fspacker.utils.libs import get_zip_meta_data
 
 __all__ = [
     "LibraryInfo",
@@ -19,7 +20,7 @@ class LibraryInfo:
 
     @staticmethod
     def from_filepath(filepath: pathlib.Path):
-        name, version, *others = re.split(r"[-_]", filepath.stem)
+        name, version = get_zip_meta_data(filepath)
         lib_info = LibraryInfo(filepath=filepath, meta_data=Distribution())
         lib_info.meta_data.name = name
         lib_info.meta_data.version = version

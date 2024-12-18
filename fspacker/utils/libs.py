@@ -6,7 +6,19 @@ import typing
 import pkginfo
 
 
-def get_lib_name(filepath: pathlib.Path) -> str:
+def get_zip_meta_data(filepath: pathlib.Path) -> typing.Tuple[str, str]:
+    if filepath.suffix == ".whl":
+        name, version, *others = filepath.name.split("-")
+    elif filepath.suffix == ".tar.gz":
+        name, version = filepath.name.rsplit("-", 1)
+    else:
+        logging.error(f"[!!!] Lib file [{filepath.name}] not valid")
+        name, version = None, None
+
+    return name, version
+
+
+def get_lib_meta_name(filepath: pathlib.Path) -> str:
     """
     Parse lib name from filepath.
 
@@ -20,7 +32,7 @@ def get_lib_name(filepath: pathlib.Path) -> str:
         raise ValueError(f"Lib name not found in {filepath}")
 
 
-def get_lib_depends(filepath: pathlib.Path) -> typing.Set[str]:
+def get_lib_meta_depends(filepath: pathlib.Path) -> typing.Set[str]:
     """Get requires dist of lib file"""
     meta_data = pkginfo.get_metadata(str(filepath))
     if hasattr(meta_data, "requires_dist"):

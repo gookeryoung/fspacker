@@ -2,9 +2,16 @@ import dataclasses
 import pathlib
 import typing
 from functools import cached_property
-
+import string
 
 __all__ = ["Dependency", "PackTarget"]
+
+
+TARGET_TEMPLATE = string.Template("""
+    src : [ ${SRC} ]
+sources : [ ${SOURCES} ]
+   libs : [ ${LIBS} ]
+  extra : [ ${EXTRA} ]""")
 
 
 @dataclasses.dataclass
@@ -40,7 +47,14 @@ class PackTarget:
     code: str
 
     def __repr__(self):
-        return f"[src={self.src.name}, sources={self.sources}, libs={self.sources}], extra={self.extra}"
+        return TARGET_TEMPLATE.substitute(
+            dict(
+                SRC=self.src.name,
+                SOURCES=", ".join(self.depends.sources),
+                LIBS=", ".join(self.depends.libs),
+                EXTRA=", ".join(self.depends.extra),
+            )
+        )
 
     @property
     def sources(self):

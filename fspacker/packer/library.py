@@ -10,7 +10,7 @@ from fspacker.packer.libspec.sci import (
 from fspacker.parser.target import PackTarget
 from fspacker.utils.repo import get_libs_repo, update_libs_repo, map_libname
 from fspacker.utils.wheel import download_wheel
-from fspacker.utils.libs import get_lib_depends
+from fspacker.utils.libs import get_lib_meta_depends
 
 __all__ = [
     "LibraryPacker",
@@ -44,7 +44,7 @@ class LibraryPacker(BasePacker):
             else:
                 filepath = lib_info.filepath
 
-            ast_tree = get_lib_depends(filepath)
+            ast_tree = get_lib_meta_depends(filepath)
             target.depends.libs |= ast_tree
 
         logging.info(f"After updating target ast tree: {target}")
@@ -62,3 +62,7 @@ class LibraryPacker(BasePacker):
             real_libname = map_libname(lib)
             if real_libname in libs_repo.keys():
                 self.SPECS["default"].pack(real_libname, target=target)
+            else:
+                logging.error(
+                    f"[!!!] Lib [{real_libname}] for [{lib}] not found in repo"
+                )
