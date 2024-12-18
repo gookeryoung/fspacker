@@ -55,9 +55,9 @@ class LibraryPacker(BasePacker):
             lib_depends = get_lib_meta_depends(filepath)
             target.depends.libs |= lib_depends
 
-            # if depth <= self.MAX_DEPEND_DEPTH:
-            #     for lib_depend in lib_depends:
-            #         self._update_lib_depends(lib_depend, target, depth + 1)
+            if depth <= self.MAX_DEPEND_DEPTH:
+                for lib_depend in lib_depends:
+                    self._update_lib_depends(lib_depend, target, depth + 1)
 
     def pack(self, target: PackTarget):
         for lib in set(target.libs):

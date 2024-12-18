@@ -27,12 +27,7 @@ class PySide2Packer(ChildLibSpecPacker):
 
 class PygamePacker(ChildLibSpecPacker):
     EXCLUDES = dict(
-        pygame={
-            "pygame/docs/",
-            "pygame/examples/",
-            "pygame/tests/",
-            "data/"
-        },
+        pygame={"pygame/docs/", "pygame/examples/", "pygame/tests/", "data/"},
     )
 
 
