@@ -91,5 +91,3 @@ LIBNAME_MAPPER = dict(
     yaml="pyyaml",
     zstd="zstandard",
 )
-
-LIBNAME_MAPPER_REVERSE = {v: k for k, v in LIBNAME_MAPPER.items()}
