@@ -60,8 +60,4 @@ def get_builtin_lib_repo() -> typing.Set[str]:
 def map_libname(libname: str) -> str:
     if libname in LIBNAME_MAPPER:
         return LIBNAME_MAPPER[libname].replace("-", "_")
-    else:
-        libs_repo = get_libs_repo()
-        if libname in libs_repo:
-            return libname
-        return libname.replace("-", "_").replace(".", "_")
+    return libname

@@ -37,6 +37,7 @@ class LibraryPacker(BasePacker):
     def _update_lib_depends(
         self, lib_name: str, target: PackTarget, depth: int = 0
     ):
+        lib_name = map_libname(lib_name)
         lib_info = self.libs_repo.get(lib_name)
         if lib_info is None:
             filepath = download_wheel(lib_name)
