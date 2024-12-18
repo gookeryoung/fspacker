@@ -83,7 +83,9 @@ def download_wheel(libname: str) -> pathlib.Path:
         )
         lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
 
-    assert len(lib_files)
+    if not len(lib_files):
+        logging.error(f"[!!!] Download wheel [{libname}] error")
+        return None
     return lib_files[0]
 
 
