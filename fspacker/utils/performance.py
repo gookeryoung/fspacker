@@ -46,7 +46,7 @@ class PerformanceTracker:
                     else 0
                 )
                 logging.debug(
-                    f"Function '{func_name}' total time: {elapsed_time:.6f} seconds ({percentage:.2f}% of total runtime)."
+                    f"Function '{func_name}' total time: {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
                 )
             cls.global_start_time = None
 
@@ -76,7 +76,7 @@ def perf_tracker(func):
             if total_time > 0:
                 percentage = (elapsed_time / total_time) * 100
                 logging.debug(
-                    f"Function '{func_name}' took {elapsed_time:.6f} seconds ({percentage:.2f}% of total runtime)."
+                    f"Function '{func_name}' took {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
                 )
         else:
             result = func(*args, **kwargs)

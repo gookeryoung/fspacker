@@ -20,34 +20,41 @@ def unpack_wheel(
     patterns: typing.Set[str],
     excludes: typing.Set[str],
 ) -> None:
+    """Unpack wheel file into destination directory."""
+
     info = get_libs_repo().get(libname)
-
-    if info is None or not info.filepath.exists():
-        download_wheel(libname)
-
     if info is not None:
+        logging.info(
+            f"Unpacking by pattern [{info.meta_data.name}]->[{dest_dir.name}]"
+        )
+
+        # No rules, fast unpacking
+        if not len(excludes) and not len(patterns):
+            shutil.unpack_archive(info.filepath, dest_dir, "zip")
+            return
+
+        # No exclude rules
         if not len(excludes):
             excludes = {
                 "dist-info/",
             }
 
-        compiled_patterns = [re.compile(f".*{p}") for p in patterns]
         compiled_excludes = [re.compile(f".*{e}") for e in excludes]
-        logging.info(
-            f"Unpacking by pattern [{info.meta_data.name}]->[{dest_dir.name}]"
-        )
+        compiled_patterns = [re.compile(f".*{p}") for p in patterns]
+
         with zipfile.ZipFile(info.filepath, "r") as zip_ref:
             for file in zip_ref.namelist():
                 if any(e.match(file) for e in compiled_excludes):
                     continue
 
-                if len(patterns) and any(
-                    p.match(file) for p in compiled_patterns
-                ):
+                if len(patterns):
+                    if any(p.match(file) for p in compiled_patterns):
+                        zip_ref.extract(file, dest_dir)
+                        continue
+                    else:
+                        continue
+                else:
                     zip_ref.extract(file, dest_dir)
-                    continue
-
-                zip_ref.extract(file, dest_dir)
 
 
 @perf_tracker
