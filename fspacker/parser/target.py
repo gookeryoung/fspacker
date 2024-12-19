@@ -55,9 +55,6 @@ class PackTarget:
             )
         )
 
-    def __hash__(self):
-        return hash(self.src)
-
     @property
     def sources(self):
         return self.depends.sources
