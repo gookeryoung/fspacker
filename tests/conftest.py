@@ -122,7 +122,7 @@ def math_examples():
     return list(
         DIR_EXAMPLES / x
         for x in (
-            # "math_numba",
+            "math_numba",
             "math_pandas",
             "math_torch",
             "math_matplotlib",

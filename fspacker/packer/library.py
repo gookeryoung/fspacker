@@ -9,6 +9,7 @@ from fspacker.packer.libspec.gui import (
 )
 from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
+    NumbaSpecPacker,
     TorchSpecPacker,
 )
 from fspacker.parser.target import PackTarget
@@ -35,6 +36,7 @@ class LibraryPacker(BasePacker):
             tkinter=TkinterPacker(self),
             # sci
             matplotlib=MatplotlibSpecPacker(self),
+            numba=NumbaSpecPacker(self),
             torch=TorchSpecPacker(self),
         )
         self.libs_repo = get_libs_repo()

@@ -5,4 +5,4 @@ TODO:
 - [] add docs and project link
 """
 
-__version__ = "0.5.4"
+__version__ = "0.5.5"

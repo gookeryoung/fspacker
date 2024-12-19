@@ -15,6 +15,14 @@ class MatplotlibSpecPacker(ChildLibSpecPacker):
     )
 
 
+class NumbaSpecPacker(ChildLibSpecPacker):
+    PATTERNS = dict(
+        numba={"numba/", "data/"},
+        cffi=set(),
+        pycparser=set(),
+    )
+
+
 class TorchSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         torch={"functorch/", "torch/", "torchgen/"},
