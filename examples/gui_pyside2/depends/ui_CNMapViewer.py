@@ -20,6 +20,10 @@ class Ui_MainWindow(object):
         MainWindow.resize(800, 600)
         self.action_New = QAction(MainWindow)
         self.action_New.setObjectName("action_New")
+        self.actionaboutQt = QAction(MainWindow)
+        self.actionaboutQt.setObjectName("actionaboutQt")
+        self.actionTEST = QAction(MainWindow)
+        self.actionTEST.setObjectName("actionTEST")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         MainWindow.setCentralWidget(self.centralwidget)
@@ -41,6 +45,8 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_Edit.menuAction())
         self.menubar.addAction(self.menu_About.menuAction())
         self.menu_File.addAction(self.action_New)
+        self.menu_Edit.addAction(self.actionTEST)
+        self.menu_About.addAction(self.actionaboutQt)
 
         self.retranslateUi(MainWindow)
 
@@ -54,6 +60,12 @@ class Ui_MainWindow(object):
         )
         self.action_New.setText(
             QCoreApplication.translate("MainWindow", "&New", None)
+        )
+        self.actionaboutQt.setText(
+            QCoreApplication.translate("MainWindow", "aboutQt", None)
+        )
+        self.actionTEST.setText(
+            QCoreApplication.translate("MainWindow", "TEST", None)
         )
         self.menu_File.setTitle(
             QCoreApplication.translate("MainWindow", "&File", None)

@@ -9,7 +9,8 @@ CWD = pathlib.Path(__file__).parent
 DIR_EXAMPLES = CWD.parent / "examples"
 
 
-def exec_dist_dir(dist_dir: pathlib.Path):
+def exec_dist_dir(project_dir: pathlib.Path):
+    dist_dir = project_dir / "dist"
     os.chdir(dist_dir)
     exe_files = list(_ for _ in dist_dir.glob("*.exe"))
 

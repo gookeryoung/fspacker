@@ -7,6 +7,8 @@ from PySide2.QtWidgets import (
     QPushButton,
 )
 
+from depends.CNMapViewer import CNMapViewer
+
 
 def main():
     app = QApplication([])
@@ -15,6 +17,8 @@ def main():
     win.setWindowTitle("pyside2 simple gui")
 
     layout = QVBoxLayout()
+    viewer = CNMapViewer()
+    layout.addWidget(viewer)
     label = QLabel("Hello, Pyside2!")
     label.setAlignment(Qt.AlignCenter)
     layout.addWidget(label)
@@ -34,3 +38,7 @@ def main():
 
     win.show()
     app.exec_()
+
+
+if __name__ == "__main__":
+    main()

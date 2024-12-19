@@ -1,9 +1,9 @@
-import os
 import pathlib
 
 from fspacker.utils.libs import (
     get_lib_meta_depends,
     get_lib_meta_name,
+    get_zip_meta_data,
     unpack_zipfile,
 )
 from fspacker.utils.persist import update_json_values
@@ -18,25 +18,36 @@ class TestUtilsLibs:
     LIB_NAMES = [
         "orderedset",
         "python-docx",
-        "PyYAML",
+        "pyyaml",
         "you-get",
         "zstandard",
     ]
 
-    def test_get_lib_name(self):
+    def test_get_lib_meta_name(self):
         for lib_name in self.LIB_NAMES:
             lib_file = download_wheel(lib_name)
             parse_name = get_lib_meta_name(lib_file)
 
             assert parse_name == lib_name
 
-    def test_get_lib_name_fail(self):
+    def test_get_lib_meta_name_fail(self):
         try:
             lib_name = get_lib_meta_name(filepath=None)
         except ValueError:
             pass
         else:
             assert lib_name is None
+
+    def test_get_zip_meta_data(self):
+        for lib_name in self.LIB_NAMES:
+            lib_file = download_wheel(lib_name)
+            name, version = get_zip_meta_data(lib_file)
+            assert name == lib_name
+
+    def test_get_zip_meta_data_fail(self):
+        name, version = get_zip_meta_data(pathlib.Path("sample_file.zip"))
+        assert name == ""
+        assert version == ""
 
     def test_get_lib_depends(self):
         lib_file = download_wheel("python-docx")

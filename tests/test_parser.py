@@ -3,37 +3,31 @@ from tests.utils import DIR_EXAMPLES
 
 
 class TestSourceParser:
-    def test_ex01(self):
-        parser = SourceParser(root_dir=DIR_EXAMPLES / "ex01_helloworld_console")
-        parser.parse(
-            DIR_EXAMPLES
-            / "ex01_helloworld_console"
-            / "ex01_helloworld_console.py"
-        )
-        assert "ex01_helloworld_console" in parser.targets.keys()
+    def test_source_parser(self):
+        parser = SourceParser(root_dir=DIR_EXAMPLES / "base_helloworld")
+        parser.parse(DIR_EXAMPLES / "base_helloworld" / "base_helloworld.py")
+        assert "base_helloworld" in parser.targets.keys()
 
-        target = parser.targets["ex01_helloworld_console"]
+        target = parser.targets["base_helloworld"]
         assert target.libs == {"lxml"}
         assert target.sources == {"modules", "module_c", "module_d", "core"}
 
     def test_ex02(self):
-        root_dir = DIR_EXAMPLES / "ex02_tkinter"
+        root_dir = DIR_EXAMPLES / "gui_tkinter"
         parser = SourceParser(root_dir=root_dir)
-        parser.parse(root_dir / "ex02_tkinter.py")
-        assert "ex02_tkinter" in parser.targets.keys()
+        parser.parse(root_dir / "gui_tkinter.py")
+        assert "gui_tkinter" in parser.targets.keys()
 
-        target = parser.targets["ex02_tkinter"]
+        target = parser.targets["gui_tkinter"]
         assert target.libs == {"yaml"}
         assert target.sources == {"modules", "config", "assets"}
         assert target.extra == {"tkinter"}
 
     def test_ex03(self):
-        parser = SourceParser(root_dir=DIR_EXAMPLES / "ex03_pyside2_simple")
-        parser.parse(
-            DIR_EXAMPLES / "ex03_pyside2_simple" / "ex03_pyside2_simple.py"
-        )
-        assert "ex03_pyside2_simple" in parser.targets.keys()
+        parser = SourceParser(root_dir=DIR_EXAMPLES / "gui_pyside2")
+        parser.parse(DIR_EXAMPLES / "gui_pyside2" / "gui_pyside2.py")
+        assert "gui_pyside2" in parser.targets.keys()
 
-        target = parser.targets["ex03_pyside2_simple"]
+        target = parser.targets["gui_pyside2"]
         assert target.libs == {"pyside2"}
         assert target.sources == set()

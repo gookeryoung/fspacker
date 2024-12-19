@@ -31,5 +31,21 @@ def clear_cache():
 
 
 @pytest.fixture
-def ex02():
-    return DIR_EXAMPLES / "ex02_tkinter"
+def base_examples():
+    return list(DIR_EXAMPLES / x for x in ("base_helloworld",))
+
+
+@pytest.fixture
+def gui_examples():
+    return list(
+        DIR_EXAMPLES / x
+        for x in (
+            "gui_tkinter",
+            "gui_pyside2",
+        )
+    )
+
+
+@pytest.fixture
+def math_examples():
+    return list(DIR_EXAMPLES / x for x in ("math_matplotlib",))
