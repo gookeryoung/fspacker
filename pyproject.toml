@@ -11,6 +11,8 @@ dependencies = [
     "stdlib-list>=0.10.0",
     "types-requests>=2.32.0.20241016",
 ]
+[project.urls]
+source = "https://gitee.com/gooker_young/fspacker"
 
 [project.scripts]
 fsp = "fspacker.cli:main"
@@ -44,6 +46,9 @@ dev-dependencies = [
     "pyyaml>=6.0.2",
     "lxml>=5.3.0",
     "ordered-set>=4.1.0",
+    # for docs
+    "sphinx>=7.1.2",
+    "sphinx-autodoc-typehints>=2.0.1",
 ]
 
 [tool.uv.sources]
@@ -70,7 +75,7 @@ priority = "primary"
 
 [tool.ruff]
 line-length = 80 # 代码最大行宽
-lint.select = [ # 选择的规则
+lint.select = [# 选择的规则
     "F",
     "E",
     "W",
