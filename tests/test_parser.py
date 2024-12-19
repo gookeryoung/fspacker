@@ -30,3 +30,12 @@ class TestSourceParser:
         target = parser.targets["gui_pyside2"]
         assert target.libs == {"pyside2"}
         assert target.sources == {"depends", "assets", "resources_rc"}
+
+    def test_math_numba(self, dir_examples):
+        parser = SourceParser(root_dir=dir_examples / "math_numba")
+        parser.parse(dir_examples / "math_numba" / "math_numba.py")
+        assert "math_numba" in parser.targets.keys()
+
+        target = parser.targets["math_numba"]
+        assert target.libs == {"numba", "numpy"}
+        assert target.sources == set()

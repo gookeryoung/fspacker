@@ -73,8 +73,6 @@ def clear_cache():
 @pytest.fixture
 def run_proc():
     def runner(args: typing.List[pathlib.Path]):
-        ret = []
-        apps = []
         for arg in args:
             if isinstance(arg, pathlib.Path):
                 proc = Processor(arg)
@@ -85,14 +83,15 @@ def run_proc():
                 exe_files = list(_ for _ in dist_dir.glob("*.exe"))
 
                 if not len(exe_files):
+                    print(f"[#] No exe file found for [{arg.name}]")
                     return False
 
                 print(f"\n[#] Running executable: [{exe_files[0].name}]")
-                apps.append(exe_files[0].name)
-                ret.append(_call_app(exe_files[0].as_posix()))
-
-        print(f"Running results: [{list(zip(apps, ret))}]")
-        return all(ret)
+                call_result = _call_app(exe_files[0].as_posix())
+                if not call_result:
+                    print(f"[#] Running failed: [{exe_files[0].name}]")
+                    return False
+        return True
 
     return runner
 
@@ -120,4 +119,12 @@ def gui_examples():
 
 @pytest.fixture
 def math_examples():
-    return list(DIR_EXAMPLES / x for x in ("math_matplotlib",))
+    return list(
+        DIR_EXAMPLES / x
+        for x in (
+            # "math_numba",
+            "math_pandas",
+            "math_torch",
+            "math_matplotlib",
+        )
+    )

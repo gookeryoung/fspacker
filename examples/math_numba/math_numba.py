@@ -27,27 +27,27 @@ def main():
         return out
 
     # Compile using Numba
-    normalsj = nb.jit(normals, nopython=True)
+    normal_sj = nb.jit(normals, nopython=True)
     # Must use state address not state with numba
     n = 10000
 
-    def numbacall():
-        return normalsj(n, state_addr)
+    def numba_call():
+        return normal_sj(n, state_addr)
 
     rg = np.random.Generator(PCG64())
 
-    def numpycall():
+    def numpy_call():
         return rg.normal(size=n)
 
     # Check that the functions work
-    r1 = numbacall()
-    r2 = numpycall()
+    r1 = numba_call()
+    r2 = numpy_call()
     assert r1.shape == (n,)
     assert r1.shape == r2.shape
 
-    t1 = timeit(numbacall, number=1000)
+    t1 = timeit(numba_call, number=1000)
     print(f"{t1:.2f} secs for {n} PCG64 (Numba/PCG64) gaussian randoms")
-    t2 = timeit(numpycall, number=1000)
+    t2 = timeit(numpy_call, number=1000)
     print(f"{t2:.2f} secs for {n} PCG64 (NumPy/PCG64) gaussian randoms")
 
     # example 2
@@ -73,12 +73,12 @@ def main():
     print(bounded_uint(323, 2394691, ctypes_state.value))
 
     @nb.jit(nopython=True)
-    def bounded_uints(lb, ub, n, state):
+    def bounded_u_ints(lb, ub, n, state):
         out = np.empty(n, dtype=np.uint32)
         for i in range(n):
             out[i] = bounded_uint(lb, ub, state)
 
-    bounded_uints(323, 2394691, 10000000, ctypes_state.value)
+    bounded_u_ints(323, 2394691, 10000000, ctypes_state.value)
 
 
 if __name__ == "__main__":
