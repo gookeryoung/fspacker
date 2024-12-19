@@ -10,6 +10,7 @@ import pkginfo
 def get_zip_meta_data(filepath: pathlib.Path) -> typing.Tuple[str, str]:
     if filepath.suffix == ".whl":
         name, version, *others = filepath.name.split("-")
+        name = name.replace("_", "-")
     elif filepath.suffix == ".gz":
         name, version = filepath.name.rsplit("-", 1)
     else:
@@ -28,7 +29,7 @@ def get_lib_meta_name(filepath: pathlib.Path) -> str:
     """
     meta_data = pkginfo.get_metadata(str(filepath))
     if hasattr(meta_data, "name"):
-        return meta_data.name
+        return meta_data.name.lower()
     else:
         raise ValueError(f"Lib name not found in {filepath}")
 
