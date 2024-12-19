@@ -1,13 +1,13 @@
+from depends.CNMapViewer import CNMapViewer
 from PySide2.QtCore import Qt
+from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import (
     QApplication,
-    QWidget,
-    QVBoxLayout,
     QLabel,
     QPushButton,
+    QVBoxLayout,
+    QWidget,
 )
-
-from depends.CNMapViewer import CNMapViewer
 
 
 def main():
@@ -15,6 +15,7 @@ def main():
 
     win = QWidget()
     win.setWindowTitle("pyside2 simple gui")
+    win.setWindowIcon(QIcon(":/assets/icons/remove.ico"))
 
     layout = QVBoxLayout()
     viewer = CNMapViewer()

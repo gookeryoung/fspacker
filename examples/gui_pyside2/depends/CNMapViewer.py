@@ -1,6 +1,6 @@
+from depends.ui_CNMapViewer import Ui_MainWindow
 from PySide2.QtGui import QFont
 from PySide2.QtWidgets import QMainWindow, QMessageBox
-from depends.ui_CNMapViewer import Ui_MainWindow
 
 
 class CNMapViewer(QMainWindow, Ui_MainWindow):

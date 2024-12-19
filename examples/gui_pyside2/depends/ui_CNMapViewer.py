@@ -12,12 +12,15 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 
+import resources_rc
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(400, 400)
+        MainWindow.setMinimumSize(QSize(400, 400))
         self.action_New = QAction(MainWindow)
         self.action_New.setObjectName("action_New")
         self.actionaboutQt = QAction(MainWindow)
@@ -26,10 +29,14 @@ class Ui_MainWindow(object):
         self.actionTEST.setObjectName("actionTEST")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        self.label = QLabel(self.centralwidget)
+        self.label.setObjectName("label")
+        self.label.setGeometry(QRect(50, 80, 128, 128))
+        self.label.setPixmap(QPixmap(":/assets/icons/add.ico"))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
-        self.menubar.setGeometry(QRect(0, 0, 800, 22))
+        self.menubar.setGeometry(QRect(0, 0, 400, 22))
         self.menu_File = QMenu(self.menubar)
         self.menu_File.setObjectName("menu_File")
         self.menu_Edit = QMenu(self.menubar)
