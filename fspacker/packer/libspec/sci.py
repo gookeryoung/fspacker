@@ -9,6 +9,7 @@ class MatplotlibSpecPacker(ChildLibSpecPacker):
             "mpl_toolkits/",
             "pylab.py",
         },
+        six=set(),
     )
     EXCLUDES = dict(
         matplotlib={"matplotlib-.*.pth"},
@@ -18,14 +19,27 @@ class MatplotlibSpecPacker(ChildLibSpecPacker):
 class NumbaSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         numba={"numba/", "data/"},
+        importlib_metadata=set(),
         cffi=set(),
         pycparser=set(),
+        zipp=set(),
+    )
+
+
+class PandasSpecPacker(ChildLibSpecPacker):
+    PATTERNS = dict(
+        pandas=set(),
+        six=set(),
     )
 
 
 class TorchSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         torch={"functorch/", "torch/", "torchgen/"},
+        urllib3=set(),
+        chardet=set(),
+        certifi=set(),
+        idna=set(),
     )
     EXCLUDES = dict(
         torch={

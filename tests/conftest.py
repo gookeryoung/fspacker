@@ -56,6 +56,11 @@ def pytest_sessionstart(session):
     os.environ["FSPACKER_CACHE"] = str(TEST_CACHE_DIR)
     os.environ["FSPACKER_LIBS"] = str(TEST_LIB_DIR)
 
+    # clear all dist files
+    dist_folders = list(x for x in DIR_EXAMPLES.rglob("dist") if x.is_dir())
+    for dist_folder in dist_folders:
+        shutil.rmtree(dist_folder)
+
 
 def pytest_sessionfinish(session, exitstatus):
     print(f"\nClear environment, {session=}, {exitstatus=}")
@@ -115,6 +120,11 @@ def gui_examples():
             "gui_pyside2",
         )
     )
+
+
+@pytest.fixture
+def game_examples():
+    return list(DIR_EXAMPLES / x for x in ("game_pygame",))
 
 
 @pytest.fixture

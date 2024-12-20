@@ -3,7 +3,6 @@ import pathlib
 import platform
 import typing
 
-__version = "0.5.0"
 __cache_env = os.getenv("FSPACKER_CACHE")
 __libs_env = os.getenv("FSPACKER_LIBS")
 
