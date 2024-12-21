@@ -7,11 +7,16 @@ from fspacker.config import EMBED_FILE_NAME, EMBED_FILEPATH, PYTHON_VER
 from fspacker.packer.base import BasePacker
 from fspacker.parser.target import PackTarget
 from fspacker.utils.checksum import calc_checksum
-from fspacker.utils.persist import get_json_value, update_json_values
+from fspacker.utils.config import get_config_manager
 from fspacker.utils.url import get_fastest_embed_url
 
 
 class RuntimePacker(BasePacker):
+    def __init__(self):
+        super().__init__()
+
+        self._config = get_config_manager()
+
     def pack(self, target: PackTarget):
         dest = target.runtime_dir
         if (dest / "python.exe").exists():
@@ -24,8 +29,7 @@ class RuntimePacker(BasePacker):
         )
         shutil.unpack_archive(EMBED_FILEPATH, dest, "zip")
 
-    @staticmethod
-    def fetch_runtime():
+    def fetch_runtime(self):
         """Fetch runtime zip file"""
         from fspacker.config import EMBED_FILEPATH as EMBED
 
@@ -33,7 +37,7 @@ class RuntimePacker(BasePacker):
             logging.info(
                 f"Compare file [{EMBED.name}] with local config checksum"
             )
-            src_checksum = get_json_value("embed_file_checksum")
+            src_checksum = self._config["embed_file_checksum"]
             dst_checksum = calc_checksum(EMBED)
             if src_checksum == dst_checksum:
                 logging.info("Checksum matches!")
@@ -54,4 +58,4 @@ class RuntimePacker(BasePacker):
 
         checksum = calc_checksum(EMBED)
         logging.info(f"Write checksum [{checksum}] into config file")
-        update_json_values(dict(embed_file_checksum=checksum))
+        self._config["embed_file_checksum"] = checksum

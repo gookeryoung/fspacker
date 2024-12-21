@@ -1,12 +1,12 @@
 import pathlib
 
+from fspacker.utils.config import get_config_manager
 from fspacker.utils.libs import (
     get_lib_meta_depends,
     get_lib_meta_name,
     get_zip_meta_data,
     unpack_zipfile,
 )
-from fspacker.utils.persist import update_json_values
 from fspacker.utils.url import (
     get_fastest_embed_url,
     get_fastest_pip_url,
@@ -90,10 +90,7 @@ class TestUrl:
         assert "huawei" in embed_url
 
     def test_get_fastest_urls(self):
-        update_json_values(
-            dict(
-                fastest_pip_url=None,
-                fastest_embed_url=None,
-            )
-        )
+        config = get_config_manager()
+        config["fastest_pip_url"] = None
+        config["fastest_embed_url"] = None
         self.test_get_fastest_urls_from_json()
