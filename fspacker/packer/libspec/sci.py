@@ -51,6 +51,7 @@ class TorchSpecPacker(ChildLibSpecPacker):
         certifi=set(),
         chardet=set(),
         idna=set(),
+        numpy=set(),
         mpmath=set(),
         urllib3=set(),
     )

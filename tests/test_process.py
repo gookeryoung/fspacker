@@ -5,6 +5,10 @@ class TestProcess:
     def test_base_examples(self, base_examples, run_proc):
         assert run_proc(base_examples)
 
+        # run tkinter twice
+        dir_tkinter = dir_examples / "gui_tkinter"
+        assert run_proc([dir_tkinter], 1)
+
     def test_base_examples_with_tmp_cache(
         self, base_examples, run_proc, tmpdir
     ):

@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from fspacker.config import LIBS_REPO_DIR
 from fspacker.utils.performance import perf_tracker
-from fspacker.utils.repo import get_libs_repo
+from fspacker.utils.repo import get_libs_repo, get_libname
 from fspacker.utils.url import get_fastest_pip_url
 
 
@@ -63,6 +63,7 @@ def unpack_wheel(
 @perf_tracker
 def download_wheel(libname: str) -> pathlib.Path:
     """Download wheel file for lib name, if not found in lib repo."""
+    libname = get_libname(libname)
     match_name = "*".join(re.split(r"[-_]", libname))
     lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
     if not lib_files:
