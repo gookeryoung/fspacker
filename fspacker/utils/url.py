@@ -5,8 +5,8 @@ import typing
 import requests
 
 from fspacker.config import EMBED_URL_PREFIX, PIP_URL_PREFIX
+from fspacker.utils.config import get_config_manager
 from fspacker.utils.performance import perf_tracker
-from fspacker.utils.persist import get_json_value, update_json_values
 
 __all__ = [
     "get_fastest_embed_url",
@@ -44,19 +44,21 @@ def _get_fastest_url(urls: typing.Dict[str, str]) -> str:
 
 @perf_tracker
 def get_fastest_pip_url() -> str:
-    if fastest_url := get_json_value("fastest_pip_url"):
+    config = get_config_manager()
+    if fastest_url := config["fastest_pip_url"]:
         return fastest_url
     else:
         fastest_url = _get_fastest_url(PIP_URL_PREFIX)
-        update_json_values(dict(fastest_pip_url=fastest_url))
+        config["fastest_pip_url"] = fastest_url
         return fastest_url
 
 
 @perf_tracker
 def get_fastest_embed_url() -> str:
-    if fastest_url := get_json_value("fastest_embed_url"):
+    config = get_config_manager()
+    if fastest_url := config["fastest_embed_url"]:
         return fastest_url
     else:
         fastest_url = _get_fastest_url(EMBED_URL_PREFIX)
-        update_json_values(dict(fastest_embed_url=fastest_url))
+        config["fastest_embed_url"] = fastest_url
         return fastest_url

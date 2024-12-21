@@ -8,13 +8,14 @@ import typing
 import psutil
 import pytest
 
-from fspacker.config import TEST_CALL_TIMEOUT
 from fspacker.process import Processor
 
 CWD = pathlib.Path(__file__).parent
 DIR_EXAMPLES = CWD.parent / "examples"
 TEST_CACHE_DIR = pathlib.Path.home() / "test-cache"
 TEST_LIB_DIR = pathlib.Path.home() / "test-libs"
+
+TEST_CALL_TIMEOUT = 5
 
 
 def _call_app(app: str, timeout=TEST_CALL_TIMEOUT):
@@ -75,7 +76,9 @@ def pytest_sessionfinish(session, exitstatus):
 def run_proc():
     """Run processor to build example code and test if it can execute."""
 
-    def runner(args: typing.List[pathlib.Path]):
+    def runner(
+        args: typing.List[pathlib.Path], timeout: int = TEST_CALL_TIMEOUT
+    ):
         for arg in args:
             if isinstance(arg, pathlib.Path):
                 proc = Processor(arg)
@@ -90,7 +93,9 @@ def run_proc():
                     return False
 
                 print(f"\n[#] Running executable: [{exe_files[0].name}]")
-                call_result = _call_app(exe_files[0].as_posix())
+                call_result = _call_app(
+                    exe_files[0].as_posix(), timeout=timeout
+                )
                 if not call_result:
                     print(f"[#] Running failed: [{exe_files[0].name}]")
                     return False

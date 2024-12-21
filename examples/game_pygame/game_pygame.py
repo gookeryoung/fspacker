@@ -1,5 +1,4 @@
 import bisect
-import sys
 from collections import deque
 from pathlib import Path
 from random import choice
@@ -8,30 +7,25 @@ from typing import Dict, NamedTuple, Tuple
 
 import pygame as pg
 
-SnakeProps = NamedTuple(
-    "SnakeProps",
-    [
-        ("pos", Tuple[int, int]),
-        ("length", int),
-        ("direction", str),
-        ("speed", int),
-    ],
-)
 
-GameSettings = NamedTuple(
-    "GameSettings",
-    [
-        ("caption", str),  # 标题
-        ("geometry", dict),  # 窗口设置
-        ("fps", int),  # fps 设置
-        ("fontsize", Dict[str, int]),  # 字体大小
-        ("colors", Dict[str, int]),  # 颜色列表
-        ("snake_init", SnakeProps),  # 贪吃蛇初始状态
-        ("scores", Tuple[int, ...]),  # 不同等级对应分数划分点
-        ("motions", Dict[str, Tuple[int, int]]),  # 移动规则
-        ("operations", Dict[str, int]),  # 按键与方向映射关系
-    ],
-)
+class SnakeProps(NamedTuple):
+    pos: Tuple[int, int]
+    length: int
+    direction: str
+    speed: int
+
+
+class GameSettings(NamedTuple):
+    caption: str
+    geometry: dict
+    fps: int
+    fontsize: Dict[str, int]
+    colors: Dict[str, int]
+    snake_init: SnakeProps
+    scores: Tuple[int, ...]
+    motions: Dict[str, Tuple[int, int]]
+    operations: Dict[str, int]
+
 
 GS = GameSettings(
     caption="Snake Game v1.0",
@@ -254,13 +248,13 @@ class Game:
             )
 
             self.screen.blit(
-                self.ttf_large.render(f"操作提示", True, border), (535, 140)
+                self.ttf_large.render("操作提示", True, border), (535, 140)
             )
             self.screen.blit(
-                self.ttf.render(f"方向: W/A/S/D", True, info), (535, 200)
+                self.ttf.render("方向: W/A/S/D", True, info), (535, 200)
             )
             self.screen.blit(
-                self.ttf.render(f"退出: ESC", True, info), (535, 240)
+                self.ttf.render("退出: ESC", True, info), (535, 240)
             )
 
             if self.snake.grids[0] == self.food:
