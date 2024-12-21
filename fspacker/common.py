@@ -3,8 +3,6 @@ import pathlib
 
 from pkginfo import Distribution
 
-from fspacker.utils.libs import get_zip_meta_data
-
 __all__ = [
     "LibraryInfo",
 ]
@@ -20,6 +18,8 @@ class LibraryInfo:
 
     @staticmethod
     def from_filepath(filepath: pathlib.Path):
+        from fspacker.utils.libs import get_zip_meta_data
+
         name, version = get_zip_meta_data(filepath)
         lib_info = LibraryInfo(filepath=filepath, meta_data=Distribution())
         lib_info.meta_data.name = name

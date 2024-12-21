@@ -17,10 +17,13 @@ from fspacker.utils.url import get_fastest_pip_url
 def unpack_wheel(
     libname: str,
     dest_dir: pathlib.Path,
-    patterns: typing.Set[str],
-    excludes: typing.Set[str],
+    patterns: typing.Set[str] = None,
+    excludes: typing.Set[str] = None,
 ) -> None:
     """Unpack wheel file into destination directory."""
+
+    excludes = {} if excludes is None else excludes
+    patterns = {} if patterns is None else patterns
 
     if (dest_dir / libname).exists():
         logging.info(f"Lib [{libname}] already unpacked, skip")
@@ -53,6 +56,8 @@ def unpack_wheel(
                         continue
 
                 zip_ref.extract(file, dest_dir)
+    else:
+        logging.error(f"[!!!] Lib {libname} wheel not found.")
 
 
 @perf_tracker
@@ -61,7 +66,7 @@ def download_wheel(libname: str) -> pathlib.Path:
     match_name = "*".join(re.split(r"[-_]", libname))
     lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
     if not lib_files:
-        logging.warning(f"No wheel for {libname}, start downloading.")
+        logging.warning(f"No wheel for [{libname}], start downloading.")
         pip_url = get_fastest_pip_url()
         net_loc = urlparse(pip_url).netloc
         subprocess.call(
