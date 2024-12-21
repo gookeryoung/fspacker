@@ -79,6 +79,7 @@ class LibraryPacker(BasePacker):
 
         logging.info("Start packing with default")
         for lib in target.libs:
+            lib = map_libname(lib)
             if lib in self.libs_repo.keys():
                 self.SPECS["default"].pack(lib, target=target)
             else:
