@@ -15,7 +15,7 @@ __all__ = [
     "get_libs_repo",
     "update_libs_repo",
     "get_builtin_lib_repo",
-    "map_libname",
+    "get_libname",
 ]
 
 
@@ -57,11 +57,15 @@ def get_builtin_lib_repo() -> typing.Set[str]:
     return __builtin_lib_repo
 
 
-def map_libname(libname: str) -> str:
-    if libname in LIBNAME_MAPPER:
-        return LIBNAME_MAPPER[libname].replace("-", "_")
+def get_libname(libname: str) -> str:
+    libname = _map_libname(libname).lower()
+    if "_" in libname:
+        return libname.replace("_", "-")
+    return libname
 
-    if "-" in libname:
-        return libname.replace("-", "_")
+
+def _map_libname(libname: str) -> str:
+    if libname in LIBNAME_MAPPER:
+        return LIBNAME_MAPPER[libname]
 
     return libname

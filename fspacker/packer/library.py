@@ -10,11 +10,12 @@ from fspacker.packer.libspec.gui import (
 from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
     NumbaSpecPacker,
+    PandasSpecPacker,
     TorchSpecPacker,
 )
 from fspacker.parser.target import PackTarget
 from fspacker.utils.libs import get_lib_meta_depends
-from fspacker.utils.repo import get_libs_repo, update_libs_repo, map_libname
+from fspacker.utils.repo import get_libs_repo, update_libs_repo, get_libname
 from fspacker.utils.wheel import download_wheel
 
 __all__ = [
@@ -37,6 +38,7 @@ class LibraryPacker(BasePacker):
             # sci
             matplotlib=MatplotlibSpecPacker(self),
             numba=NumbaSpecPacker(self),
+            pandas=PandasSpecPacker(self),
             torch=TorchSpecPacker(self),
         )
         self.libs_repo = get_libs_repo()
@@ -44,7 +46,7 @@ class LibraryPacker(BasePacker):
     def _update_lib_depends(
         self, lib_name: str, target: PackTarget, depth: int
     ):
-        lib_name = map_libname(lib_name)
+        lib_name = get_libname(lib_name)
         lib_info = self.libs_repo.get(lib_name)
         if lib_info is None:
             filepath = download_wheel(lib_name)
@@ -57,9 +59,9 @@ class LibraryPacker(BasePacker):
             lib_depends = get_lib_meta_depends(filepath)
             target.depends.libs |= lib_depends
 
-            if depth <= self.MAX_DEPEND_DEPTH:
-                for lib_depend in lib_depends:
-                    self._update_lib_depends(lib_depend, target, depth + 1)
+            # if depth <= self.MAX_DEPEND_DEPTH:
+            #     for lib_depend in lib_depends:
+            #         self._update_lib_depends(lib_depend, target, depth + 1)
 
     def pack(self, target: PackTarget):
         for lib in set(target.libs):
@@ -77,10 +79,10 @@ class LibraryPacker(BasePacker):
 
         logging.info("Start packing with default")
         for lib in target.libs:
-            real_libname = map_libname(lib).lower()
-            if real_libname in self.libs_repo.keys():
-                self.SPECS["default"].pack(real_libname, target=target)
+            lib = get_libname(lib)
+            if lib in self.libs_repo.keys():
+                self.SPECS["default"].pack(lib, target=target)
             else:
                 logging.error(
-                    f"[!!!] Lib [{real_libname}] for [{lib}] not found in repo"
+                    f"[!!!] Lib [{lib}] for [{lib}] not found in repo"
                 )
