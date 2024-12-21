@@ -6,6 +6,12 @@ import typing
 
 import pkginfo
 
+from fspacker.common import LibraryInfo
+from fspacker.parser.target import PackTarget
+from fspacker.utils.performance import perf_tracker
+from fspacker.utils.repo import get_libs_repo, update_libs_repo
+from fspacker.utils.wheel import unpack_wheel, download_wheel
+
 
 def get_zip_meta_data(filepath: pathlib.Path) -> typing.Tuple[str, str]:
     if filepath.suffix == ".whl":
@@ -64,3 +70,25 @@ def unpack_zipfile(filepath: pathlib.Path, dest_dir: pathlib.Path):
             str(filepath.parent),
         ],
     )
+
+
+@perf_tracker
+def install_lib(
+    libname: str,
+    target: PackTarget,
+    patterns: typing.Set[str] = None,
+    excludes: typing.Set[str] = None,
+    extend_depends: bool = False,
+) -> bool:
+    info: LibraryInfo = get_libs_repo().get(libname.lower())
+    if info is None or not info.filepath.exists():
+        filepath = download_wheel(libname)
+        if filepath and filepath.exists():
+            update_libs_repo(libname, filepath)
+    else:
+        filepath = info.filepath
+        unpack_wheel(libname, target.packages_dir, patterns, excludes)
+
+    if extend_depends and filepath is not None and filepath.exists():
+        lib_depends = get_lib_meta_depends(filepath)
+        target.depends.libs |= lib_depends
