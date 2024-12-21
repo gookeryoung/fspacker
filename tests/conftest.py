@@ -18,6 +18,8 @@ TEST_LIB_DIR = pathlib.Path.home() / "test-libs"
 
 
 def _call_app(app: str, timeout=TEST_CALL_TIMEOUT):
+    """Call application and try running it in [timeout] seconds."""
+
     try:
         proc = subprocess.Popen(
             [app], stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -46,32 +48,33 @@ def _call_app(app: str, timeout=TEST_CALL_TIMEOUT):
         proc.terminate()
         return True
     except Exception as e:
-        print(f"An error occurred while trying to launch the application: {e}")
+        print(f"An error occurred while trying to launch the application: {e}.")
         return False
 
 
 def pytest_sessionstart(session):
-    """Start before pytest session"""
+    """Called before each pytest session."""
+
     print(f"\nStart environment, {session=}")
     os.environ["FSPACKER_CACHE"] = str(TEST_CACHE_DIR)
     os.environ["FSPACKER_LIBS"] = str(TEST_LIB_DIR)
 
+    # Clear all dist files before test
+    dist_folders = list(x for x in DIR_EXAMPLES.rglob("dist") if x.is_dir())
+    for dist_folder in dist_folders:
+        shutil.rmtree(dist_folder)
+
 
 def pytest_sessionfinish(session, exitstatus):
+    """Called after each pytest session."""
+
     print(f"\nClear environment, {session=}, {exitstatus=}")
 
 
 @pytest.fixture
-def clear_cache():
-    for dir_ in (TEST_CACHE_DIR, TEST_LIB_DIR):
-        if dir_.exists():
-            shutil.rmtree(dir_)
-
-    print(f"\nClear cache and libs")
-
-
-@pytest.fixture
 def run_proc():
+    """Run processor to build example code and test if it can execute."""
+
     def runner(args: typing.List[pathlib.Path]):
         for arg in args:
             if isinstance(arg, pathlib.Path):
@@ -103,7 +106,18 @@ def dir_examples():
 
 @pytest.fixture
 def base_examples():
-    return list(DIR_EXAMPLES / x for x in ("base_helloworld",))
+    return list(
+        DIR_EXAMPLES / x
+        for x in (
+            "base_helloworld",
+            "base_office",
+        )
+    )
+
+
+@pytest.fixture
+def game_examples():
+    return list(DIR_EXAMPLES / x for x in ("game_pygame",))
 
 
 @pytest.fixture
@@ -128,3 +142,8 @@ def math_examples():
             "math_matplotlib",
         )
     )
+
+
+@pytest.fixture
+def web_examples():
+    return list(DIR_EXAMPLES / x for x in ("web_bottle",))

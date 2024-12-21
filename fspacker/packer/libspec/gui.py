@@ -11,23 +11,32 @@ class PySide2Packer(ChildLibSpecPacker):
         pyside2={
             "PySide2/__init__.py",
             "PySide2/pyside2.abi3.dll",
-            "PySide2/Qt5?Core",
-            "PySide2/Qt5?Gui",
-            "PySide2/Qt5?Widgets",
-            "PySide2/Qt5?Network.dll",
-            "PySide2/Qt5?Network.py.*",
-            "PySide2/Qt5?Qml.dll",
-            "PySide2/Qt5?Qml.py.*",
-            "plugins/iconengines/qsvgicon.dll",
-            "plugins/imageformats/.*.dll",
-            "plugins/platforms/.*.dll",
+            "PySide2/QtCore.pyd",
+            "PySide2/Qt5Core.dll",
+            "PySide2/QtGui.pyd",
+            "PySide2/Qt5Gui.dll",
+            "PySide2/QtWidgets.pyd",
+            "PySide2/Qt5Widgets.dll",
+            "PySide2/QtNetwork.pyd",
+            "PySide2/Qt5Network.dll",
+            "PySide2/QtQml.pyd",
+            "PySide2/Qt5Qml.dll",
+            "*plugins/iconengines/qsvgicon.dll",
+            "*plugins/imageformats/*.dll",
+            "*plugins/platforms/*.dll",
         },
     )
 
 
 class PygamePacker(ChildLibSpecPacker):
     EXCLUDES = dict(
-        pygame={"pygame/docs/", "pygame/examples/", "pygame/tests/", "data/"},
+        pygame={
+            "pygame/docs/*",
+            "pygame/examples/*",
+            "pygame/tests/*",
+            "pygame/__pyinstaller/*",
+            "pygame*data/*",
+        },
     )
 
 
