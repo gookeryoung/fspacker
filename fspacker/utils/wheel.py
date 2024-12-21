@@ -1,3 +1,4 @@
+import fnmatch
 import logging
 import pathlib
 import re
@@ -20,6 +21,7 @@ def unpack_wheel(
     excludes: typing.Set[str],
 ) -> None:
     """Unpack wheel file into destination directory."""
+
     if (dest_dir / libname).exists():
         logging.info(f"Lib [{libname}] already unpacked, skip")
         return
@@ -35,18 +37,16 @@ def unpack_wheel(
         #     shutil.unpack_archive(info.filepath, dest_dir, "zip")
         #     return
 
-        compiled_excludes = list(
-            re.compile(f".*{e}") for e in set(excludes) | {"dist-info/"}
-        )
-        compiled_patterns = list(re.compile(f".*{p}") for p in patterns)
-
+        excludes = set(excludes) | {"*dist-info/*"}
         with zipfile.ZipFile(info.filepath, "r") as zip_ref:
             for file in zip_ref.namelist():
-                if any(e.match(file) for e in compiled_excludes):
+                if any(fnmatch.fnmatch(file, exclude) for exclude in excludes):
                     continue
 
                 if len(patterns):
-                    if any(p.match(file) for p in compiled_patterns):
+                    if any(
+                        fnmatch.fnmatch(file, pattern) for pattern in patterns
+                    ):
                         zip_ref.extract(file, dest_dir)
                         continue
                     else:
