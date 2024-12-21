@@ -116,6 +116,11 @@ def base_examples():
 
 
 @pytest.fixture
+def game_examples():
+    return list(DIR_EXAMPLES / x for x in ("game_pygame",))
+
+
+@pytest.fixture
 def gui_examples():
     return list(
         DIR_EXAMPLES / x
@@ -124,11 +129,6 @@ def gui_examples():
             "gui_pyside2",
         )
     )
-
-
-@pytest.fixture
-def game_examples():
-    return list(DIR_EXAMPLES / x for x in ("game_pygame",))
 
 
 @pytest.fixture
@@ -142,3 +142,8 @@ def math_examples():
             "math_matplotlib",
         )
     )
+
+
+@pytest.fixture
+def web_examples():
+    return list(DIR_EXAMPLES / x for x in ("web_bottle",))

@@ -20,7 +20,7 @@ class NumbaSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         numba={
             "numba/*",
-            "data/*",
+            "numba*data/*",
         },
         importlib_metadata=set(),
         cffi=set(),

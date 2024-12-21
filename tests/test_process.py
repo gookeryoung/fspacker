@@ -14,11 +14,14 @@ class TestProcess:
 
         assert run_proc(base_examples)
 
-    def test_gui_examples(self, gui_examples, run_proc):
-        assert run_proc(gui_examples)
-
     def test_game_examples(self, game_examples, run_proc):
         assert run_proc(game_examples)
 
+    def test_gui_examples(self, gui_examples, run_proc):
+        assert run_proc(gui_examples)
+
     def test_math_examples(self, math_examples, run_proc):
         assert run_proc(math_examples)
+
+    def test_web_examples(self, web_examples, run_proc):
+        assert run_proc(web_examples)
