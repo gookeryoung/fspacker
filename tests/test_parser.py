@@ -8,8 +8,14 @@ class TestSourceParser:
         assert "base_helloworld" in parser.targets.keys()
 
         target = parser.targets["base_helloworld"]
-        assert target.libs == {"lxml"}
-        assert target.sources == {"modules", "module_c", "module_d", "core"}
+        assert target.libs == {"lxml", "orderedset"}
+        assert target.sources == {
+            "modules",
+            "module_c",
+            "module_d",
+            "core",
+            "mathtools",
+        }
 
     def test_gui_tkinter(self, dir_examples):
         root_dir = dir_examples / "gui_tkinter"
