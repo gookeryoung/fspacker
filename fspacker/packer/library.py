@@ -10,6 +10,7 @@ from fspacker.packer.libspec.gui import (
 from fspacker.packer.libspec.sci import (
     MatplotlibSpecPacker,
     NumbaSpecPacker,
+    NumpySpecPacker,
     PandasSpecPacker,
     TorchSpecPacker,
 )
@@ -38,13 +39,14 @@ class LibraryPacker(BasePacker):
             # sci
             matplotlib=MatplotlibSpecPacker(self),
             numba=NumbaSpecPacker(self),
+            numpy=NumpySpecPacker(self),
             pandas=PandasSpecPacker(self),
             torch=TorchSpecPacker(self),
         )
         self.libs_repo = get_libs_repo()
 
     def _update_lib_depends(
-        self, lib_name: str, target: PackTarget, depth: int
+        self, lib_name: str, target: PackTarget, depth: int = 0
     ):
         lib_name = get_libname(lib_name)
         lib_info = self.libs_repo.get(lib_name)
@@ -65,7 +67,7 @@ class LibraryPacker(BasePacker):
 
     def pack(self, target: PackTarget):
         for lib in set(target.libs):
-            self._update_lib_depends(lib, target, 0)
+            self._update_lib_depends(lib, target)
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")
@@ -86,3 +88,4 @@ class LibraryPacker(BasePacker):
                 logging.error(
                     f"[!!!] Lib [{lib}] for [{lib}] not found in repo"
                 )
+                self._update_lib_depends(lib, target)

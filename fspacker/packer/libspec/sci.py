@@ -29,6 +29,15 @@ class NumbaSpecPacker(ChildLibSpecPacker):
     )
 
 
+class NumpySpecPacker(ChildLibSpecPacker):
+    EXCLUDES = dict(
+        numpy={
+            "numpy/_pyinstaller/*",
+            "numpy/tests/*",
+        }
+    )
+
+
 class PandasSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
         pandas=set(),
@@ -38,11 +47,12 @@ class PandasSpecPacker(ChildLibSpecPacker):
 
 class TorchSpecPacker(ChildLibSpecPacker):
     PATTERNS = dict(
-        torch={"functorch/*", "torch/*", "torchgen/*"},
-        urllib3=set(),
-        chardet=set(),
+        torch=set(),
         certifi=set(),
+        chardet=set(),
         idna=set(),
+        mpmath=set(),
+        urllib3=set(),
     )
     EXCLUDES = dict(
         torch={
