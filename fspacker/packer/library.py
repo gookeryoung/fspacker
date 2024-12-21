@@ -15,7 +15,7 @@ from fspacker.packer.libspec.sci import (
 )
 from fspacker.parser.target import PackTarget
 from fspacker.utils.libs import get_lib_meta_depends
-from fspacker.utils.repo import get_libs_repo, update_libs_repo, map_libname
+from fspacker.utils.repo import get_libs_repo, update_libs_repo, get_libname
 from fspacker.utils.wheel import download_wheel
 
 __all__ = [
@@ -46,7 +46,7 @@ class LibraryPacker(BasePacker):
     def _update_lib_depends(
         self, lib_name: str, target: PackTarget, depth: int
     ):
-        lib_name = map_libname(lib_name)
+        lib_name = get_libname(lib_name)
         lib_info = self.libs_repo.get(lib_name)
         if lib_info is None:
             filepath = download_wheel(lib_name)
@@ -79,7 +79,7 @@ class LibraryPacker(BasePacker):
 
         logging.info("Start packing with default")
         for lib in target.libs:
-            lib = map_libname(lib)
+            lib = get_libname(lib)
             if lib in self.libs_repo.keys():
                 self.SPECS["default"].pack(lib, target=target)
             else:

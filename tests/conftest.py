@@ -106,7 +106,13 @@ def dir_examples():
 
 @pytest.fixture
 def base_examples():
-    return list(DIR_EXAMPLES / x for x in ("base_helloworld",))
+    return list(
+        DIR_EXAMPLES / x
+        for x in (
+            "base_helloworld",
+            "base_office",
+        )
+    )
 
 
 @pytest.fixture
