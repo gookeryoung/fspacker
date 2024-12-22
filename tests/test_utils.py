@@ -7,6 +7,7 @@ from fspacker.utils.libs import (
     get_zip_meta_data,
     unpack_zipfile,
 )
+from fspacker.utils.performance import perf_tracker
 from fspacker.utils.url import (
     get_fastest_embed_url,
     get_fastest_pip_url,
@@ -89,6 +90,7 @@ class TestUrl:
         assert "aliyun" in pip_url
         assert "huawei" in embed_url
 
+    @perf_tracker
     def test_get_fastest_urls(self):
         config = get_config_manager()
         config["fastest_pip_url"] = None

@@ -18,7 +18,7 @@ TEST_LIB_DIR = pathlib.Path.home() / "test-libs"
 TEST_CALL_TIMEOUT = 5
 
 
-def _call_app(app: str, timeout=TEST_CALL_TIMEOUT):
+def __call_executable(app: str, timeout=TEST_CALL_TIMEOUT):
     """Call application and try running it in [timeout] seconds."""
 
     try:
@@ -53,6 +53,27 @@ def _call_app(app: str, timeout=TEST_CALL_TIMEOUT):
         return False
 
 
+def __run_project(project_dir: pathlib.Path, timeout: int = TEST_CALL_TIMEOUT):
+    proc = Processor(project_dir)
+    proc.run()
+
+    dist_dir = project_dir / "dist"
+    os.chdir(dist_dir)
+    exe_files = list(_ for _ in dist_dir.glob("*.exe"))
+
+    if not len(exe_files):
+        print(f"[#] No exe file found for [{arg.name}].")
+        return False
+
+    print(f"\n[#] Running executable: [{exe_files[0].name}].")
+    call_result = __call_executable(exe_files[0].as_posix(), timeout=timeout)
+    if not call_result:
+        print(f"[#] Running failed: [{exe_files[0].name}].")
+        return False
+
+    return True
+
+
 def pytest_sessionstart(session):
     """Called before each pytest session."""
 
@@ -69,7 +90,7 @@ def pytest_sessionstart(session):
 def pytest_sessionfinish(session, exitstatus):
     """Called after each pytest session."""
 
-    print(f"\nClear environment, {session=}, {exitstatus=}")
+    print(f"\nClear environment, {session=}, {exitstatus=}.")
 
 
 @pytest.fixture
@@ -77,29 +98,16 @@ def run_proc():
     """Run processor to build example code and test if it can execute."""
 
     def runner(
-        args: typing.List[pathlib.Path], timeout: int = TEST_CALL_TIMEOUT
+        args: typing.Union[typing.List[pathlib.Path], pathlib.Path],
+        timeout: int = TEST_CALL_TIMEOUT,
     ):
-        for arg in args:
-            if isinstance(arg, pathlib.Path):
-                proc = Processor(arg)
-                proc.run()
-
-                dist_dir = arg / "dist"
-                os.chdir(dist_dir)
-                exe_files = list(_ for _ in dist_dir.glob("*.exe"))
-
-                if not len(exe_files):
-                    print(f"[#] No exe file found for [{arg.name}]")
-                    return False
-
-                print(f"\n[#] Running executable: [{exe_files[0].name}]")
-                call_result = _call_app(
-                    exe_files[0].as_posix(), timeout=timeout
-                )
-                if not call_result:
-                    print(f"[#] Running failed: [{exe_files[0].name}]")
-                    return False
-        return True
+        if isinstance(args, pathlib.Path):
+            return __run_project(args, timeout=timeout)
+        elif isinstance(args, typing.Sequence):
+            return all([__run_project(arg, timeout=timeout) for arg in args])
+        else:
+            print(f"[#] Invalid args: [{args}].")
+            return False
 
     return runner
 
@@ -110,45 +118,50 @@ def dir_examples():
 
 
 @pytest.fixture
-def base_examples():
-    return list(
-        DIR_EXAMPLES / x
-        for x in (
-            "base_helloworld",
-            "base_office",
-        )
-    )
+def base_helloworld():
+    return DIR_EXAMPLES / "base_helloworld"
 
 
 @pytest.fixture
-def game_examples():
-    return list(DIR_EXAMPLES / x for x in ("game_pygame",))
+def base_office():
+    return DIR_EXAMPLES / "base_office"
 
 
 @pytest.fixture
-def gui_examples():
-    return list(
-        DIR_EXAMPLES / x
-        for x in (
-            "gui_tkinter",
-            "gui_pyside2",
-        )
-    )
+def game_pygame():
+    return DIR_EXAMPLES / "game_pygame"
 
 
 @pytest.fixture
-def math_examples():
-    return list(
-        DIR_EXAMPLES / x
-        for x in (
-            "math_numba",
-            "math_pandas",
-            "math_torch",
-            "math_matplotlib",
-        )
-    )
+def gui_tkinter():
+    return DIR_EXAMPLES / "gui_tkinter"
 
 
 @pytest.fixture
-def web_examples():
-    return list(DIR_EXAMPLES / x for x in ("web_bottle",))
+def gui_pyside2():
+    return DIR_EXAMPLES / "gui_pyside2"
+
+
+@pytest.fixture
+def math_matplotlib():
+    return DIR_EXAMPLES / "math_matplotlib"
+
+
+@pytest.fixture
+def math_numba():
+    return DIR_EXAMPLES / "math_numba"
+
+
+@pytest.fixture
+def math_pandas():
+    return DIR_EXAMPLES / "math_pandas"
+
+
+@pytest.fixture
+def math_torch():
+    return DIR_EXAMPLES / "math_torch"
+
+
+@pytest.fixture
+def web_bottle():
+    return DIR_EXAMPLES / "web_bottle"
