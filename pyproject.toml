@@ -56,7 +56,7 @@ fspacker = { workspace = true }
 
 [tool.poetry]
 name = "fspacker"
-version = "0.5.9"
+version = "0.6.0"
 description = "Fast & Simple Packer toolset for python."
 readme = "README.md"
 authors = ["Young <gooker_young@163.com>"]
@@ -68,6 +68,9 @@ rtoml = "^0.11.0"
 stdlib-list = "0.10.0"
 types-requests = "^2.32.0.20241016"
 pkginfo = "^1.12.0"
+
+[tool.poetry.scripts]
+fsp = "fspacker.cli:main"
 
 [[tool.poetry.source]]
 name = 'tuna'
