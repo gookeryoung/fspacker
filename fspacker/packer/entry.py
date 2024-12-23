@@ -16,6 +16,20 @@ main()
 """
 )
 
+INT_TEMPLATE_QT = string.Template(
+    """\
+import sys, os
+import PySide2
+
+qt_dir = os.path.dirname(PySide2.__file__)
+plugin_path = os.path.join(qt_dir, "plugins" , "platforms")
+os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = plugin_path
+sys.path.append(os.path.join(os.getcwd(), "src"))
+from $SRC import main
+main()
+"""
+)
+
 
 class EntryPacker(BasePacker):
     def pack(self, target: PackTarget):
@@ -43,6 +57,10 @@ class EntryPacker(BasePacker):
         logging.info(
             f"Create int file: [{name}.int]->[{dst.relative_to(root)}]"
         )
-        content = INT_TEMPLATE.substitute(SRC=f"src.{name}")
+        if {"pyside2", "pyside6", "pyqt5", "pyqt6"}.intersection(set(x.lower() for x in target.libs)):
+            content = INT_TEMPLATE_QT.substitute(SRC=f"src.{name}")
+        else:
+            content = INT_TEMPLATE.substitute(SRC=f"src.{name}")
+
         with open(dst, "w") as f:
             f.write(content)

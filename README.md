@@ -1,4 +1,4 @@
-# fspacker
+# FSPacker
 
 Fast & Simple Packer toolset for python.
 
@@ -6,10 +6,11 @@ Fast & Simple Packer toolset for python.
 
 - [x] 10-100x faster than existing deploy libs such as Py2exe, PyInstaller, Nuitka...
 - [x] Supports multi-project deployment
+- [x] Supports offline packing
 - [ ] Supports archiving with zip or 7z
 - [ ] Supports deployment with InnoSetup
 - [ ] Supports compilation with nuitka
-- [ ] Supports encryption with pyarmor
+- [ ] Supports encryption with PyArmor
 
 ## Support Platforms
 
