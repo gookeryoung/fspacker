@@ -1,15 +1,15 @@
 class TestProcess:
     def test_base_helloworld(self, base_helloworld, run_proc):
-        assert run_proc(base_helloworld, 1)
+        assert run_proc(base_helloworld)
 
     def test_base_office(self, base_office, run_proc):
-        assert run_proc(base_office, 1)
+        assert run_proc(base_office)
 
     def test_game_pygame(self, game_pygame, run_proc):
-        assert run_proc(game_pygame, 1)
+        assert run_proc(game_pygame)
 
     def test_gui_tkinter_run_twice(self, gui_tkinter, run_proc):
-        assert run_proc([gui_tkinter, gui_tkinter], 2)
+        assert run_proc([gui_tkinter, gui_tkinter])
 
     def test_gui_pyside2(self, gui_pyside2, run_proc):
         assert run_proc(gui_pyside2)
