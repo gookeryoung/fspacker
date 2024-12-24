@@ -27,4 +27,4 @@ class TestProcess:
         assert run_proc(math_torch)
 
     def test_web_bottle(self, web_bottle, run_proc):
-        assert run_proc(web_bottle, 1)
+        assert run_proc(web_bottle)
