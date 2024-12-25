@@ -57,7 +57,9 @@ class EntryPacker(BasePacker):
         logging.info(
             f"Create int file: [{name}.int]->[{dst.relative_to(root)}]"
         )
-        if {"pyside2", "pyside6", "pyqt5", "pyqt6"}.intersection(set(x.lower() for x in target.libs)):
+        if {"pyside2", "pyside6", "pyqt5", "pyqt6"}.intersection(
+            set(x.lower() for x in target.libs)
+        ):
             content = INT_TEMPLATE_QT.substitute(SRC=f"src.{name}")
         else:
             content = INT_TEMPLATE.substitute(SRC=f"src.{name}")
