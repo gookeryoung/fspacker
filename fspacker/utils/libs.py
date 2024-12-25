@@ -11,6 +11,7 @@ from fspacker.parser.target import PackTarget
 from fspacker.utils.performance import perf_tracker
 from fspacker.utils.repo import get_libs_repo, update_libs_repo
 from fspacker.utils.wheel import unpack_wheel, download_wheel
+from fspacker.utils.config import ConfigManager
 
 
 def get_zip_meta_data(filepath: pathlib.Path) -> typing.Tuple[str, str]:
@@ -82,6 +83,10 @@ def install_lib(
 ) -> bool:
     info: LibraryInfo = get_libs_repo().get(libname.lower())
     if info is None or not info.filepath.exists():
+        if ConfigManager().get("offline_mode", False):
+            logging.error(f"[!!!] Offline mode, lib [{libname}] not found")
+            return
+
         filepath = download_wheel(libname)
         if filepath and filepath.exists():
             update_libs_repo(libname, filepath)

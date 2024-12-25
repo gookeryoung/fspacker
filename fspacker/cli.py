@@ -32,6 +32,11 @@ def main():
         help="Debug mode, show detail information",
     )
     parser.add_argument(
+        "--offline",
+        action="store_true",
+        help="Offline mode, must set FSPACKER_CACHE and FSPACKER_LIBS first.",
+    )
+    parser.add_argument(
         "-d",
         "--dir",
         dest="directory",
@@ -43,6 +48,7 @@ def main():
     args = parser.parse_args()
     file = pathlib.Path(args.file) if args.file else None
     zip_mode = args.zip
+    offline_mode = args.offline
     directory = pathlib.Path(args.directory)
     show_debug = args.debug
     show_version = args.version
@@ -59,13 +65,20 @@ def main():
         logging.info(f"fspacker {__version__}")
         return
 
+    if offline_mode:
+        from fspacker.utils.config import ConfigManager
+
+        ConfigManager()["offline_mode"] = True
+
     if not directory.exists():
         logging.info(f"Directory [{directory}] doesn't exist")
         parser.print_help()
         return
 
     t0 = time.perf_counter()
-    logging.info(f"Start packing, mode: [{'' if zip_mode else 'No-'}Zip]")
+    logging.info(
+        f"Start packing, mode: [{'' if zip_mode else 'No-'}Zip], [{'Offline' if offline_mode else 'Online'}]"
+    )
     logging.info(f"Source root directory: [{directory}]")
 
     from fspacker.process import Processor

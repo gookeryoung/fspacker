@@ -9,23 +9,34 @@ from fspacker.config import CONFIG_FILEPATH
 
 __all__ = [
     "ConfigManager",
-    "get_config_manager",
 ]
 
 
 class ConfigManager(UserDict):
-    def __init__(self, config_file: pathlib.Path, default_config=None):
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+
+        return cls._instance
+
+    def __init__(self):
         super().__init__()
 
-        self.config_file = config_file
-        self.config = default_config or {}
-        if self.config_file and self.config_file.exists():
-            self.load()
-        else:
-            logging.error(
-                f"[!!!] File [{self.config_file.name}] doesn't exist."
-            )
-            return
+        if not hasattr(self, "initialized"):
+            self.initialized = True
+
+            self.config_file = CONFIG_FILEPATH
+            self.config = {}
+
+            if self.config_file and self.config_file.exists():
+                self.load()
+            else:
+                logging.error(
+                    f"[!!!] File [{self.config_file.name}] doesn't exist."
+                )
+                return
 
     def load(self):
         logging.info(f"Load logging file: [{self.config_file.name}]")
@@ -47,15 +58,4 @@ class ConfigManager(UserDict):
             return None
 
 
-__global_config: typing.Optional[ConfigManager] = None
-
-
-def get_config_manager():
-    global __global_config
-
-    if __global_config is None:
-        __global_config = ConfigManager(CONFIG_FILEPATH)
-    return __global_config
-
-
-atexit.register(get_config_manager().save)
+atexit.register(ConfigManager().save)

@@ -1,6 +1,6 @@
 import pathlib
 
-from fspacker.utils.config import get_config_manager
+from fspacker.utils.config import ConfigManager
 from fspacker.utils.libs import (
     get_lib_meta_depends,
     get_lib_meta_name,
@@ -92,7 +92,7 @@ class TestUrl:
 
     @perf_tracker
     def test_get_fastest_urls(self):
-        config = get_config_manager()
+        config = ConfigManager()
         config["fastest_pip_url"] = None
         config["fastest_embed_url"] = None
         self.test_get_fastest_urls_from_json()
