@@ -8,8 +8,8 @@ import zipfile
 from urllib.parse import urlparse
 
 from fspacker.config import LIBS_REPO_DIR
-from fspacker.utils.performance import perf_tracker
 from fspacker.utils.repo import get_libs_repo, get_libname
+from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import get_fastest_pip_url
 
 
@@ -31,9 +31,7 @@ def unpack_wheel(
 
     info = get_libs_repo().get(libname)
     if info is not None:
-        logging.info(
-            f"Unpacking by pattern [{info.meta_data.name}]->[{dest_dir.name}]"
-        )
+        logging.info(f"Unpacking by pattern [{info.meta_data.name}]->[{dest_dir.name}]")
 
         # No rules, fast unpacking
         # if not len(excludes) and not len(patterns):
@@ -47,9 +45,7 @@ def unpack_wheel(
                     continue
 
                 if len(patterns):
-                    if any(
-                        fnmatch.fnmatch(file, pattern) for pattern in patterns
-                    ):
+                    if any(fnmatch.fnmatch(file, pattern) for pattern in patterns):
                         zip_ref.extract(file, dest_dir)
                         continue
                     else:

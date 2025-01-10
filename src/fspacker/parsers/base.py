@@ -1,7 +1,7 @@
 import pathlib
 import typing
 
-from fspacker.parser.target import PackTarget
+from fspacker.parsers.target import PackTarget
 
 
 class BaseParser:

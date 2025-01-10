@@ -1,7 +1,6 @@
 import os
 import pathlib
 import platform
-import typing
 
 __cache_env = os.getenv("FSPACKER_CACHE")
 __libs_env = os.getenv("FSPACKER_LIBS")
@@ -37,20 +36,6 @@ TKINTER_FILEPATH = ASSETS_DIR / "tkinter.zip"
 if not EMBED_REPO_DIR.exists():
     EMBED_REPO_DIR.mkdir(parents=True)
 
-# python mirrors
-EMBED_URL_PREFIX: typing.Dict[str, str] = dict(
-    official="https://www.python.org/ftp/python/",
-    huawei="https://mirrors.huaweicloud.com/python/",
-)
-
-# pip mirrors
-PIP_URL_PREFIX: typing.Dict[str, str] = dict(
-    aliyun="https://mirrors.aliyun.com/pypi/simple/",
-    tsinghua="https://pypi.tuna.tsinghua.edu.cn/simple/",
-    douban="http://pypi.douban.com/simple/",
-    ustc="https://pypi.mirrors.ustc.edu.cn/simple/",
-    huawei="https://mirrors.huaweicloud.com/repository/pypi/simple/",
-)
 
 # resource files and folders
 RES_ENTRIES = (

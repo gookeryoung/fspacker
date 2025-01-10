@@ -5,6 +5,10 @@ import time
 from functools import wraps
 from threading import Lock
 
+__all__ = [
+    "perf_tracker",
+]
+
 
 class PerformanceTracker:
     """Performance tracker class."""
@@ -36,15 +40,9 @@ class PerformanceTracker:
     def finalize(cls):
         if cls.global_start_time is not None and cls.debug_mode:
             cls.update_total_time()
-            logging.debug(
-                f"{'-' * 20}Summary{'-' * 20}\n[*] Total application runtime: {cls.total_time:.6f} seconds."
-            )
+            logging.debug(f"{'-' * 20}Summary{'-' * 20}\n[*] Total application runtime: {cls.total_time:.6f} seconds.")
             for func_name, elapsed_time in cls.function_times.items():
-                percentage = (
-                    (elapsed_time / cls.total_time) * 100
-                    if cls.total_time > 0
-                    else 0
-                )
+                percentage = (elapsed_time / cls.total_time) * 100 if cls.total_time > 0 else 0
                 logging.debug(
                     f"Function '{func_name}' total time: {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
                 )
@@ -67,17 +65,14 @@ def perf_tracker(func):
             with PerformanceTracker.lock:
                 func_name = f"{func.__module__}.{func.__name__}"
                 PerformanceTracker.function_times[func_name] = (
-                    PerformanceTracker.function_times.get(func_name, 0)
-                    + elapsed_time
+                    PerformanceTracker.function_times.get(func_name, 0) + elapsed_time
                 )
 
             PerformanceTracker.update_total_time()
             total_time = PerformanceTracker.total_time
             if total_time > 0:
                 percentage = (elapsed_time / total_time) * 100
-                logging.debug(
-                    f"Function '{func_name}' took {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
-                )
+                logging.debug(f"Function '{func_name}' took {elapsed_time:.6f} seconds [{percentage:.2f}% of total].")
         else:
             result = func(*args, **kwargs)
 

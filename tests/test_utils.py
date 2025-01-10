@@ -7,12 +7,21 @@ from fspacker.utils.libs import (
     get_zip_meta_data,
     unpack_zipfile,
 )
-from fspacker.utils.performance import perf_tracker
+from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import (
     get_fastest_embed_url,
     get_fastest_pip_url,
 )
 from fspacker.utils.wheel import download_wheel, remove_wheel
+
+
+class TestConfigManager:
+    def test_load_config(self):
+        config = ConfigManager.get_instance()
+        assert not config["mode.offline"]
+        config["mode.offline"] = True
+        assert config["mode.offline"]
+        assert config["mode.not_exist"] is None
 
 
 class TestUtilsLibs:
@@ -92,7 +101,7 @@ class TestUrl:
 
     @perf_tracker
     def test_get_fastest_urls(self):
-        config = ConfigManager()
+        config = ConfigManager.get_instance()
         config["fastest_pip_url"] = None
         config["fastest_embed_url"] = None
         self.test_get_fastest_urls_from_json()

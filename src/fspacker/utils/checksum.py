@@ -19,4 +19,4 @@ def calc_checksum(filepath: pathlib.Path, block_size: int = 4096) -> str:
             hash_method.update(chunk)
 
     logging.info(f"Checksum is: [{hash_method.hexdigest()}]")
-    return hash_method.hexdigest()
+    return str(hash_method.hexdigest())

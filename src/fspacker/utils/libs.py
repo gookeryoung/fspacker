@@ -7,11 +7,11 @@ import typing
 import pkginfo
 
 from fspacker.common import LibraryInfo
-from fspacker.parser.target import PackTarget
-from fspacker.utils.performance import perf_tracker
-from fspacker.utils.repo import get_libs_repo, update_libs_repo
-from fspacker.utils.wheel import unpack_wheel, download_wheel
+from fspacker.parsers.target import PackTarget
 from fspacker.utils.config import ConfigManager
+from fspacker.utils.repo import get_libs_repo, update_libs_repo
+from fspacker.utils.trackers import perf_tracker
+from fspacker.utils.wheel import unpack_wheel, download_wheel
 
 
 def get_zip_meta_data(filepath: pathlib.Path) -> typing.Tuple[str, str]:
@@ -45,12 +45,7 @@ def get_lib_meta_depends(filepath: pathlib.Path) -> typing.Set[str]:
     """Get requires dist of lib file"""
     meta_data = pkginfo.get_metadata(str(filepath))
     if hasattr(meta_data, "requires_dist"):
-        return set(
-            list(
-                re.split(r"[;<>!=()\[~.]", x)[0].strip()
-                for x in meta_data.requires_dist
-            )
-        )
+        return set(list(re.split(r"[;<>!=()\[~.]", x)[0].strip() for x in meta_data.requires_dist))
     else:
         raise ValueError(f"No requires for {filepath}")
 
@@ -83,7 +78,8 @@ def install_lib(
 ) -> bool:
     info: LibraryInfo = get_libs_repo().get(libname.lower())
     if info is None or not info.filepath.exists():
-        if ConfigManager().get("offline_mode", False):
+        config = ConfigManager.get_instance()
+        if config["mode.offline"]:
             logging.error(f"[!!!] Offline mode, lib [{libname}] not found")
             return
 

@@ -1,20 +1,20 @@
 import logging
 
-from fspacker.packer.base import BasePacker
-from fspacker.packer.libspec.base import DefaultLibrarySpecPacker
-from fspacker.packer.libspec.gui import (
+from fspacker.packers.base import BasePacker
+from fspacker.packers.libspec.base import DefaultLibrarySpecPacker
+from fspacker.packers.libspec.gui import (
     PySide2Packer,
     PygamePacker,
     TkinterPacker,
 )
-from fspacker.packer.libspec.sci import (
+from fspacker.packers.libspec.sci import (
     MatplotlibSpecPacker,
     NumbaSpecPacker,
     NumpySpecPacker,
     PandasSpecPacker,
     TorchSpecPacker,
 )
-from fspacker.parser.target import PackTarget
+from fspacker.parsers.target import PackTarget
 from fspacker.utils.libs import install_lib
 from fspacker.utils.repo import get_libs_repo, get_libname
 
@@ -63,7 +63,5 @@ class LibraryPacker(BasePacker):
             if lib in self.libs_repo.keys():
                 self.SPECS["default"].pack(lib, target=target)
             else:
-                logging.error(
-                    f"[!!!] Lib [{lib}] for [{lib}] not found in repo"
-                )
+                logging.error(f"[!!!] Lib [{lib}] for [{lib}] not found in repo")
                 install_lib(lib, target)

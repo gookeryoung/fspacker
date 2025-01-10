@@ -1,8 +1,8 @@
 import logging
 import typing
 
-from fspacker.packer.base import BasePacker
-from fspacker.parser.target import PackTarget
+from fspacker.packers.base import BasePacker
+from fspacker.parsers.target import PackTarget
 from fspacker.utils.libs import unpack_zipfile, install_lib
 from fspacker.utils.repo import get_libs_repo
 

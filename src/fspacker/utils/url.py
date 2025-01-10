@@ -4,14 +4,28 @@ import typing
 
 import requests
 
-from fspacker.config import EMBED_URL_PREFIX, PIP_URL_PREFIX
 from fspacker.utils.config import ConfigManager
-from fspacker.utils.performance import perf_tracker
+from fspacker.utils.trackers import perf_tracker
 
 __all__ = [
     "get_fastest_embed_url",
     "get_fastest_pip_url",
 ]
+
+# python mirrors
+EMBED_URL_PREFIX: typing.Dict[str, str] = dict(
+    official="https://www.python.org/ftp/python/",
+    huawei="https://mirrors.huaweicloud.com/python/",
+)
+
+# pip mirrors
+PIP_URL_PREFIX: typing.Dict[str, str] = dict(
+    aliyun="https://mirrors.aliyun.com/pypi/simple/",
+    tsinghua="https://pypi.tuna.tsinghua.edu.cn/simple/",
+    douban="http://pypi.douban.com/simple/",
+    ustc="https://pypi.mirrors.ustc.edu.cn/simple/",
+    huawei="https://mirrors.huaweicloud.com/repository/pypi/simple/",
+)
 
 
 def _check_url_access_time(url: str) -> float:
@@ -44,21 +58,21 @@ def _get_fastest_url(urls: typing.Dict[str, str]) -> str:
 
 @perf_tracker
 def get_fastest_pip_url() -> str:
-    config = ConfigManager()
-    if fastest_url := config["fastest_pip_url"]:
+    config = ConfigManager.get_instance()
+    if fastest_url := config["url.pip"]:
         return fastest_url
     else:
         fastest_url = _get_fastest_url(PIP_URL_PREFIX)
-        config["fastest_pip_url"] = fastest_url
+        config["url.pip"] = fastest_url
         return fastest_url
 
 
 @perf_tracker
 def get_fastest_embed_url() -> str:
-    config = ConfigManager()
-    if fastest_url := config["fastest_embed_url"]:
+    config = ConfigManager.get_instance()
+    if fastest_url := config["url.embed"]:
         return fastest_url
     else:
         fastest_url = _get_fastest_url(EMBED_URL_PREFIX)
-        config["fastest_embed_url"] = fastest_url
+        config["url.embed"] = fastest_url
         return fastest_url

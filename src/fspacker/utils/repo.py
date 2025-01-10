@@ -6,7 +6,7 @@ import stdlib_list
 
 from fspacker.common import LibraryInfo
 from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT, LIBNAME_MAPPER
-from fspacker.utils.performance import perf_tracker
+from fspacker.utils.trackers import perf_tracker
 
 __libs_repo: typing.Dict[str, LibraryInfo] = {}
 __builtin_lib_repo: typing.Set[str] = set()
@@ -24,11 +24,7 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
     global __libs_repo
 
     if not len(__libs_repo):
-        lib_files = list(
-            _
-            for _ in LIBS_REPO_DIR.rglob("*")
-            if _.suffix in (".whl", ".tar.gz")
-        )
+        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob("*") if _.suffix in (".whl", ".tar.gz"))
         for lib_file in lib_files:
             info = LibraryInfo.from_filepath(lib_file)
             __libs_repo.setdefault(info.meta_data.name.lower(), info)
