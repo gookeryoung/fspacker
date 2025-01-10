@@ -22,7 +22,7 @@ fsp = "fspacker.__main__:main"
 fsp = "fspacker.__main__:main"
 
 [tool.uv]
-index-url = 'https://mirrors.aliyun.com/pypi/simple/'
+index-url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
 dev-dependencies = [
     "coverage>=7.6.1",
     "mypy>=1.13.0",
