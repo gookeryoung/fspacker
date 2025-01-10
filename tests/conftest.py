@@ -22,9 +22,7 @@ def __call_executable(app: str, timeout=TEST_CALL_TIMEOUT):
     """Call application and try running it in [timeout] seconds."""
 
     try:
-        proc = subprocess.Popen(
-            [app], stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        proc = subprocess.Popen([app], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         time.sleep(1)
         for _ in range(timeout):
             if proc.poll() is not None:
@@ -33,15 +31,11 @@ def __call_executable(app: str, timeout=TEST_CALL_TIMEOUT):
                     proc.terminate()
                     return True
                 else:
-                    print(
-                        f"App [{app}]exited prematurely with return code [{proc.returncode}]."
-                    )
+                    print(f"App [{app}]exited prematurely with return code [{proc.returncode}].")
                     return False
 
             if not any(proc.pid == p.pid for p in psutil.process_iter(["pid"])):
-                print(
-                    f"Process [{proc.pid}] not found among running processes."
-                )
+                print(f"Process [{proc.pid}] not found among running processes.")
                 return False
 
             time.sleep(1)

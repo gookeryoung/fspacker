@@ -1,47 +1,60 @@
-from fspacker.parser.source import SourceParser
+import typing
+
+import pytest
+
+from fspacker.parsers.source import SourceParser
+
+
+@pytest.fixture
+def run_parser(dir_examples):
+    """Run source parser"""
+
+    def runner(
+        arg: str,
+        libs: typing.Optional[typing.Set[str]] = None,
+        sources: typing.Optional[typing.Set[str]] = None,
+        extra: typing.Optional[typing.Set[str]] = None,
+    ) -> None:
+        parser = SourceParser(root_dir=dir_examples / arg)
+        parser.parse(dir_examples / arg / f"{arg}.py")
+        assert arg in parser.targets.keys()
+
+        libs = set() if libs is None else libs
+        sources = set() if sources is None else sources
+        extra = set() if extra is None else extra
+
+        target = parser.targets.get(arg)
+        assert target.libs == libs
+        assert target.sources == sources
+        assert target.extra == extra
+
+    return runner
 
 
 class TestSourceParser:
-    def test_source_parser(self, dir_examples):
-        parser = SourceParser(root_dir=dir_examples / "base_helloworld")
-        parser.parse(dir_examples / "base_helloworld" / "base_helloworld.py")
-        assert "base_helloworld" in parser.targets.keys()
+    def test_source_parser(self, run_parser):
+        run_parser(
+            "base_helloworld",
+            {"lxml", "orderedset"},
+            {
+                "modules",
+                "module_c",
+                "module_d",
+                "core",
+                "mathtools",
+            },
+        )
 
-        target = parser.targets["base_helloworld"]
-        assert target.libs == {"lxml", "orderedset"}
-        assert target.sources == {
-            "modules",
-            "module_c",
-            "module_d",
-            "core",
-            "mathtools",
-        }
+    def test_gui_tkinter(self, run_parser):
+        run_parser(
+            "gui_tkinter",
+            {"yaml"},
+            {"modules", "config", "assets"},
+            {"tkinter"},
+        )
 
-    def test_gui_tkinter(self, dir_examples):
-        root_dir = dir_examples / "gui_tkinter"
-        parser = SourceParser(root_dir=root_dir)
-        parser.parse(root_dir / "gui_tkinter.py")
-        assert "gui_tkinter" in parser.targets.keys()
+    def test_gui_pyside2(self, run_parser):
+        run_parser("gui_pyside2", {"pyside2"}, {"depends", "assets", "resources_rc"})
 
-        target = parser.targets["gui_tkinter"]
-        assert target.libs == {"yaml"}
-        assert target.sources == {"modules", "config", "assets"}
-        assert target.extra == {"tkinter"}
-
-    def test_gui_pyside2(self, dir_examples):
-        parser = SourceParser(root_dir=dir_examples / "gui_pyside2")
-        parser.parse(dir_examples / "gui_pyside2" / "gui_pyside2.py")
-        assert "gui_pyside2" in parser.targets.keys()
-
-        target = parser.targets["gui_pyside2"]
-        assert target.libs == {"pyside2"}
-        assert target.sources == {"depends", "assets", "resources_rc"}
-
-    def test_math_numba(self, dir_examples):
-        parser = SourceParser(root_dir=dir_examples / "math_numba")
-        parser.parse(dir_examples / "math_numba" / "math_numba.py")
-        assert "math_numba" in parser.targets.keys()
-
-        target = parser.targets["math_numba"]
-        assert target.libs == {"numba", "numpy"}
-        assert target.sources == set()
+    def test_math_numba(self, run_parser):
+        run_parser("math_numba", {"numba", "numpy"})

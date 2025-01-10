@@ -5,8 +5,8 @@ import typing
 from io import StringIO
 
 from fspacker.config import TKINTER_LIBS, RES_ENTRIES
-from fspacker.parser.base import BaseParser
-from fspacker.parser.target import PackTarget, Dependency
+from fspacker.parsers.base import BaseParser
+from fspacker.parsers.target import PackTarget, Dependency
 from fspacker.utils.repo import get_builtin_lib_repo
 
 __all__ = ("SourceParser",)
@@ -40,9 +40,7 @@ class SourceParser(BaseParser):
                 logging.info(f"Add pack target{self.targets[entry.stem]}")
 
     def _parse_folder(self, filepath: pathlib.Path) -> Dependency:
-        files: typing.List[pathlib.Path] = list(
-            _ for _ in filepath.iterdir() if _.suffix == ".py"
-        )
+        files: typing.List[pathlib.Path] = list(_ for _ in filepath.iterdir() if _.suffix == ".py")
         for file in files:
             self._parse_content(file)
 

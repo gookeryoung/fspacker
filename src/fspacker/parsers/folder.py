@@ -2,7 +2,7 @@ import logging
 import pathlib
 
 from fspacker.config import IGNORE_SYMBOLS
-from fspacker.parser.base import BaseParser
+from fspacker.parsers.base import BaseParser
 
 
 class FolderParser(BaseParser):

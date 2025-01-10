@@ -1,4 +1,4 @@
-from fspacker.packer.libspec.base import ChildLibSpecPacker
+from fspacker.packers.libspec.base import ChildLibSpecPacker
 
 
 class MatplotlibSpecPacker(ChildLibSpecPacker):

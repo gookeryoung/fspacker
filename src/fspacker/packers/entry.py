@@ -3,8 +3,8 @@ import shutil
 import string
 
 from fspacker.config import GUI_LIBS, ASSETS_DIR
-from fspacker.packer.base import BasePacker
-from fspacker.parser.target import PackTarget
+from fspacker.packers.base import BasePacker
+from fspacker.parsers.target import PackTarget
 
 # int file template
 INT_TEMPLATE = string.Template(
@@ -42,24 +42,16 @@ class EntryPacker(BasePacker):
 
         if not dst.exists():
             logging.info(f"Target is [{'GUI' if is_gui else 'CONSOLE'}]")
-            logging.info(
-                f"Copy executable file: [{src.name}]->[{dst.relative_to(root)}]"
-            )
+            logging.info(f"Copy executable file: [{src.name}]->[{dst.relative_to(root)}]")
             shutil.copy(src, dst)
         else:
-            logging.info(
-                f"Entry file [{dst.relative_to(root)}] already exist, skip"
-            )
+            logging.info(f"Entry file [{dst.relative_to(root)}] already exist, skip")
 
         name = target.src.stem
         dst = target.dist_dir / f"{name}.int"
 
-        logging.info(
-            f"Create int file: [{name}.int]->[{dst.relative_to(root)}]"
-        )
-        if {"pyside2", "pyside6", "pyqt5", "pyqt6"}.intersection(
-            set(x.lower() for x in target.libs)
-        ):
+        logging.info(f"Create int file: [{name}.int]->[{dst.relative_to(root)}]")
+        if {"pyside2", "pyside6", "pyqt5", "pyqt6"}.intersection(set(x.lower() for x in target.libs)):
             content = INT_TEMPLATE_QT.substitute(SRC=f"src.{name}")
         else:
             content = INT_TEMPLATE.substitute(SRC=f"src.{name}")

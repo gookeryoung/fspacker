@@ -5,6 +5,13 @@ class TestProcess:
     def test_base_office(self, base_office, run_proc):
         assert run_proc(base_office)
 
+    def test_base_helloworld_tmp_cache(self, base_helloworld, run_proc, tmpdir):
+        from fspacker.utils.config import ConfigManager
+
+        config = ConfigManager.get_instance()
+        config["FSPACKER_CACHE"] = str(tmpdir / "cache")
+        assert run_proc(base_helloworld)
+
     def test_game_pygame(self, game_pygame, run_proc):
         assert run_proc(game_pygame)
 

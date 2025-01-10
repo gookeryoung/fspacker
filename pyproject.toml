@@ -5,6 +5,7 @@ dynamic = ["version"]
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
+    "click>=8.1.7",
     "pkginfo>=1.11.2",
     "requests>=2.32.3",
     "rtoml>=0.11.0",
@@ -15,10 +16,10 @@ dependencies = [
 source = "https://gitee.com/gooker_young/fspacker"
 
 [project.scripts]
-fsp = "fspacker.cli:main"
+fsp = "fspacker.__main__:main"
 
 [project.entry-points."pipx.run"]
-fsp = "fspacker.cli:main"
+fsp = "fspacker.__main__:main"
 
 [tool.uv]
 index-url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
@@ -68,9 +69,10 @@ rtoml = "^0.11.0"
 stdlib-list = "0.10.0"
 types-requests = "^2.32.0.20241016"
 pkginfo = "^1.12.0"
+click = "^8.1.8"
 
 [tool.poetry.scripts]
-fsp = "fspacker.cli:main"
+fsp = "fspacker.__main__:main"
 
 [[tool.poetry.source]]
 name = 'tuna'
@@ -109,7 +111,7 @@ vcs = "git"
 style = "semver"
 
 [tool.ruff]
-line-length = 80 # 代码最大行宽
+line-length = 120 # 代码最大行宽
 lint.select = [# 选择的规则
     "F",
     "E",
@@ -122,7 +124,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["fspacker"]
+packages = ["src/fspacker"]
 
 [tool.hatch.version]
-path = "fspacker/__init__.py"
+path = "src/fspacker/__init__.py"

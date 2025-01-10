@@ -1,14 +1,14 @@
 import pathlib
 import typing
 
-from fspacker.packer.base import BasePacker
-from fspacker.packer.depends import DependsPacker
-from fspacker.packer.entry import EntryPacker
-from fspacker.packer.library import LibraryPacker
-from fspacker.packer.runtime import RuntimePacker
-from fspacker.parser.folder import FolderParser
-from fspacker.parser.source import SourceParser
-from fspacker.parser.target import PackTarget
+from fspacker.packers.base import BasePacker
+from fspacker.packers.depends import DependsPacker
+from fspacker.packers.entry import EntryPacker
+from fspacker.packers.library import LibraryPacker
+from fspacker.packers.runtime import RuntimePacker
+from fspacker.parsers.folder import FolderParser
+from fspacker.parsers.source import SourceParser
+from fspacker.parsers.target import PackTarget
 
 
 class Processor:
