@@ -50,6 +50,7 @@ dev-dependencies = [
     # for docs
     "sphinx>=7.1.2",
     "sphinx-autodoc-typehints>=2.0.1",
+    "pytest-html>=4.1.1",
 ]
 
 [tool.uv.sources]
@@ -92,6 +93,7 @@ pysnooper = "^1.2.1"
 black = "~24.8"
 pyyaml = "^6.0.2"
 nuitka = "^2.5.8"
+pytest-html = "^4.1.1"
 
 
 [tool.poetry.group.test.dependencies]
