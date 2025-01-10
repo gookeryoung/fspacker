@@ -22,7 +22,7 @@ fsp = "fspacker.__main__:main"
 fsp = "fspacker.__main__:main"
 
 [tool.uv]
-index-url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
+index-url = 'https://mirrors.aliyun.com/pypi/simple/'
 dev-dependencies = [
     "coverage>=7.6.1",
     "mypy>=1.13.0",
@@ -51,66 +51,11 @@ dev-dependencies = [
     "sphinx>=7.1.2",
     "sphinx-autodoc-typehints>=2.0.1",
     "pytest-html>=4.1.1",
+    "psutil>=6.1.1",
 ]
 
 [tool.uv.sources]
 fspacker = { workspace = true }
-
-[tool.poetry]
-name = "fspacker"
-version = "0.6.0"
-description = "Fast & Simple Packer toolset for python."
-readme = "README.md"
-authors = ["Young <gooker_young@163.com>"]
-
-[tool.poetry.dependencies]
-python = ">=3.8,<3.9"
-requests = "^2.32.3"
-rtoml = "^0.11.0"
-stdlib-list = "0.10.0"
-types-requests = "^2.32.0.20241016"
-pkginfo = "^1.12.0"
-click = "^8.1.8"
-
-[tool.poetry.scripts]
-fsp = "fspacker.__main__:main"
-
-[[tool.poetry.source]]
-name = 'tuna'
-url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
-priority = "primary"
-
-
-[tool.poetry.group.dev.dependencies]
-mypy = "^1.13.0"
-ruff = "^0.8.4"
-pyside2 = "^5.15.2.1"
-pypdf = "^5.1.0"
-pandas = "~2.0"
-numpy = "~1.24"
-matplotlib = "~3.7"
-pysnooper = "^1.2.1"
-black = "~24.8"
-pyyaml = "^6.0.2"
-nuitka = "^2.5.8"
-pytest-html = "^4.1.1"
-
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.4"
-pytest-cov = "~5.0"
-coverage = "~7.6"
-pytest-benchmark = "~4.0"
-
-
-[tool.poetry.group.docs.dependencies]
-sphinx = "~7.1"
-sphinx-autodoc-typehints = "~2.0"
-
-[tool.poery-dynamic-versioning]
-enable = true
-vcs = "git"
-style = "semver"
 
 [tool.ruff]
 line-length = 120 # 代码最大行宽
@@ -124,6 +69,11 @@ lint.select = [# 选择的规则
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+test = [
+    "psutil>=6.1.1",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fspacker"]
