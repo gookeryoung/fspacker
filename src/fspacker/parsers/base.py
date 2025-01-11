@@ -15,4 +15,5 @@ class BaseParser:
         self.targets = targets if targets is not None else {}
         self.root = root_dir
 
-    def parse(self, entry: pathlib.Path): ...
+    def parse(self, entry: pathlib.Path):
+        pass

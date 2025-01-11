@@ -14,7 +14,6 @@ def _proc_directory(file: click.Path, directory: click.Path):
 
     if not directory.exists():
         logging.info(f"Directory [{directory}] doesn't exist")
-        parser.print_help()
         return
 
     t0 = time.perf_counter()
