@@ -2,9 +2,9 @@ import logging
 import shutil
 import string
 
-from fspacker.config import GUI_LIBS, ASSETS_DIR
 from fspacker.packers.base import BasePacker
 from fspacker.parsers.target import PackTarget
+from fspacker.settings import settings
 
 # int file template
 INT_TEMPLATE = string.Template(
@@ -33,10 +33,10 @@ main()
 
 class EntryPacker(BasePacker):
     def pack(self, target: PackTarget):
-        is_gui = target.libs.union(target.extra).intersection(GUI_LIBS)
+        is_gui = target.libs.union(target.extra).intersection(settings.GUI_LIBS)
 
         exe_file = "gui.exe" if is_gui else "console.exe"
-        src = ASSETS_DIR / exe_file
+        src = settings.ASSETS_DIR / exe_file
         root = target.root_dir
         dst = target.dist_dir / f"{target.src.stem}.exe"
 

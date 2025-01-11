@@ -7,7 +7,7 @@ import typing
 import zipfile
 from urllib.parse import urlparse
 
-from fspacker.config import LIBS_REPO_DIR
+from fspacker.settings import settings
 from fspacker.utils.repo import get_libs_repo, get_libname
 from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import get_fastest_pip_url
@@ -61,7 +61,7 @@ def download_wheel(libname: str) -> pathlib.Path:
     """Download wheel file for lib name, if not found in lib repo."""
     libname = get_libname(libname)
     match_name = "*".join(re.split(r"[-_]", libname))
-    lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
+    lib_files = list(_ for _ in settings.LIBS_REPO_DIR.rglob(f"{match_name}*"))
     if not lib_files:
         logging.warning(f"No wheel for [{libname}], start downloading.")
         pip_url = get_fastest_pip_url()
@@ -74,14 +74,14 @@ def download_wheel(libname: str) -> pathlib.Path:
                 "download",
                 libname,
                 "-d",
-                str(LIBS_REPO_DIR),
+                str(settings.LIBS_REPO_DIR),
                 "--trusted-host",
                 net_loc,
                 "-i",
                 pip_url,
             ],
         )
-        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob(f"{match_name}*"))
+        lib_files = list(_ for _ in settings.LIBS_REPO_DIR.rglob(f"{match_name}*"))
 
     if not len(lib_files):
         logging.error(f"[!!!] Download wheel [{libname}] error, {match_name=}")

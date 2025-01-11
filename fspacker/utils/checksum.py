@@ -11,7 +11,7 @@ def calc_checksum(filepath: pathlib.Path, block_size: int = 4096) -> str:
     :return: String format of checksum.
     """
 
-    hash_method = hashlib.md5()
+    hash_method = hashlib.sha256()
 
     logging.info(f"Calculate checksum for: [{filepath.name}]")
     with open(filepath, "rb") as file:

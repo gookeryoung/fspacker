@@ -1,15 +1,15 @@
 import logging
 import pathlib
 
-from fspacker.config import IGNORE_SYMBOLS
 from fspacker.parsers.base import BaseParser
+from fspacker.settings import settings
 
 
 class FolderParser(BaseParser):
     """Parser for folders"""
 
     def parse(self, entry: pathlib.Path):
-        if entry.stem.lower() in IGNORE_SYMBOLS:
+        if entry.stem.lower() in settings.IGNORE_SYMBOLS:
             logging.info(f"Skip parsing folder: [{entry.stem}]")
             return
 

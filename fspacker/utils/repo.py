@@ -5,7 +5,7 @@ import typing
 import stdlib_list
 
 from fspacker.common import LibraryInfo
-from fspacker.config import LIBS_REPO_DIR, PYTHON_VER_SHORT, LIBNAME_MAPPER
+from fspacker.settings import settings
 from fspacker.utils.trackers import perf_tracker
 
 __libs_repo: typing.Dict[str, LibraryInfo] = {}
@@ -24,7 +24,7 @@ def get_libs_repo() -> typing.Dict[str, LibraryInfo]:
     global __libs_repo
 
     if not len(__libs_repo):
-        lib_files = list(_ for _ in LIBS_REPO_DIR.rglob("*") if _.suffix in (".whl", ".tar.gz"))
+        lib_files = list(_ for _ in settings.LIBS_REPO_DIR.rglob("*") if _.suffix in (".whl", ".tar.gz"))
         for lib_file in lib_files:
             info = LibraryInfo.from_filepath(lib_file)
             __libs_repo.setdefault(info.meta_data.name.lower(), info)
@@ -47,7 +47,7 @@ def get_builtin_lib_repo() -> typing.Set[str]:
     global __builtin_lib_repo
 
     if not len(__builtin_lib_repo):
-        __builtin_lib_repo = set(stdlib_list.stdlib_list(PYTHON_VER_SHORT))
+        __builtin_lib_repo = set(stdlib_list.stdlib_list(settings.PYTHON_VER_SHORT))
         logging.info(f"Parse built-in libs: total=[{len(__builtin_lib_repo)}]")
 
     return __builtin_lib_repo
@@ -61,7 +61,7 @@ def get_libname(libname: str) -> str:
 
 
 def _map_libname(libname: str) -> str:
-    if libname in LIBNAME_MAPPER:
-        return LIBNAME_MAPPER[libname]
+    if libname in settings.LIBNAME_MAPPER:
+        return settings.LIBNAME_MAPPER[libname]
 
     return libname

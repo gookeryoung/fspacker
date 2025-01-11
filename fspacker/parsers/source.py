@@ -4,9 +4,9 @@ import pathlib
 import typing
 from io import StringIO
 
-from fspacker.config import TKINTER_LIBS, RES_ENTRIES
 from fspacker.parsers.base import BaseParser
 from fspacker.parsers.target import PackTarget, Dependency
+from fspacker.settings import settings
 from fspacker.utils.repo import get_builtin_lib_repo
 
 __all__ = ("SourceParser",)
@@ -53,7 +53,7 @@ class SourceParser(BaseParser):
         local_entries = {_.stem: _ for _ in filepath.parent.iterdir()}
         self.entries.update(local_entries)
         for entry in self.entries.values():
-            if entry.stem in RES_ENTRIES:
+            if entry.stem in settings.RES_ENTRIES:
                 self.info.sources.add(entry.stem)
 
         for node in ast.walk(tree):
@@ -82,5 +82,5 @@ class SourceParser(BaseParser):
                 self.info.libs.add(import_name)
 
             # import_name needs tkinter
-            if import_name in TKINTER_LIBS:
+            if import_name in settings.TKINTER_LIBS:
                 self.info.extra.add("tkinter")

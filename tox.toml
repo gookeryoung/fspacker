@@ -2,9 +2,9 @@ requires = ["tox>=4"]
 env_list = ["lint", "type", "build", "publish", "3.8"]
 
 [testenv]
-PIP_INDEX_URL = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-deps = ["pytest"]
+deps = ["pytest", "pytest-cov", "pytest-html", "psutil"]
 commands = [["pytest", { replace = "posargs", default = ["tests"], extend = true }]]
+setenv = "PIP_INDEX_URL = https://pypi.tuna.tsinghua.edu.cn/simple/"
 
 [pytest]
 addopts = ["--benchmark-enable"]
@@ -30,12 +30,10 @@ commands = [["mypy", { replace = "posargs", default = ["fspacker"], extend = tru
 
 [env.build]
 description = "build & publish"
-deps = ["poetry"]
+deps = ["uv"]
 commands = [
-    ["rm", "-rf", "dist"],
-    ["poetry", "build", { replace = "posargs", extend = true }],
-    ["poetry", "publish", { replace = "posargs", extend = true }],
+    ["uv", "build", { replace = "posargs", extend = true }],
+    ["uv", "publish", { replace = "posargs", extend = true }],
 ]
-allowlist_externals = ["rm"]
 
 

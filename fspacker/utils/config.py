@@ -6,17 +6,17 @@ from collections import UserDict
 
 import rtoml
 
-from fspacker.config import CACHE_DIR
+from fspacker.settings import settings
 
 
 class ConfigManager(UserDict):
     _instance = None
 
-    file_path: pathlib.Path = CACHE_DIR / "config.toml"
+    file_path: pathlib.Path = settings.CACHE_DIR / "config.toml"
 
     def __new__(cls, filepath: str = ""):
         if cls._instance is None:
-            cls._instance = super(ConfigManager, cls).__new__(cls)
+            cls._instance = super().__new__(cls)
             if filepath:
                 cls.file_path = pathlib.Path(filepath)
 

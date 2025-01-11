@@ -5,7 +5,6 @@ import subprocess
 import time
 import typing
 
-import psutil
 import pytest
 
 from fspacker.process import Processor
@@ -18,7 +17,7 @@ TEST_LIB_DIR = pathlib.Path.home() / "test-libs"
 TEST_CALL_TIMEOUT = 5
 
 
-def __call_executable(app: str, timeout=TEST_CALL_TIMEOUT):
+def _call_exec(app: str, timeout=TEST_CALL_TIMEOUT):
     """Call application and try running it in [timeout] seconds."""
 
     try:
@@ -34,10 +33,6 @@ def __call_executable(app: str, timeout=TEST_CALL_TIMEOUT):
                     print(f"App [{app}]exited prematurely with return code [{proc.returncode}].")
                     return False
 
-            if not any(proc.pid == p.pid for p in psutil.process_iter(["pid"])):
-                print(f"Process [{proc.pid}] not found among running processes.")
-                return False
-
             time.sleep(1)
         print(f"App [{app}] type: [GUI],  run successfully.")
         proc.terminate()
@@ -47,7 +42,7 @@ def __call_executable(app: str, timeout=TEST_CALL_TIMEOUT):
         return False
 
 
-def __run_project(project_dir: pathlib.Path, timeout: int = TEST_CALL_TIMEOUT):
+def _run_project(project_dir: pathlib.Path, timeout: int = TEST_CALL_TIMEOUT):
     proc = Processor(project_dir)
     proc.run()
 
@@ -56,11 +51,11 @@ def __run_project(project_dir: pathlib.Path, timeout: int = TEST_CALL_TIMEOUT):
     exe_files = list(_ for _ in dist_dir.glob("*.exe"))
 
     if not len(exe_files):
-        print(f"[#] No exe file found for [{arg.name}].")
+        print(f"[#] No exe file found for [{project_dir.name}].")
         return False
 
     print(f"\n[#] Running executable: [{exe_files[0].name}].")
-    call_result = __call_executable(exe_files[0].as_posix(), timeout=timeout)
+    call_result = _call_exec(exe_files[0].as_posix(), timeout=timeout)
     if not call_result:
         print(f"[#] Running failed: [{exe_files[0].name}].")
         return False
@@ -96,9 +91,9 @@ def run_proc():
         timeout: int = TEST_CALL_TIMEOUT,
     ):
         if isinstance(args, pathlib.Path):
-            return __run_project(args, timeout=timeout)
+            return _run_project(args, timeout=timeout)
         elif isinstance(args, typing.Sequence):
-            return all([__run_project(arg, timeout=timeout) for arg in args])
+            return all([_run_project(arg, timeout=timeout) for arg in args])
         else:
             print(f"[#] Invalid args: [{args}].")
             return False
