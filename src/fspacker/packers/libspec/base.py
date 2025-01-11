@@ -11,7 +11,8 @@ class LibSpecPackerMixin:
     PATTERNS: typing.Dict[str, typing.Set[str]] = {}
     EXCLUDES: typing.Dict[str, typing.Set[str]] = {}
 
-    def pack(self, lib: str, target: PackTarget): ...
+    def pack(self, lib: str, target: PackTarget):
+        pass
 
     @property
     def info(self):
