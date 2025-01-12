@@ -11,7 +11,6 @@ __all__ = [
 ]
 
 
-_libs_dir: typing.Optional[pathlib.Path] = None
 _config: typing.Dict[str, typing.Any] = {}
 
 
@@ -29,15 +28,11 @@ def _get_cache_dir() -> pathlib.Path:
 
 def _get_libs_dir() -> pathlib.Path:
     """Libs directory for fspacker, use user document if not exist."""
-
-    global _libs_dir
-
-    if _libs_dir is None:
-        cache_env = os.getenv("FSPACKER_LIBS")
-        if cache_env is not None and (cache_path := pathlib.Path(cache_env)).exists():
-            _libs_dir = cache_path
-        else:
-            _libs_dir = _get_cache_dir() / "libs-repo"
+    cache_env = os.getenv("FSPACKER_LIBS")
+    if cache_env is not None and (cache_path := pathlib.Path(cache_env)).exists():
+        _libs_dir = cache_path
+    else:
+        _libs_dir = _get_cache_dir() / "libs-repo"
 
     return _libs_dir
 
@@ -67,21 +62,17 @@ def _save_config() -> None:
 class Settings:
     """Global settings for fspacker."""
 
-    # python
-    PYTHON_VER = platform.python_version()
-    PYTHON_VER_SHORT = ".".join(PYTHON_VER.split(".")[:2])
-    MACHINE = platform.machine().lower()
-
     # global
-    ASSETS_DIR = pathlib.Path(__file__).parent.parent / "assets"
+    src_dir = pathlib.Path(__file__).parent.parent
+    assets_dir = src_dir / "assets"
     # resource files and folders
-    RES_ENTRIES = (
+    res_entries = (
         "assets",
         "data",
         ".qrc",
     )
     # ignore symbols for folders
-    IGNORE_SYMBOLS = (
+    ignore_symbols = (
         "dist-info",
         "__pycache__",
         "site-packages",
@@ -89,7 +80,7 @@ class Settings:
         "dist",
     )
     # gui libs
-    GUI_LIBS = (
+    gui_libs = (
         "pyside2",
         "pyqt5",
         "pygame",
@@ -97,7 +88,7 @@ class Settings:
         "tkinter",
     )
     # mapping between import name and real file name
-    LIBNAME_MAPPER = dict(
+    libname_mapper = dict(
         pil="Pillow",
         docx="python-docx",
         win32com="pywin32",
@@ -105,18 +96,12 @@ class Settings:
         zstd="zstandard",
     )
 
-    # embed
-    EMBED_REPO_DIR = _get_cache_dir() / "embed-repo"
-    EMBED_FILE_NAME = f"python-{PYTHON_VER}-embed-{MACHINE}.zip"
-    EMBED_FILE_PATH = EMBED_REPO_DIR / EMBED_FILE_NAME
-
     # libs
-    LIBS_REPO_DIR = _get_libs_dir()
-    TKINTER_LIBS = ("tkinter", "matplotlib")
+    tkinter_libs = ("tkinter", "matplotlib")
 
     # tkinter
-    TKINTER_LIB_PATH = ASSETS_DIR / "tkinter-lib.zip"
-    TKINTER_PATH = ASSETS_DIR / "tkinter.zip"
+    tkinter_lib_path = assets_dir / "tkinter-lib.zip"
+    tkinter_path = assets_dir / "tkinter.zip"
 
     _instance = None
 
@@ -126,8 +111,11 @@ class Settings:
             cls._instance = Settings()
 
             # make directories
-            cache_dir = _get_cache_dir()
-            dirs = (cache_dir, cls.EMBED_REPO_DIR, cls.LIBS_REPO_DIR)
+            dirs = (
+                cls._instance.cache_dir,
+                cls._instance.embed_dir,
+                cls._instance.libs_dir,
+            )
             for directory in dirs:
                 if not directory.exists():
                     directory.mkdir(parents=True)
@@ -135,8 +123,36 @@ class Settings:
         return cls._instance
 
     @property
+    def python_ver(self):
+        return platform.python_version()
+
+    @property
+    def python_ver_short(self):
+        return ".".join(self.python_ver.split(".")[:2])
+
+    @property
+    def machine(self):
+        return platform.machine().lower()
+
+    @property
     def cache_dir(self):
         return _get_cache_dir()
+
+    @property
+    def libs_dir(self):
+        return _get_libs_dir()
+
+    @property
+    def embed_dir(self):
+        return _get_cache_dir() / "embed-repo"
+
+    @property
+    def embed_filename(self):
+        return f"python-{self.python_ver}-embed-{self.machine}.zip"
+
+    @property
+    def embed_filepath(self):
+        return self.embed_dir / self.embed_file_name
 
     @property
     def config(self):

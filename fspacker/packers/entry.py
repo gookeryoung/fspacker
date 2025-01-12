@@ -33,10 +33,10 @@ main()
 
 class EntryPacker(BasePacker):
     def pack(self, target: PackTarget):
-        is_gui = target.libs.union(target.extra).intersection(settings.GUI_LIBS)
+        is_gui = target.libs.union(target.extra).intersection(settings.gui_libs)
 
         exe_file = "gui.exe" if is_gui else "console.exe"
-        src = settings.ASSETS_DIR / exe_file
+        src = settings.assets_dir / exe_file
         root = target.root_dir
         dst = target.dist_dir / f"{target.src.stem}.exe"
 

@@ -24,7 +24,7 @@ class FolderParser(BaseParser):
     """Parser for folders"""
 
     def parse(self, entry: pathlib.Path, root_dir: pathlib.Path):
-        if entry.stem.lower() in settings.IGNORE_SYMBOLS:
+        if entry.stem.lower() in settings.ignore_symbols:
             logging.info(f"Skip parsing folder: [{entry.stem}]")
             return
 
@@ -75,7 +75,7 @@ class SourceParser(BaseParser):
         local_entries = {_.stem: _ for _ in filepath.parent.iterdir()}
         self.entries.update(local_entries)
         for entry in self.entries.values():
-            if entry.stem in settings.RES_ENTRIES:
+            if entry.stem in settings.res_entries:
                 self.info.sources.add(entry.stem)
 
         for node in ast.walk(tree):
@@ -104,14 +104,13 @@ class SourceParser(BaseParser):
                 self.info.libs.add(import_name)
 
             # import_name needs tkinter
-            if import_name in settings.TKINTER_LIBS:
+            if import_name in settings.tkinter_libs:
                 self.info.extra.add("tkinter")
 
 
 class ParserFactory:
     PARSERS: typing.Dict[str, BaseParser] = {}
     TARGETS: typing.Dict[str, PackTarget] = {}
-    ROOT_DIR: typing.Optional[pathlib.Path] = None
 
     _instance = None
 
@@ -125,13 +124,6 @@ class ParserFactory:
 
         if parser is not None:
             parser.parse(entry, root_dir)
-
-    @classmethod
-    def set_root(cls, root_dir: pathlib.Path):
-        if cls._instance is None:
-            cls.get_instance()
-
-        cls._instance.ROOT = root_dir
 
     @classmethod
     def get_instance(cls):

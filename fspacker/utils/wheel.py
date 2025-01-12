@@ -62,7 +62,7 @@ def download_wheel(libname: str) -> typing.Optional[pathlib.Path]:
     """Download wheel file for lib name, if not found in lib repo."""
     libname = get_libname(libname)
     match_name = "*".join(re.split(r"[-_]", libname))
-    lib_files = list(_ for _ in settings.LIBS_REPO_DIR.rglob(f"{match_name}*"))
+    lib_files = list(_ for _ in settings.libs_dir.rglob(f"{match_name}*"))
     if not lib_files:
         logging.warning(f"No wheel for [{libname}], start downloading.")
         pip_url = get_fastest_pip_url()
@@ -75,14 +75,14 @@ def download_wheel(libname: str) -> typing.Optional[pathlib.Path]:
                 "download",
                 libname,
                 "-d",
-                str(settings.LIBS_REPO_DIR),
+                str(settings.libs_dir),
                 "--trusted-host",
                 net_loc,
                 "-i",
                 pip_url,
             ],
         )
-        lib_files = list(_ for _ in settings.LIBS_REPO_DIR.rglob(f"{match_name}*"))
+        lib_files = list(_ for _ in settings.libs_dir.rglob(f"{match_name}*"))
 
     if not len(lib_files):
         logging.error(f"[!!!] Download wheel [{libname}] error, {match_name=}")

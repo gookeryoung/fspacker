@@ -24,37 +24,37 @@ class RuntimePacker(BasePacker):
             self.fetch_runtime()
 
         logging.info(
-            f"Unpack runtime zip file: [{settings.EMBED_FILE_PATH.name}]->[{dest.relative_to(target.root_dir)}]"
+            f"Unpack runtime zip file: [{settings.embed_filepath.name}]->[{dest.relative_to(target.root_dir)}]"
         )
-        shutil.unpack_archive(settings.EMBED_FILE_PATH, dest, "zip")
+        shutil.unpack_archive(settings.embed_filepath, dest, "zip")
 
     @staticmethod
     def fetch_runtime():
         """Fetch runtime zip file"""
 
-        if settings.EMBED_FILE_PATH.exists():
+        if settings.embed_filepath.exists():
             logging.info(
-                f"Compare file [{settings.EMBED_FILE_PATH.name}] with local config checksum"
+                f"Compare file [{settings.embed_filepath.name}] with local config checksum"
             )
             src_checksum = settings.config.get("file.embed.checksum", "")
-            dst_checksum = calc_checksum(settings.EMBED_FILE_PATH)
+            dst_checksum = calc_checksum(settings.embed_filepath)
             if src_checksum == dst_checksum:
                 logging.info("Checksum matches!")
                 return
 
         fastest_url = get_fastest_embed_url()
-        archive_url = f"{fastest_url}{settings.PYTHON_VER}/{settings.EMBED_FILE_NAME}"
+        archive_url = f"{fastest_url}{settings.python_ver}/{settings.embed_file_name}"
         with urlopen(archive_url) as url:
             runtime_files = url.read()
 
         logging.info(f"Download embed runtime from [{fastest_url}]")
         t0 = time.perf_counter()
-        with open(settings.EMBED_FILE_PATH, "wb") as f:
+        with open(settings.embed_filepath, "wb") as f:
             f.write(runtime_files)
         logging.info(
             f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s."
         )
 
-        checksum = calc_checksum(settings.EMBED_FILE_PATH)
+        checksum = calc_checksum(settings.embed_filepath)
         logging.info(f"Write checksum [{checksum}] into config file")
         settings.config["file.embed.checksum"] = checksum

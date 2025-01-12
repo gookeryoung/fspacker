@@ -46,7 +46,7 @@ def get_libname(libname: str) -> str:
 
 
 def _map_libname(libname: str) -> str:
-    if libname in settings.LIBNAME_MAPPER:
-        return settings.LIBNAME_MAPPER[libname]
+    if libname in settings.libname_mapper:
+        return settings.libname_mapper[libname]
 
     return libname

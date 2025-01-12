@@ -1,6 +1,9 @@
+[project]
+dynamic = ["version"]
+
 [tool.poetry]
 name = "fspacker"
-version = "0.6.0"
+version = "0.0.0"
 description = ""
 authors = ["gooker_young <gooker_young@qq.com>"]
 readme = "README.md"
@@ -40,6 +43,21 @@ setuptools = "~75"
 sphinx = "~7"
 sphinx-autodoc-typehints = "~2"
 
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "pep440"
+
+
+[tool.poetry-dynamic-versioning.files."fspacker/__init__.py"]
+persistent-substitution = true
+initial-content = """
+   These version placeholders will be replaced later during substitution.
+  __version__ = "0.6.0"
+  __version_tuple__ = (0, 6, 0)
+"""
+
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
+build-backend = "poetry_dynamic_versioning.backend"

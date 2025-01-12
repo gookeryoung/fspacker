@@ -19,9 +19,7 @@ def _get_libs_repo() -> typing.Dict[str, LibraryInfo]:
 
     if not len(_extern_libs_repo):
         lib_files = list(
-            _
-            for _ in settings.LIBS_REPO_DIR.rglob("*")
-            if _.suffix in (".whl", ".tar.gz")
+            _ for _ in settings.libs_dir.rglob("*") if _.suffix in (".whl", ".tar.gz")
         )
         for lib_file in lib_files:
             info = LibraryInfo.from_filepath(lib_file)
@@ -37,7 +35,7 @@ def _get_builtin_repo() -> typing.Set[str]:
     global _builtin_libs_repo
 
     if not len(_builtin_libs_repo):
-        _builtin_libs_repo = set(stdlib_list.stdlib_list(settings.PYTHON_VER_SHORT))
+        _builtin_libs_repo = set(stdlib_list.stdlib_list(settings.python_ver_short))
         logging.info(f"Parse built-in libs: total=[{len(_builtin_libs_repo)}]")
 
     return _builtin_libs_repo
