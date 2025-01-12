@@ -1,8 +1,8 @@
 import logging
 import pathlib
 
+from fspacker.conf.settings import settings
 from fspacker.parsers.base import BaseParser
-from fspacker.settings import settings
 
 
 class FolderParser(BaseParser):

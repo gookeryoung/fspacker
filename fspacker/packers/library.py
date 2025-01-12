@@ -16,7 +16,8 @@ from fspacker.packers.libspec.sci import (
 )
 from fspacker.parsers.target import PackTarget
 from fspacker.utils.libs import install_lib
-from fspacker.utils.repo import get_libs_repo, get_libname
+from fspacker.core.libraries import get_libname
+from fspacker.utils.resources import resources
 
 __all__ = [
     "LibraryPacker",
@@ -42,7 +43,6 @@ class LibraryPacker(BasePacker):
             pandas=PandasSpecPacker(self),
             torch=TorchSpecPacker(self),
         )
-        self.libs_repo = get_libs_repo()
 
     def pack(self, target: PackTarget):
         for lib in set(target.libs):
@@ -60,7 +60,7 @@ class LibraryPacker(BasePacker):
         logging.info(f"Start packing [{target.libs}] with default")
         for lib in list(target.libs):
             lib = get_libname(lib)
-            if lib in self.libs_repo.keys():
+            if lib in resources.LIBS_REPO.keys():
                 self.SPECS["default"].pack(lib, target=target)
             else:
                 logging.error(f"[!!!] Lib [{lib}] for [{lib}] not found in repo")

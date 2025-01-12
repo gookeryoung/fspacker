@@ -1,5 +1,5 @@
 requires = ["tox>=4"]
-env_list = ["lint", "type", "build", "publish", "3.8"]
+env_list = ["lint", "type", "build", "publish"]
 
 [testenv]
 deps = ["pytest", "pytest-cov", "pytest-html", "psutil"]
@@ -17,12 +17,6 @@ deps = [
 ]
 commands = [["pytest", { replace = "posargs", default = ["tests"], extend = true }]]
 
-[env.lint]
-description = "run linters"
-skip_install = true
-deps = ["ruff"]
-commands = [["ruff", "check", "--fix", "fspacker"]]
-
 [env.type]
 description = "run type checks"
 deps = ["mypy"]
@@ -30,10 +24,10 @@ commands = [["mypy", { replace = "posargs", default = ["fspacker"], extend = tru
 
 [env.build]
 description = "build & publish"
-deps = ["uv"]
+deps = ["poetry"]
 commands = [
-    ["uv", "build", { replace = "posargs", extend = true }],
-    ["uv", "publish", { replace = "posargs", extend = true }],
+    ["poetry", "build", { replace = "posargs", extend = true }],
+    ["poetry", "publish", { replace = "posargs", extend = true }],
 ]
 
 

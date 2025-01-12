@@ -3,11 +3,10 @@ import shutil
 import time
 from urllib.request import urlopen
 
+from fspacker.conf.settings import settings
 from fspacker.packers.base import BasePacker
 from fspacker.parsers.target import PackTarget
-from fspacker.settings import settings
 from fspacker.utils.checksum import calc_checksum
-from fspacker.utils.config import ConfigManager
 from fspacker.utils.url import get_fastest_embed_url
 
 
@@ -21,8 +20,7 @@ class RuntimePacker(BasePacker):
             logging.info("Runtime folder exists, skip")
             return
 
-        config = ConfigManager.get_instance()
-        if not config["mode.offline"]:
+        if not settings.CONFIG["mode.offline"]:
             self.fetch_runtime()
 
         logging.info(
@@ -34,10 +32,11 @@ class RuntimePacker(BasePacker):
     def fetch_runtime():
         """Fetch runtime zip file"""
 
-        config = ConfigManager.get_instance()
         if settings.EMBED_FILE_PATH.exists():
-            logging.info(f"Compare file [{settings.EMBED_FILE_PATH.name}] with local config checksum")
-            src_checksum = config["file.embed.checksum"]
+            logging.info(
+                f"Compare file [{settings.EMBED_FILE_PATH.name}] with local config checksum"
+            )
+            src_checksum = settings.CONFIG.get("file.embed.checksum", "")
             dst_checksum = calc_checksum(settings.EMBED_FILE_PATH)
             if src_checksum == dst_checksum:
                 logging.info("Checksum matches!")
@@ -52,8 +51,10 @@ class RuntimePacker(BasePacker):
         t0 = time.perf_counter()
         with open(settings.EMBED_FILE_PATH, "wb") as f:
             f.write(runtime_files)
-        logging.info(f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s.")
+        logging.info(
+            f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s."
+        )
 
         checksum = calc_checksum(settings.EMBED_FILE_PATH)
         logging.info(f"Write checksum [{checksum}] into config file")
-        config["file.embed.checksum"] = checksum
+        settings.CONFIG["file.embed.checksum"] = checksum

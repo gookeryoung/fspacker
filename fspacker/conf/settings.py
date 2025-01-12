@@ -1,7 +1,9 @@
+import atexit
 import os
 import pathlib
 import platform
 import typing
+import rtoml
 
 __all__ = [
     "settings",
@@ -10,6 +12,7 @@ __all__ = [
 
 _libs_dir: typing.Optional[pathlib.Path] = None
 _cache_dir: typing.Optional[pathlib.Path] = None
+_config: typing.Dict[str, typing.Any] = {}
 
 
 def _get_cache_dir() -> pathlib.Path:
@@ -30,16 +33,38 @@ def _get_cache_dir() -> pathlib.Path:
 def _get_libs_dir() -> pathlib.Path:
     """Libs directory for fspacker, use user document if not exist."""
 
-    global _cache_dir
+    global _libs_dir
 
-    if _cache_dir is None:
+    if _libs_dir is None:
         cache_env = os.getenv("FSPACKER_LIBS")
         if cache_env is not None and (cache_path := pathlib.Path(cache_env)).exists():
-            _cache_dir = cache_path
+            _libs_dir = cache_path
         else:
-            _cache_dir = _get_cache_dir() / "libs-repo"
+            _libs_dir = _get_cache_dir() / "libs-repo"
 
-    return _cache_dir
+    return _libs_dir
+
+
+def _get_config() -> typing.Dict[str, typing.Any]:
+    """Read config from `config.toml`."""
+
+    global _config
+
+    if not len(_config):
+        config_file = _get_cache_dir() / "config.toml"
+        if config_file.exists():
+            _config = rtoml.load(config_file)
+
+    return _config
+
+
+def _save_config() -> None:
+    """Save config file while exiting."""
+    global _config
+
+    if len(_config):
+        config_file = _get_cache_dir() / "config.toml"
+        rtoml.dump(_config, config_file, pretty=True, none_value=None)
 
 
 class Settings:
@@ -51,8 +76,9 @@ class Settings:
     MACHINE = platform.machine().lower()
 
     # global
+    CONFIG = _get_config()
     CACHE_DIR = _get_cache_dir()
-    ASSETS_DIR = pathlib.Path(__file__).parent / "assets"
+    ASSETS_DIR = pathlib.Path(__file__).parent.parent / "assets"
     # resource files and folders
     RES_ENTRIES = (
         "assets",
@@ -113,5 +139,10 @@ class Settings:
 
         return cls._instance
 
+    @classmethod
+    def save_config(cls):
+        _save_config()
+
 
 settings = Settings.get_instance()
+atexit.register(settings.save_config)

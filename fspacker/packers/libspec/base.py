@@ -4,7 +4,7 @@ import typing
 from fspacker.packers.base import BasePacker
 from fspacker.parsers.target import PackTarget
 from fspacker.utils.libs import unpack_zipfile, install_lib
-from fspacker.utils.repo import get_libs_repo
+from fspacker.utils.resources import resources
 
 
 class LibSpecPackerMixin:
@@ -43,7 +43,7 @@ class DefaultLibrarySpecPacker(LibSpecPackerMixin):
     def pack(self, lib: str, target: PackTarget):
         if lib not in target.lib_folders:
             logging.info(f"Packing [{lib}], using [default] lib spec")
-            info = get_libs_repo().get(lib)
+            info = resources.LIBS_REPO.get(lib)
             if info.filepath.suffix == ".whl":
                 install_lib(lib, target)
             elif info.filepath.suffix == ".gz":

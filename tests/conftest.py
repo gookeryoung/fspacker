@@ -30,7 +30,9 @@ def _call_exec(app: str, timeout=TEST_CALL_TIMEOUT):
                     proc.terminate()
                     return True
                 else:
-                    print(f"App [{app}]exited prematurely with return code [{proc.returncode}].")
+                    print(
+                        f"App [{app}]exited prematurely with return code [{proc.returncode}]."
+                    )
                     return False
 
             time.sleep(1)

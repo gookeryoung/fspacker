@@ -6,8 +6,8 @@ from io import StringIO
 
 from fspacker.parsers.base import BaseParser
 from fspacker.parsers.target import PackTarget, Dependency
-from fspacker.settings import settings
-from fspacker.utils.repo import get_builtin_lib_repo
+from fspacker.conf.settings import settings
+from fspacker.utils.resources import get_builtin_lib_repo
 
 __all__ = ("SourceParser",)
 
@@ -18,7 +18,7 @@ class SourceParser(BaseParser):
     def __init__(
         self,
         root_dir: pathlib.Path,
-        targets: typing.Dict[str, PackTarget] = None,
+        targets: typing.Optional[typing.Dict[str, PackTarget]] = None,
     ):
         super().__init__(root_dir, targets)
 
@@ -27,7 +27,7 @@ class SourceParser(BaseParser):
         self.code_text = StringIO()
         self.info = Dependency()
 
-    def parse(self, entry: pathlib.Path):
+    def parse(self, entry: pathlib.Path) -> None:
         with open(entry, encoding="utf-8") as f:
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
@@ -39,12 +39,14 @@ class SourceParser(BaseParser):
                 )
                 logging.info(f"Add pack target{self.targets[entry.stem]}")
 
-    def _parse_folder(self, filepath: pathlib.Path) -> Dependency:
-        files: typing.List[pathlib.Path] = list(_ for _ in filepath.iterdir() if _.suffix == ".py")
+    def _parse_folder(self, filepath: pathlib.Path) -> None:
+        files: typing.List[pathlib.Path] = list(
+            _ for _ in filepath.iterdir() if _.suffix == ".py"
+        )
         for file in files:
             self._parse_content(file)
 
-    def _parse_content(self, filepath: pathlib.Path) -> Dependency:
+    def _parse_content(self, filepath: pathlib.Path) -> None:
         """Analyse ast tree from source code"""
         with open(filepath, encoding="utf-8") as f:
             content = "".join(f.readlines())
@@ -64,7 +66,7 @@ class SourceParser(BaseParser):
                 for alias in node.names:
                     self._parse_import_str(alias.name)
 
-    def _parse_import_str(self, import_str: str):
+    def _parse_import_str(self, import_str: str) -> None:
         imports = import_str.split(".")
         filepath_ = self.root.joinpath(*imports)
         if filepath_.is_dir():

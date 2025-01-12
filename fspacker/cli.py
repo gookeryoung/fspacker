@@ -5,23 +5,23 @@ from dataclasses import dataclass
 
 import click
 
-from fspacker.utils.config import ConfigManager
+from fspacker.conf.settings import settings
 
 
-def _proc_directory(file: click.Path, directory: click.Path):
-    file = pathlib.Path(file) if file is not None else None
-    directory = pathlib.Path(directory)
+def _proc_directory(directory: str, file: str):
+    file_path = pathlib.Path(file)
+    dir_path = pathlib.Path(directory)
 
-    if not directory.exists():
-        logging.info(f"Directory [{directory}] doesn't exist")
+    if not dir_path.exists():
+        logging.info(f"Directory [{dir_path}] doesn't exist")
         return
 
     t0 = time.perf_counter()
-    logging.info(f"Source root directory: [{directory}]")
+    logging.info(f"Source root directory: [{dir_path}]")
 
     from fspacker.process import Processor
 
-    processor = Processor(directory, file)
+    processor = Processor(dir_path, file_path)
     processor.run()
 
     logging.info(f"Packing done! Total used: [{time.perf_counter() - t0:.2f}]s.")
@@ -38,7 +38,9 @@ class BuildOptions:
 
 @click.group(invoke_without_command=True)
 @click.option("--debug", is_flag=True, help="Debug mode, show detail information.")
-@click.option("-v", "--version", is_flag=True, help="Debug mode, show detail information.")
+@click.option(
+    "-v", "--version", is_flag=True, help="Debug mode, show detail information."
+)
 @click.pass_context
 def cli(ctx: click.Context, debug: bool, version: bool):
     ctx.obj = BuildOptions(debug=debug, version=version)
@@ -61,21 +63,28 @@ def cli(ctx: click.Context, debug: bool, version: bool):
 
 
 @cli.command()
-@click.option("-d", "--directory", default=str(pathlib.Path.cwd()), help="Input source file.")
-@click.option("-f", "--file", default=None, help="Input source file.")
-@click.option("--offline", is_flag=True, help="Offline mode, must set FSPACKER_CACHE and FSPACKER_LIBS first.")
-@click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
+@click.option(
+    "-d", "--directory", default=str(pathlib.Path.cwd()), help="Input source file."
+)
+@click.option("-f", "--file", default="", help="Input source file.")
+@click.option(
+    "--offline",
+    is_flag=True,
+    help="Offline mode, must set FSPACKER_CACHE and FSPACKER_LIBS first.",
+)
+@click.option(
+    "-a", "--archive", is_flag=True, help="Archive mode, pack as archive files."
+)
 def build(offline: bool, archive: bool, directory: str, file: str):
     logging.info(f"Current directory: [{directory}].")
-    config = ConfigManager.get_instance()
 
     if offline:
-        config["mode.offline"] = True
+        settings.CONFIG["mode.offline"] = True
 
     if archive:
-        config["mode.archive"] = True
+        settings.CONFIG["mode.archive"] = True
 
-    _proc_directory(directory=directory, file=file)
+    _proc_directory(directory, file)
 
 
 def main():

@@ -7,8 +7,9 @@ import typing
 import zipfile
 from urllib.parse import urlparse
 
-from fspacker.settings import settings
-from fspacker.utils.repo import get_libs_repo, get_libname
+from fspacker.conf.settings import settings
+from fspacker.core.libraries import get_libname
+from fspacker.utils.resources import resources
 from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import get_fastest_pip_url
 
@@ -17,19 +18,19 @@ from fspacker.utils.url import get_fastest_pip_url
 def unpack_wheel(
     libname: str,
     dest_dir: pathlib.Path,
-    patterns: typing.Set[str] = None,
-    excludes: typing.Set[str] = None,
+    patterns: typing.Optional[typing.Set[str]] = None,
+    excludes: typing.Optional[typing.Set[str]] = None,
 ) -> None:
     """Unpack wheel file into destination directory."""
 
-    excludes = {} if excludes is None else excludes
-    patterns = {} if patterns is None else patterns
+    excludes = set() if excludes is None else excludes
+    patterns = set() if patterns is None else patterns
 
     if (dest_dir / libname).exists():
         logging.info(f"Lib [{libname}] already unpacked, skip")
         return
 
-    info = get_libs_repo().get(libname)
+    info = resources.LIBS_REPO.get(libname)
     if info is not None:
         logging.info(f"Unpacking by pattern [{info.meta_data.name}]->[{dest_dir.name}]")
 
@@ -57,7 +58,7 @@ def unpack_wheel(
 
 
 @perf_tracker
-def download_wheel(libname: str) -> pathlib.Path:
+def download_wheel(libname: str) -> typing.Optional[pathlib.Path]:
     """Download wheel file for lib name, if not found in lib repo."""
     libname = get_libname(libname)
     match_name = "*".join(re.split(r"[-_]", libname))
@@ -86,13 +87,14 @@ def download_wheel(libname: str) -> pathlib.Path:
     if not len(lib_files):
         logging.error(f"[!!!] Download wheel [{libname}] error, {match_name=}")
         return None
+
     return lib_files[0]
 
 
 def remove_wheel(libname: str) -> None:
     """Remove wheel file in repo."""
 
-    info = get_libs_repo().get(libname)
+    info = resources.LIBS_REPO.get(libname)
     if info is not None:
         if info.filepath.exists():
             info.filepath.unlink()

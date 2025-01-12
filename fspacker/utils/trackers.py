@@ -2,6 +2,7 @@ import atexit
 import logging
 import os
 import time
+import typing
 from functools import wraps
 from threading import Lock
 
@@ -14,7 +15,7 @@ class PerformanceTracker:
     """Performance tracker class."""
 
     global_start_time = None
-    function_times = {}
+    function_times: typing.Dict[str, float] = {}
     total_time = 0.0
     lock = Lock()
     debug_mode = False
@@ -40,9 +41,13 @@ class PerformanceTracker:
     def finalize(cls):
         if cls.global_start_time is not None and cls.debug_mode:
             cls.update_total_time()
-            logging.debug(f"{'-' * 20}Summary{'-' * 20}\n[*] Total application runtime: {cls.total_time:.6f} seconds.")
+            logging.debug(
+                f"{'-' * 20}Summary{'-' * 20}\n[*] Total application runtime: {cls.total_time:.6f} seconds."
+            )
             for func_name, elapsed_time in cls.function_times.items():
-                percentage = (elapsed_time / cls.total_time) * 100 if cls.total_time > 0 else 0
+                percentage = (
+                    (elapsed_time / cls.total_time) * 100 if cls.total_time > 0 else 0
+                )
                 logging.debug(
                     f"Function '{func_name}' total time: {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
                 )
@@ -72,7 +77,9 @@ def perf_tracker(func):
             total_time = PerformanceTracker.total_time
             if total_time > 0:
                 percentage = (elapsed_time / total_time) * 100
-                logging.debug(f"Function '{func_name}' took {elapsed_time:.6f} seconds [{percentage:.2f}% of total].")
+                logging.debug(
+                    f"Function '{func_name}' took {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
+                )
         else:
             result = func(*args, **kwargs)
 

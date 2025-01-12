@@ -6,11 +6,13 @@ from functools import cached_property
 
 __all__ = ["Dependency", "PackTarget"]
 
-TARGET_TEMPLATE = string.Template("""
+TARGET_TEMPLATE = string.Template(
+    """
     src : [ ${SRC} ]
 sources : [ ${SOURCES} ]
    libs : [ ${LIBS} ]
-  extra : [ ${EXTRA} ]""")
+  extra : [ ${EXTRA} ]"""
+)
 
 
 @dataclasses.dataclass

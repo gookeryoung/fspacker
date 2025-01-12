@@ -62,12 +62,18 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(
+            QCoreApplication.translate("MainWindow", "MainWindow", None)
+        )
         self.action_New.setText(QCoreApplication.translate("MainWindow", "&New", None))
-        self.actionaboutQt.setText(QCoreApplication.translate("MainWindow", "aboutQt", None))
+        self.actionaboutQt.setText(
+            QCoreApplication.translate("MainWindow", "aboutQt", None)
+        )
         self.actionTEST.setText(QCoreApplication.translate("MainWindow", "TEST", None))
         self.menu_File.setTitle(QCoreApplication.translate("MainWindow", "&File", None))
         self.menu_Edit.setTitle(QCoreApplication.translate("MainWindow", "&Edit", None))
-        self.menu_About.setTitle(QCoreApplication.translate("MainWindow", "&About", None))
+        self.menu_About.setTitle(
+            QCoreApplication.translate("MainWindow", "&About", None)
+        )
 
     # retranslateUi
