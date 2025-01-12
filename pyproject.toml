@@ -49,13 +49,12 @@ enable = true
 vcs = "git"
 style = "pep440"
 
-
 [tool.poetry-dynamic-versioning.files."fspacker/__init__.py"]
 persistent-substitution = true
 initial-content = """
-   These version placeholders will be replaced later during substitution.
-  __version__ = "0.6.0"
-  __version_tuple__ = (0, 6, 0)
+# These version placeholders will be replaced later during substitution.
+__version__ = "0.0.0"
+__version_tuple__ = (0, 0, 0)
 """
 
 [build-system]
