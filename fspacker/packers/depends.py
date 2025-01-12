@@ -1,8 +1,8 @@
 import logging
 import shutil
 
+from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
-from fspacker.parsers.target import PackTarget
 
 __all__ = [
     "DependsPacker",

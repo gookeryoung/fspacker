@@ -1,10 +1,10 @@
 import logging
 import typing
 
+from fspacker.core.resources import resources
+from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
-from fspacker.parsers.target import PackTarget
 from fspacker.utils.libs import unpack_zipfile, install_lib
-from fspacker.utils.resources import resources
 
 
 class LibSpecPackerMixin:

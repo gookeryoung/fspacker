@@ -3,6 +3,7 @@ import os
 import pathlib
 import platform
 import typing
+
 import rtoml
 
 __all__ = [
@@ -11,21 +12,17 @@ __all__ = [
 
 
 _libs_dir: typing.Optional[pathlib.Path] = None
-_cache_dir: typing.Optional[pathlib.Path] = None
 _config: typing.Dict[str, typing.Any] = {}
 
 
 def _get_cache_dir() -> pathlib.Path:
     """Cache directory for fspacker, use user document if not exist."""
 
-    global _cache_dir
-
-    if _cache_dir is None:
-        cache_env = os.getenv("FSPACKER_CACHE")
-        if cache_env is not None and (cache_path := pathlib.Path(cache_env)).exists():
-            _cache_dir = cache_path
-        else:
-            _cache_dir = pathlib.Path("~").expanduser() / ".cache" / "fspacker"
+    cache_env = os.getenv("FSPACKER_CACHE")
+    if cache_env is not None:
+        _cache_dir = pathlib.Path(cache_env)
+    else:
+        _cache_dir = pathlib.Path("~").expanduser() / ".cache" / "fspacker"
 
     return _cache_dir
 
@@ -76,8 +73,6 @@ class Settings:
     MACHINE = platform.machine().lower()
 
     # global
-    CONFIG = _get_config()
-    CACHE_DIR = _get_cache_dir()
     ASSETS_DIR = pathlib.Path(__file__).parent.parent / "assets"
     # resource files and folders
     RES_ENTRIES = (
@@ -111,7 +106,7 @@ class Settings:
     )
 
     # embed
-    EMBED_REPO_DIR = CACHE_DIR / "embed-repo"
+    EMBED_REPO_DIR = _get_cache_dir() / "embed-repo"
     EMBED_FILE_NAME = f"python-{PYTHON_VER}-embed-{MACHINE}.zip"
     EMBED_FILE_PATH = EMBED_REPO_DIR / EMBED_FILE_NAME
 
@@ -138,6 +133,14 @@ class Settings:
                     directory.mkdir(parents=True)
 
         return cls._instance
+
+    @property
+    def cache_dir(self):
+        return _get_cache_dir()
+
+    @property
+    def config(self):
+        return _get_config()
 
     @classmethod
     def save_config(cls):

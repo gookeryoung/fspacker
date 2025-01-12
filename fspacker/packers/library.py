@@ -1,5 +1,8 @@
 import logging
 
+from fspacker.core.libraries import get_libname
+from fspacker.core.resources import resources
+from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
 from fspacker.packers.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packers.libspec.gui import (
@@ -14,10 +17,7 @@ from fspacker.packers.libspec.sci import (
     PandasSpecPacker,
     TorchSpecPacker,
 )
-from fspacker.parsers.target import PackTarget
 from fspacker.utils.libs import install_lib
-from fspacker.core.libraries import get_libname
-from fspacker.utils.resources import resources
 
 __all__ = [
     "LibraryPacker",

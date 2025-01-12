@@ -1,7 +1,7 @@
 import logging
 import typing
 
-from fspacker.parsers.target import PackTarget
+from fspacker.core.target import PackTarget
 
 
 class BasePacker:

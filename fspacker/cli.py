@@ -79,10 +79,10 @@ def build(offline: bool, archive: bool, directory: str, file: str):
     logging.info(f"Current directory: [{directory}].")
 
     if offline:
-        settings.CONFIG["mode.offline"] = True
+        settings.config["mode.offline"] = True
 
     if archive:
-        settings.CONFIG["mode.archive"] = True
+        settings.config["mode.archive"] = True
 
     _proc_directory(directory, file)
 

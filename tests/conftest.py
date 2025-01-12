@@ -7,12 +7,8 @@ import typing
 
 import pytest
 
-from fspacker.process import Processor
-
 CWD = pathlib.Path(__file__).parent
 DIR_EXAMPLES = CWD.parent / "examples"
-TEST_CACHE_DIR = pathlib.Path.home() / "test-cache"
-TEST_LIB_DIR = pathlib.Path.home() / "test-libs"
 
 TEST_CALL_TIMEOUT = 5
 
@@ -45,6 +41,8 @@ def _call_exec(app: str, timeout=TEST_CALL_TIMEOUT):
 
 
 def _run_project(project_dir: pathlib.Path, timeout: int = TEST_CALL_TIMEOUT):
+    from fspacker.process import Processor
+
     proc = Processor(project_dir)
     proc.run()
 
@@ -69,8 +67,6 @@ def pytest_sessionstart(session):
     """Called before each pytest session."""
 
     print(f"\nStart environment, {session=}")
-    os.environ["FSPACKER_CACHE"] = str(TEST_CACHE_DIR)
-    os.environ["FSPACKER_LIBS"] = str(TEST_LIB_DIR)
 
     # Clear all dist files before test
     dist_folders = list(x for x in DIR_EXAMPLES.rglob("dist") if x.is_dir())
@@ -82,6 +78,18 @@ def pytest_sessionfinish(session, exitstatus):
     """Called after each pytest session."""
 
     print(f"\nClear environment, {session=}, {exitstatus=}.")
+
+
+@pytest.fixture(autouse=True, scope="function")
+def set_default_dirs(monkeypatch):
+    print("\nSetting up default env:")
+    monkeypatch.setenv(
+        "FSPACKER_CACHE", str(pathlib.Path("~").expanduser() / ".cache" / "fspacker")
+    )
+    monkeypatch.setenv(
+        "FSPACKER_LIBS",
+        str(pathlib.Path("~").expanduser() / ".cache" / "fspacker" / "libs-repo"),
+    )
 
 
 @pytest.fixture

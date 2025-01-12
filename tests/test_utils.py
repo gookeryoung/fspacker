@@ -1,11 +1,11 @@
 import pathlib
 
 from fspacker.conf.settings import settings
+from fspacker.core.archive import unpack
 from fspacker.core.libraries import get_zip_meta_data
 from fspacker.utils.libs import (
     get_lib_meta_depends,
     get_lib_meta_name,
-    unpack_zipfile,
 )
 from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import (
@@ -65,8 +65,8 @@ class TestUtilsLibs:
 
     def test_unpack_zipfile(self, tmpdir):
         lib_file = download_wheel("orderedset")
-        unpack_zipfile(lib_file, tmpdir)
-        tmp_folder = pathlib.Path(tmpdir) / "orderedset"
+        unpack(lib_file, tmpdir)
+        tmp_folder = pathlib.Path(tmpdir) / lib_file.name.replace(".tar.gz", "")
         assert tmp_folder.is_dir()
 
 
@@ -92,7 +92,6 @@ class TestUrl:
 
     @perf_tracker
     def test_get_fastest_urls(self):
-        config = settings.CONFIG
-        config["fastest_pip_url"] = None
-        config["fastest_embed_url"] = None
+        settings.config["fastest_pip_url"] = None
+        settings.config["fastest_embed_url"] = None
         self.test_get_fastest_urls_from_json()

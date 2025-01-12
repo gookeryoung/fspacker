@@ -1,9 +1,9 @@
 import logging
 import shutil
 
-from fspacker.packers.libspec.base import ChildLibSpecPacker
-from fspacker.parsers.target import PackTarget
 from fspacker.conf.settings import settings
+from fspacker.core.target import PackTarget
+from fspacker.packers.libspec.base import ChildLibSpecPacker
 
 
 class PySide2Packer(ChildLibSpecPacker):

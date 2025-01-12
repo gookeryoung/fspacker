@@ -32,7 +32,7 @@ def _get_libs_repo() -> typing.Dict[str, LibraryInfo]:
 
 
 @perf_tracker
-def get_builtin_lib_repo() -> typing.Set[str]:
+def _get_builtin_repo() -> typing.Set[str]:
     """Analyse and return names of built-in libraries"""
     global _builtin_libs_repo
 
@@ -45,6 +45,7 @@ def get_builtin_lib_repo() -> typing.Set[str]:
 
 class Resources:
     LIBS_REPO = _get_libs_repo()
+    BUILTIN_REPO = _get_builtin_repo()
 
     _instance = None
 

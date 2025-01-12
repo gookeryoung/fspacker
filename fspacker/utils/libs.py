@@ -8,8 +8,8 @@ import pkginfo
 
 from fspacker.conf.settings import settings
 from fspacker.core.libraries import LibraryInfo
-from fspacker.parsers.target import PackTarget
-from fspacker.utils.resources import resources
+from fspacker.core.resources import resources
+from fspacker.core.target import PackTarget
 from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.wheel import unpack_wheel, download_wheel
 
@@ -70,7 +70,7 @@ def install_lib(
 ) -> bool:
     info: LibraryInfo = resources.LIBS_REPO.get(libname.lower())
     if info is None or not info.filepath.exists():
-        if settings.CONFIG.get("mode.offline", None) is None:
+        if settings.config.get("mode.offline", None) is None:
             logging.error(f"[!!!] Offline mode, lib [{libname}] not found")
             return False
 

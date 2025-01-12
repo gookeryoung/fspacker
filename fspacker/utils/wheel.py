@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from fspacker.conf.settings import settings
 from fspacker.core.libraries import get_libname
-from fspacker.utils.resources import resources
+from fspacker.core.resources import resources
 from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import get_fastest_pip_url
 

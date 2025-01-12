@@ -20,7 +20,7 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
 priority = "primary"
 
 [tool.poetry.scripts]
-fsp = "fspacker.__main__:main"
+fsp = "fspacker.cli:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"

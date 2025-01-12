@@ -58,19 +58,19 @@ def _get_fastest_url(urls: typing.Dict[str, str]) -> str:
 
 @perf_tracker
 def get_fastest_pip_url() -> str:
-    if fastest_url := settings.CONFIG.get("url.pip"):
+    if fastest_url := settings.config.get("url.pip"):
         return fastest_url
     else:
         fastest_url = _get_fastest_url(PIP_URL_PREFIX)
-        settings.CONFIG["url.pip"] = fastest_url
+        settings.config["url.pip"] = fastest_url
         return fastest_url
 
 
 @perf_tracker
 def get_fastest_embed_url() -> str:
-    if fastest_url := settings.CONFIG.get("url.embed", ""):
+    if fastest_url := settings.config.get("url.embed", ""):
         return fastest_url
     else:
         fastest_url = _get_fastest_url(EMBED_URL_PREFIX)
-        settings.CONFIG["url.embed"] = fastest_url
+        settings.config["url.embed"] = fastest_url
         return fastest_url

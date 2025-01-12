@@ -2,42 +2,62 @@ import ast
 import logging
 import pathlib
 import typing
+from abc import ABC, abstractmethod
 from io import StringIO
 
-from fspacker.parsers.base import BaseParser
-from fspacker.parsers.target import PackTarget, Dependency
 from fspacker.conf.settings import settings
-from fspacker.utils.resources import get_builtin_lib_repo
+from fspacker.core.resources import resources
+from fspacker.core.target import PackTarget, Dependency
 
-__all__ = ("SourceParser",)
+__all__ = ["parser_factory"]
+
+
+class BaseParser(ABC):
+    """Base class for parsers"""
+
+    @abstractmethod
+    def parse(self, entry: pathlib.Path, root_dir: pathlib.Path):
+        pass
+
+
+class FolderParser(BaseParser):
+    """Parser for folders"""
+
+    def parse(self, entry: pathlib.Path, root_dir: pathlib.Path):
+        if entry.stem.lower() in settings.IGNORE_SYMBOLS:
+            logging.info(f"Skip parsing folder: [{entry.stem}]")
+            return
+
+        for k, v in parser_factory.TARGETS.items():
+            if entry.stem in v.code:
+                v.sources.add(entry.stem)
+                logging.info(f"Update pack target: {v}")
 
 
 class SourceParser(BaseParser):
     """Parse by source code"""
 
-    def __init__(
-        self,
-        root_dir: pathlib.Path,
-        targets: typing.Optional[typing.Dict[str, PackTarget]] = None,
-    ):
-        super().__init__(root_dir, targets)
+    root_dir: pathlib.Path
+    entries: typing.Dict[str, pathlib.Path]
+    info: Dependency
+    code_text: StringIO
 
-        self.entries: typing.Dict[str, pathlib.Path] = {}
-        self.builtins = get_builtin_lib_repo()
-        self.code_text = StringIO()
+    def parse(self, entry: pathlib.Path, root_dir: pathlib.Path) -> None:
+        self.root_dir = root_dir
+        self.entries = {}
         self.info = Dependency()
+        self.code_text = StringIO()
 
-    def parse(self, entry: pathlib.Path) -> None:
         with open(entry, encoding="utf-8") as f:
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
                 self._parse_content(entry)
-                self.targets[entry.stem] = PackTarget(
+                parser_factory.TARGETS[entry.stem] = PackTarget(
                     src=entry,
                     depends=self.info,
                     code=f"{code}{self.code_text.getvalue()}",
                 )
-                logging.info(f"Add pack target{self.targets[entry.stem]}")
+                logging.info(f"Add pack target{parser_factory.TARGETS[entry.stem]}")
 
     def _parse_folder(self, filepath: pathlib.Path) -> None:
         files: typing.List[pathlib.Path] = list(
@@ -68,7 +88,7 @@ class SourceParser(BaseParser):
 
     def _parse_import_str(self, import_str: str) -> None:
         imports = import_str.split(".")
-        filepath_ = self.root.joinpath(*imports)
+        filepath_ = self.root_dir.joinpath(*imports)
         if filepath_.is_dir():
             # deps folder
             self._parse_folder(filepath_)
@@ -79,10 +99,50 @@ class SourceParser(BaseParser):
             self.info.sources.add(import_str.split(".")[0])
         else:
             import_name = import_str.split(".")[0].lower()
-            if import_name not in self.builtins:
+            if import_name not in resources.BUILTIN_REPO:
                 # ast lib
                 self.info.libs.add(import_name)
 
             # import_name needs tkinter
             if import_name in settings.TKINTER_LIBS:
                 self.info.extra.add("tkinter")
+
+
+class ParserFactory:
+    PARSERS: typing.Dict[str, BaseParser] = {}
+    TARGETS: typing.Dict[str, PackTarget] = {}
+    ROOT_DIR: typing.Optional[pathlib.Path] = None
+
+    _instance = None
+
+    def parse(self, entry: pathlib.Path, root_dir: pathlib.Path):
+        if entry.is_dir():
+            parser = self.PARSERS.get("folder", None)
+        elif entry.is_file() and entry.suffix in ".py":
+            parser = self.PARSERS.get("source", None)
+        else:
+            parser = None
+
+        if parser is not None:
+            parser.parse(entry, root_dir)
+
+    @classmethod
+    def set_root(cls, root_dir: pathlib.Path):
+        if cls._instance is None:
+            cls.get_instance()
+
+        cls._instance.ROOT = root_dir
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = ParserFactory()
+            cls._instance.PARSERS = dict(
+                folder=FolderParser(),
+                source=SourceParser(),
+            )
+
+        return cls._instance
+
+
+parser_factory = ParserFactory.get_instance()
