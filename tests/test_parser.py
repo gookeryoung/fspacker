@@ -34,7 +34,7 @@ class TestSourceParser:
     def test_source_parser(self, run_parser):
         run_parser(
             "base_helloworld",
-            {"lxml", "orderedset"},
+            {"defusedxml", "orderedset"},
             {
                 "modules",
                 "module_c",
