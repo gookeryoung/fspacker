@@ -1,10 +1,9 @@
 import bisect
 from collections import deque
 from pathlib import Path
-from random import choice
 from time import perf_counter as tpc
 from typing import Dict, NamedTuple, Tuple
-
+import secrets
 import pygame as pg
 
 
@@ -19,7 +18,7 @@ class GameSettings(NamedTuple):
     caption: str
     geometry: dict
     fps: int
-    fontsize: Dict[str, int]
+    font_size: Dict[str, int]
     colors: Dict[str, int]
     snake_init: SnakeProps
     scores: Tuple[int, ...]
@@ -31,7 +30,7 @@ GS = GameSettings(
     caption="Snake Game v1.0",
     geometry=dict(width=720, height=480, grid=24, nx=20, ny=20),
     fps=60,
-    fontsize=dict(large=30, normal=20),
+    font_size=dict(large=30, normal=20),
     colors=dict(
         snake=0x00CCCC,
         food=0xFFFF00,
@@ -44,7 +43,7 @@ GS = GameSettings(
     snake_init=SnakeProps(
         pos=(8, 5),
         length=3,
-        direction=choice(["up", "down", "left", "right"]),
+        direction=secrets.choice(["up", "down", "left", "right"]),
         speed=4,
     ),
     scores=(150, 300, 500, 750, 1100, 1500, 2000, 2500),
@@ -145,8 +144,8 @@ class Game:
     def __init__(self) -> None:
         pg.init()
         pg.display.set_caption(GS.caption)
-        self.ttf_large = pg.font.SysFont("simhei", GS.fontsize["large"])
-        self.ttf = pg.font.SysFont("simhei", GS.fontsize["normal"])
+        self.ttf_large = pg.font.SysFont("simhei", GS.font_size["large"])
+        self.ttf = pg.font.SysFont("simhei", GS.font_size["normal"])
         self.screen = pg.display.set_mode((GS.geometry["width"], GS.geometry["height"]))
         self.snake: Snake = Snake(**GS.snake_init._asdict())
         self.food: Tuple[int, int] = (0, 0)
@@ -172,7 +171,7 @@ class Game:
                 ]
             )
         ]
-        self.food = choice(foods)
+        self.food = secrets.choice(foods)
 
     def run(self) -> None:
         clock = pg.time.Clock()

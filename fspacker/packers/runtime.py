@@ -1,13 +1,31 @@
 import logging
 import shutil
+import ssl
 import time
-from urllib.request import urlopen
+import urllib.request
+from urllib.parse import urlparse
 
 from fspacker.conf.settings import settings
 from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
 from fspacker.utils.checksum import calc_checksum
 from fspacker.utils.url import get_fastest_embed_url
+
+
+def safe_urlopen(url, timeout=10):
+    """Open url safely, only allows https schema."""
+    parsed_url = urlparse(url)
+    allowed_schemes = {"https"}
+
+    if parsed_url.scheme not in allowed_schemes:
+        raise ValueError(f"Unsupported URL scheme: {parsed_url.scheme}")
+
+    # create context with ssl verification
+    context = ssl.create_default_context()
+
+    with urllib.request.urlopen(url, timeout=timeout, context=context) as response:
+        content = response.read(1024 * 1024 * 100)  # limited to 100MB
+        return content
 
 
 class RuntimePacker(BasePacker):
@@ -43,14 +61,13 @@ class RuntimePacker(BasePacker):
                 return
 
         fastest_url = get_fastest_embed_url()
-        archive_url = f"{fastest_url}{settings.python_ver}/{settings.embed_file_name}"
-        with urlopen(archive_url) as url:
-            runtime_files = url.read()
+        archive_url = f"{fastest_url}{settings.python_ver}/{settings.embed_filename}"
+        content = safe_urlopen(archive_url)
 
         logging.info(f"Download embed runtime from [{fastest_url}]")
         t0 = time.perf_counter()
         with open(settings.embed_filepath, "wb") as f:
-            f.write(runtime_files)
+            f.write(content)
         logging.info(
             f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s."
         )

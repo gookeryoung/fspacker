@@ -9,3 +9,7 @@ def main():
     function_a()
     function_b()
     module_c.function_c()
+
+
+if __name__ == '__main__':
+    main()

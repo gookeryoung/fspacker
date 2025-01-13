@@ -44,6 +44,14 @@ sphinx = "~7"
 sphinx-autodoc-typehints = "~2"
 
 
+[tool.poetry.group.test.dependencies]
+pyyaml = "^6.0.2"
+numba = "~0.58"
+cffi = "^1.17.1"
+defusedxml = "^0.7.1"
+orderedset = "^2.0.3"
+pygame = "^2.6.1"
+
 [tool.poetry-dynamic-versioning]
 enable = true
 vcs = "git"

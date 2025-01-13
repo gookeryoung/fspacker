@@ -7,7 +7,9 @@ def function_a():
     ast = CWD / "assets"
     cfg = ast / "config.yml"
 
-    config_dict = yaml.load(str(cfg), yaml.FullLoader)
-    print(f"{config_dict=}")
+    with open(cfg, "r") as f:
+        config_dict = yaml.safe_load(f)
 
+    print(f"{config_dict=}")
+    print(f"{config_dict.get('names')=}")
     function_b()

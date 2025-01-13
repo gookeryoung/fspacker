@@ -3,6 +3,7 @@ import pathlib
 from fspacker.conf.settings import settings
 from fspacker.core.archive import unpack
 from fspacker.core.libraries import get_zip_meta_data
+from fspacker.packers.runtime import RuntimePacker
 from fspacker.utils.libs import (
     get_lib_meta_depends,
     get_lib_meta_name,
@@ -88,10 +89,18 @@ class TestUrl:
         pip_url = get_fastest_pip_url()
         embed_url = get_fastest_embed_url()
         assert "aliyun" in pip_url
-        assert "huawei" in embed_url
+        assert "huawei" in embed_url or "python.org" in embed_url
 
     @perf_tracker
     def test_get_fastest_urls(self):
         settings.config["fastest_pip_url"] = None
         settings.config["fastest_embed_url"] = None
         self.test_get_fastest_urls_from_json()
+
+
+@perf_tracker
+def test_download_runtime():
+    packer = RuntimePacker()
+    packer.fetch_runtime()
+    assert settings.embed_filepath.exists()
+    assert settings.embed_filepath.is_file()

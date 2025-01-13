@@ -1,6 +1,6 @@
-import lxml
+import defusedxml
 
 
 def function_f():
     print("Called from core.module_f, in folder")
-    print(lxml.__version__)
+    print(defusedxml.__version__)

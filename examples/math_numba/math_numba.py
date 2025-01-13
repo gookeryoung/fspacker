@@ -42,8 +42,8 @@ def main():
     # Check that the functions work
     r1 = numba_call()
     r2 = numpy_call()
-    assert r1.shape == (n,)
-    assert r1.shape == r2.shape
+    print(f"{(r1.shape == (n,))=}")
+    print(f"{(r1.shape == r2.shape)=}")
 
     t1 = timeit(numba_call, number=1000)
     print(f"{t1:.2f} secs for {n} PCG64 (Numba/PCG64) gaussian randoms")

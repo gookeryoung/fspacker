@@ -22,7 +22,6 @@ EMBED_URL_PREFIX: typing.Dict[str, str] = dict(
 PIP_URL_PREFIX: typing.Dict[str, str] = dict(
     aliyun="https://mirrors.aliyun.com/pypi/simple/",
     tsinghua="https://pypi.tuna.tsinghua.edu.cn/simple/",
-    douban="http://pypi.douban.com/simple/",
     ustc="https://pypi.mirrors.ustc.edu.cn/simple/",
     huawei="https://mirrors.huaweicloud.com/repository/pypi/simple/",
 )

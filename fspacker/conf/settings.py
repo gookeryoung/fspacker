@@ -152,7 +152,7 @@ class Settings:
 
     @property
     def embed_filepath(self):
-        return self.embed_dir / self.embed_file_name
+        return self.embed_dir / self.embed_filename
 
     @property
     def config(self):
