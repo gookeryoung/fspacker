@@ -5,6 +5,7 @@ import subprocess
 import time
 import typing
 
+import psutil
 import pytest
 
 CWD = pathlib.Path(__file__).parent
@@ -30,6 +31,10 @@ def _call_exec(app: str, timeout=TEST_CALL_TIMEOUT):
                         f"App [{app}]exited prematurely with return code [{proc.returncode}]."
                     )
                     return False
+
+            if not any(proc.pid == p.pid for p in psutil.process_iter(["pid"])):
+                print(f"Process [{proc.pid}] not found among running processes.")
+                return False
 
             time.sleep(1)
         print(f"App [{app}] type: [GUI],  run successfully.")
@@ -63,26 +68,17 @@ def _run_project(project_dir: pathlib.Path, timeout: int = TEST_CALL_TIMEOUT):
     return True
 
 
-def pytest_sessionstart(session):
-    """Called before each pytest session."""
-
-    print(f"\nStart environment, {session=}")
-
-    # Clear all dist files before test
+@pytest.fixture(autouse=True)
+def clear_dist_folders():
+    print(f"Clear all dist folders.")
     dist_folders = list(x for x in DIR_EXAMPLES.rglob("dist") if x.is_dir())
     for dist_folder in dist_folders:
         shutil.rmtree(dist_folder)
 
 
-def pytest_sessionfinish(session, exitstatus):
-    """Called after each pytest session."""
-
-    print(f"\nClear environment, {session=}, {exitstatus=}.")
-
-
-@pytest.fixture(autouse=True, scope="function")
+@pytest.fixture(autouse=True)
 def set_default_dirs(monkeypatch):
-    print("\nSetting up default env:")
+    print("Setting up default env.")
     monkeypatch.setenv(
         "FSPACKER_CACHE", str(pathlib.Path("~").expanduser() / ".cache" / "fspacker")
     )

@@ -30,30 +30,32 @@ def run_parser(dir_examples):
     return runner
 
 
-class TestSourceParser:
-    def test_source_parser(self, run_parser):
-        run_parser(
-            "base_helloworld",
-            {"defusedxml", "orderedset"},
-            {
-                "modules",
-                "module_c",
-                "module_d",
-                "core",
-                "mathtools",
-            },
-        )
+def test_source_parser(run_parser):
+    run_parser(
+        "base_helloworld",
+        {"defusedxml", "orderedset"},
+        {
+            "modules",
+            "module_c",
+            "module_d",
+            "core",
+            "mathtools",
+        },
+    )
 
-    def test_gui_tkinter(self, run_parser):
-        run_parser(
-            "gui_tkinter",
-            {"yaml"},
-            {"modules", "config", "assets"},
-            {"tkinter"},
-        )
 
-    def test_gui_pyside2(self, run_parser):
-        run_parser("gui_pyside2", {"pyside2"}, {"depends", "assets", "resources_rc"})
+def test_gui_tkinter(run_parser):
+    run_parser(
+        "gui_tkinter",
+        {"yaml"},
+        {"modules", "config", "assets"},
+        {"tkinter"},
+    )
 
-    def test_math_numba(self, run_parser):
-        run_parser("math_numba", {"numba", "numpy"})
+
+def test_gui_pyside2(run_parser):
+    run_parser("gui_pyside2", {"pyside2"}, {"depends", "assets", "resources_rc"})
+
+
+def test_math_numba(run_parser):
+    run_parser("math_numba", {"numba", "numpy"})

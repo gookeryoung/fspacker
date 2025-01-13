@@ -6,6 +6,7 @@ import typing
 import pkginfo
 
 from fspacker.conf.settings import settings
+from fspacker.core.archive import unpack
 from fspacker.core.libraries import LibraryInfo
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
@@ -49,6 +50,10 @@ def install_lib(
     excludes: typing.Optional[typing.Set[str]] = None,
     extend_depends: bool = False,
 ) -> bool:
+    if (target.packages_dir / libname).exists():
+        logging.info("Lib file already exists, exit.")
+        return
+
     info: LibraryInfo = resources.LIBS_REPO.get(libname.lower())
     if info is None or not info.filepath.exists():
         if settings.config.get("mode.offline", None) is None:
@@ -58,6 +63,7 @@ def install_lib(
         filepath = download_wheel(libname)
         if filepath and filepath.exists():
             resources.LIBS_REPO[libname] = LibraryInfo.from_filepath(filepath)
+            unpack(filepath, target.packages_dir)
     else:
         filepath = info.filepath
         unpack_wheel(libname, target.packages_dir, patterns, excludes)

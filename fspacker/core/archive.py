@@ -1,8 +1,8 @@
 import logging
 import pathlib
-import shutil
 from abc import ABC, abstractmethod
 
+from fspacker.core.commands import commands
 
 __all__ = ["unpack"]
 
@@ -19,8 +19,8 @@ class TarArchive(BaseArchive):
     """Tar file unpacker class."""
 
     def unpack(self, filepath: pathlib.Path, dest_dir: pathlib.Path):
-        logging.info(f"Unpacking tar file: [{filepath}]->[{dest_dir}]")
-        shutil.unpack_archive(filepath, dest_dir)
+        logging.info(f"Unpacking tar file using pip: [{filepath}]->[{dest_dir}]")
+        commands.pip(["install", str(filepath), "-t", str(dest_dir)])
 
 
 class ArchiveFactory:

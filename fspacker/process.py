@@ -35,13 +35,10 @@ class Processor:
         )
 
     def run(self):
-        if self.file:
-            entries = [self.file]
-        else:
-            entries = sorted(
-                list(_ for _ in self.root.iterdir() if self._check_entry(_)),
-                key=lambda x: x.is_dir(),
-            )
+        entries = sorted(
+            list(_ for _ in self.root.iterdir() if self._check_entry(_)),
+            key=lambda x: x.is_dir(),
+        )
 
         for entry in entries:
             parser_factory.parse(entry, root_dir=self.root)

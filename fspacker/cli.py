@@ -10,7 +10,7 @@ from fspacker.conf.settings import settings
 
 def _proc_directory(directory: str, file: str):
     file_path = pathlib.Path(file)
-    dir_path = pathlib.Path(directory)
+    dir_path = pathlib.Path(directory) if directory is not None else pathlib.Path.cwd()
 
     if not dir_path.exists():
         logging.info(f"Directory [{dir_path}] doesn't exist")
@@ -30,10 +30,10 @@ def _proc_directory(directory: str, file: str):
 @dataclass
 class BuildOptions:
     debug: bool
-    version: bool
+    show_version: bool
 
     def __repr__(self):
-        return f"Build mode: [debug: {self.debug}]."
+        return f"Build mode: [debug: {self.debug}, version: {self.show_version}]."
 
 
 @click.group(invoke_without_command=True)
@@ -43,7 +43,7 @@ class BuildOptions:
 )
 @click.pass_context
 def cli(ctx: click.Context, debug: bool, version: bool):
-    ctx.obj = BuildOptions(debug=debug, version=version)
+    ctx.obj = BuildOptions(debug=debug, show_version=version)
 
     if debug:
         logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
@@ -63,9 +63,7 @@ def cli(ctx: click.Context, debug: bool, version: bool):
 
 
 @cli.command()
-@click.option(
-    "-d", "--directory", default=str(pathlib.Path.cwd()), help="Input source file."
-)
+@click.option("-d", "--directory", default=None, help="Input source file.")
 @click.option("-f", "--file", default="", help="Input source file.")
 @click.option(
     "--offline",

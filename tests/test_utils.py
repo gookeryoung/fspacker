@@ -67,7 +67,8 @@ class TestUtilsLibs:
     def test_unpack_zipfile(self, tmpdir):
         lib_file = download_wheel("orderedset")
         unpack(lib_file, tmpdir)
-        tmp_folder = pathlib.Path(tmpdir) / lib_file.name.replace(".tar.gz", "")
+        libname = get_lib_meta_name(lib_file)
+        tmp_folder = pathlib.Path(tmpdir) / libname
         assert tmp_folder.is_dir()
 
 
