@@ -14,13 +14,22 @@ class BaseArchive(ABC):
     def unpack(self, filepath: pathlib.Path, dest_dir: pathlib.Path):
         pass
 
+    def __repr__(self):
+        return self.__class__.__name__
+
 
 class TarArchive(BaseArchive):
     """Tar file unpacker class."""
 
     def unpack(self, filepath: pathlib.Path, dest_dir: pathlib.Path):
-        logging.info(f"Unpacking tar file using pip: [{filepath}]->[{dest_dir}]")
         commands.pip(["install", str(filepath), "-t", str(dest_dir)])
+
+
+class WheelArchive(BaseArchive):
+    """Wheel file unpacker class."""
+
+    def unpack(self, filepath: pathlib.Path, dest_dir: pathlib.Path):
+        pass
 
 
 class ArchiveFactory:
@@ -28,6 +37,7 @@ class ArchiveFactory:
 
     ARCHIVES = dict(
         gz=TarArchive(),
+        whl=WheelArchive(),
     )
     SUFFIXES = (".whl", ".gz")
 
@@ -35,9 +45,11 @@ class ArchiveFactory:
 
     def unpack(self, filepath: pathlib.Path, dest_dir: pathlib.Path):
         if filepath.exists() and filepath.suffix in self.SUFFIXES:
-            logging.info(f"Unpacking file [{filepath}]->[{dest_dir}]")
             archive = self.ARCHIVES.get(filepath.suffix[1:].lower(), None)
             if archive is not None:
+                logging.info(
+                    f"Unpack file [{filepath}]->[{dest_dir}], using [{archive}]."
+                )
                 archive.unpack(filepath, dest_dir)
                 return
 

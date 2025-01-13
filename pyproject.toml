@@ -1,4 +1,7 @@
 [project]
+name = "fspacker"
+description = "Fast & Simple Packer toolset for python."
+readme = "README.md"
 dynamic = ["version"]
 
 [tool.poetry]
@@ -14,7 +17,8 @@ click = "^8.1.8"
 pkginfo = "^1.12.0"
 rtoml = "~0.11"
 stdlib-list = "~0.10"
-requests = "~2.29"
+requests = "^2.32.3"
+types-requests = "^2.32.0.20241016"
 
 [[tool.poetry.source]]
 name = "tsinghua"
