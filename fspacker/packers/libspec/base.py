@@ -1,10 +1,11 @@
 import logging
 import typing
 
+from fspacker.core.archive import unpack
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
-from fspacker.utils.libs import unpack_zipfile, install_lib
+from fspacker.utils.libs import install_lib
 
 
 class LibSpecPackerMixin:
@@ -47,7 +48,7 @@ class DefaultLibrarySpecPacker(LibSpecPackerMixin):
             if info.filepath.suffix == ".whl":
                 install_lib(lib, target)
             elif info.filepath.suffix == ".gz":
-                unpack_zipfile(info.filepath, target.packages_dir)
+                unpack(info.filepath, target.packages_dir)
             else:
                 logging.error(f"[!!!] Lib {lib} not found!")
         else:
