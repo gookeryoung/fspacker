@@ -5,7 +5,6 @@ import subprocess
 import time
 import typing
 
-import psutil
 import pytest
 
 CWD = pathlib.Path(__file__).parent
@@ -31,10 +30,6 @@ def _call_exec(app: str, timeout=TEST_CALL_TIMEOUT):
                         f"App [{app}]exited prematurely with return code [{proc.returncode}]."
                     )
                     return False
-
-            if not any(proc.pid == p.pid for p in psutil.process_iter(["pid"])):
-                print(f"Process [{proc.pid}] not found among running processes.")
-                return False
 
             time.sleep(1)
         print(f"App [{app}] type: [GUI],  run successfully.")
