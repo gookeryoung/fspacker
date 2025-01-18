@@ -36,24 +36,13 @@ pytest-benchmark = "~4"
 pytest-html = "~4.1"
 pytest-cov = "~4"
 mypy = "^1.14.1"
-pysnooper = "^1.2.1"
 black = "~24"
-psutil = "^6.1.1"
-setuptools = "~75"
 
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "~7"
 sphinx-autodoc-typehints = "~2"
 
-
-[tool.poetry.group.test.dependencies]
-pyyaml = "^6.0.2"
-numba = "~0.58"
-cffi = "^1.17.1"
-defusedxml = "^0.7.1"
-orderedset = "^2.0.3"
-pygame = "^2.6.1"
 
 [tool.poetry-dynamic-versioning]
 enable = true
