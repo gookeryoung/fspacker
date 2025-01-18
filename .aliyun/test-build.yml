@@ -1,0 +1,61 @@
+sources:
+  fspacker:
+    type: codeup
+    name: fspacker
+    endpoint: https://codeup.aliyun.com/678008df52027c9a54e70902/pypi/fspacker.git
+    branch: develop
+    certificate:
+      type: serviceConnection
+      serviceConnection: x9jakytjkjrnm8sb
+variables:
+  - key: PYPI_TSINGHUA
+    type: String
+    value: "https://pypi.tuna.tsinghua.edu.cn/simple/"
+  - key: PYPI_ALIYUN
+    type: String
+    value: "https://mirrors.aliyun.com/pypi/simple/"
+  - key: CACHE_DIR
+    type: String
+    value: "/root/.m2/cache"
+stages:
+  scan_stage:
+    name: "测试"
+    jobs:
+      scan:
+        name: "Python 代码扫描"
+        runsOn: public/cn-hangzhou
+        steps:
+          python_code_scan_step:
+            name: "Python 代码扫描"
+            step: "PythonCodeScan"
+            with:
+              pythonVersion: "3.8"
+              incrementalScan: true
+              exclusion: |
+                examples/
+                tests/
+                docs/
+      test:
+        name: "Python 单元测试"
+        steps:
+          install:
+            name: "Python 环境下载"
+            step: Command
+            with:
+              givenExecShell: bash
+              run: |
+                wget -qO- https://astral.sh/uv/install.sh | sh
+                uv sync
+          test:
+              name: "Python 测试"
+              step: PythonUnitTest
+              with:
+                pythonVersion: "3.8"
+                run: |
+                  uv run pytest --html=report/index.html
+                reportDir: report
+                reportIndex: index.html
+                qualityGate:
+                  - key: passRate
+                    operator: ge
+                    threshold: 95
