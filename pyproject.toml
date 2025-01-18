@@ -21,8 +21,8 @@ requests = "^2.32.3"
 types-requests = "^2.32.0.20241016"
 
 [[tool.poetry.source]]
-name = "tsinghua"
-url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
+name = "aliyun"
+url = "http://mirrors.aliyun.com/pypi/simple/"
 priority = "primary"
 
 [tool.poetry.scripts]
