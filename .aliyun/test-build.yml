@@ -38,21 +38,15 @@ stages:
       test:
         name: "Python 单元测试"
         steps:
-          install:
-            name: "Python 环境下载"
-            step: Command
-            with:
-              givenExecShell: bash
-              run: |
-                wget -qO- https://astral.sh/uv/install.sh | sh
-                uv sync
           test:
               name: "Python 测试"
               step: PythonUnitTest
               with:
                 pythonVersion: "3.8"
                 run: |
-                  uv run pytest --html=report/index.html
+                  pip install poetry -i ${PYPI_ALIYUN}
+                  poetry install
+                  poetry run pytest --html=report/index.html
                 reportDir: report
                 reportIndex: index.html
                 qualityGate:
