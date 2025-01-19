@@ -9,7 +9,7 @@ from fspacker.conf.settings import settings
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget, Dependency
 
-__all__ = ["parser_factory"]
+__all__ = ["parsers"]
 
 
 class BaseParser(ABC):
@@ -28,7 +28,7 @@ class FolderParser(BaseParser):
             logging.info(f"Skip parsing folder: [{entry.stem}]")
             return
 
-        for k, v in parser_factory.TARGETS.items():
+        for k, v in parsers.TARGETS.items():
             if entry.stem in v.code:
                 v.sources.add(entry.stem)
                 logging.info(f"Update pack target: {v}")
@@ -52,12 +52,12 @@ class SourceParser(BaseParser):
             code = "".join(f.readlines())
             if "def main" in code or "__main__" in code:
                 self._parse_content(entry)
-                parser_factory.TARGETS[entry.stem] = PackTarget(
+                parsers.TARGETS[entry.stem] = PackTarget(
                     src=entry,
                     depends=self.info,
                     code=f"{code}{self.code_text.getvalue()}",
                 )
-                logging.info(f"Add pack target{parser_factory.TARGETS[entry.stem]}")
+                logging.info(f"Add pack target{parsers.TARGETS[entry.stem]}")
 
     def _parse_folder(self, filepath: pathlib.Path) -> None:
         files: typing.List[pathlib.Path] = list(
@@ -137,4 +137,4 @@ class ParserFactory:
         return cls._instance
 
 
-parser_factory = ParserFactory.get_instance()
+parsers = ParserFactory.get_instance()

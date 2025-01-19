@@ -2,7 +2,7 @@ import typing
 
 import pytest
 
-from fspacker.core.parsers import parser_factory
+from fspacker.core.parsers import parsers
 
 
 @pytest.fixture
@@ -15,14 +15,14 @@ def run_parser(dir_examples):
         sources: typing.Optional[typing.Set[str]] = None,
         extra: typing.Optional[typing.Set[str]] = None,
     ) -> None:
-        parser_factory.parse(dir_examples / arg / f"{arg}.py", dir_examples / arg)
-        assert arg in parser_factory.TARGETS.keys()
+        parsers.parse(dir_examples / arg / f"{arg}.py", dir_examples / arg)
+        assert arg in parsers.TARGETS.keys()
 
         libs = set() if libs is None else libs
         sources = set() if sources is None else sources
         extra = set() if extra is None else extra
 
-        target = parser_factory.TARGETS.get(arg)
+        target = parsers.TARGETS.get(arg)
         assert target.libs == libs
         assert target.sources == sources
         assert target.extra == extra

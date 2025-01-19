@@ -1,7 +1,7 @@
 import pathlib
 import typing
 
-from fspacker.core.parsers import parser_factory
+from fspacker.core.parsers import parsers
 from fspacker.packers.base import BasePacker
 from fspacker.packers.depends import DependsPacker
 from fspacker.packers.entry import EntryPacker
@@ -41,8 +41,8 @@ class Processor:
         )
 
         for entry in entries:
-            parser_factory.parse(entry, root_dir=self.root)
+            parsers.parse(entry, root_dir=self.root)
 
-        for target in parser_factory.TARGETS.values():
+        for target in parsers.TARGETS.values():
             for packer in self.packers.values():
                 packer.pack(target)

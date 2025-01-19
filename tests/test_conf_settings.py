@@ -48,5 +48,6 @@ def test_config(tmpdir):
     from fspacker.conf.settings import settings
 
     settings.config["mode.offline"] = True
-    assert settings.config.get("mode.offline")
+    assert settings.config.get("mode.offline") is True
     assert settings.config.get("mode.not_exist", None) is None
+    assert settings.config.get("mode.debug", None) is None

@@ -1,10 +1,9 @@
 import atexit
+import json
 import os
 import pathlib
 import platform
 import typing
-
-import rtoml
 
 __all__ = [
     "settings",
@@ -38,14 +37,15 @@ def _get_libs_dir() -> pathlib.Path:
 
 
 def _get_config() -> typing.Dict[str, typing.Any]:
-    """Read config from `config.toml`."""
+    """Read config from `config.json`."""
 
     global _config
 
     if not len(_config):
-        config_file = _get_cache_dir() / "config.toml"
+        config_file = _get_cache_dir() / "config.json"
         if config_file.exists():
-            _config = rtoml.load(config_file)
+            with open(config_file, "r") as file:
+                _config = json.load(file)
 
     return _config
 
@@ -55,8 +55,9 @@ def _save_config() -> None:
     global _config
 
     if len(_config):
-        config_file = _get_cache_dir() / "config.toml"
-        rtoml.dump(_config, config_file, pretty=True, none_value=None)
+        config_file = _get_cache_dir() / "config.json"
+        with open(config_file, "w") as file:
+            json.dump(_config, file, ensure_ascii=True, check_circular=True, indent=4)
 
 
 class Settings:
