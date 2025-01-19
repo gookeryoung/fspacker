@@ -5,12 +5,13 @@ import typing
 import requests
 
 from fspacker.conf.settings import settings
-from fspacker.utils import trackers
+from fspacker.utils.trackers import perf_tracker
 
 __all__ = [
     "get_fastest_embed_url",
     "get_fastest_pip_url",
 ]
+
 
 # python mirrors
 EMBED_URL_PREFIX: typing.Dict[str, str] = dict(
@@ -55,7 +56,7 @@ def _get_fastest_url(urls: typing.Dict[str, str]) -> str:
     return fastest_url
 
 
-@trackers.track_function
+@perf_tracker
 def get_fastest_pip_url() -> str:
     if fastest_url := settings.config.get("url.pip"):
         return fastest_url
@@ -65,7 +66,7 @@ def get_fastest_pip_url() -> str:
         return fastest_url
 
 
-@trackers.track_function
+@perf_tracker
 def get_fastest_embed_url() -> str:
     if fastest_url := settings.config.get("url.embed", ""):
         return fastest_url

@@ -8,8 +8,6 @@ from threading import Lock
 
 __all__ = [
     "perf_tracker",
-    "PerformanceTracker",
-    "track_function",
 ]
 
 
@@ -57,34 +55,6 @@ class PerformanceTracker:
                     f"Function '{func_name}' total time: {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
                 )
             cls.global_start_time = None
-
-    @classmethod
-    def track_function(cls, func):
-        """Decorator to track the execution time of a function."""
-        def wrapper(*args, **kwargs):
-            if cls.debug_mode:
-                start_time = time.perf_counter()
-                result = func(*args, **kwargs)
-                end_time = time.perf_counter()
-                elapsed_time = end_time - start_time
-
-                with cls.lock:
-                    func_name = f"{func.__module__}.{func.__name__}"
-                    cls.function_times[func_name] = cls.function_times.get(func_name, 0) + elapsed_time
-
-                cls.update_total_time()
-                total_time = cls.total_time
-                if total_time > 0:
-                    percentage = (elapsed_time / total_time) * 100
-                    logging.debug(
-                        f"Function '{func_name}' took {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
-                    )
-            else:
-                result = func(*args, **kwargs)
-
-            return result
-
-        return wrapper
 
 
 def perf_tracker(func):
