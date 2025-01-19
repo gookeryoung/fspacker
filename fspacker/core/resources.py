@@ -1,13 +1,14 @@
-__all__ = ["resources"]
-
 import logging
 import typing
 
 import stdlib_list
 
 from fspacker.conf.settings import settings
-from fspacker.core.libraries import LibraryInfo
+from fspacker.core.libraryinfo import LibraryInfo
 from fspacker.utils.trackers import perf_tracker
+
+
+__all__ = ["resources"]
 
 _extern_libs_repo: typing.Dict[str, LibraryInfo] = {}
 _builtin_libs_repo: typing.Set[str] = set()
@@ -41,9 +42,6 @@ def _get_builtin_repo() -> typing.Set[str]:
     return _builtin_libs_repo
 
 class Resources:
-    LIBS_REPO = _get_libs_repo()
-    BUILTIN_REPO = _get_builtin_repo()
-
     _instance = None
 
     @classmethod
@@ -52,6 +50,13 @@ class Resources:
             cls._instance = Resources()
 
         return cls._instance
+    
+    @property
+    def LIBS_REPO(self):
+        return _get_libs_repo()
 
+    @property
+    def BUILTIN_REPO(self):
+        return _get_builtin_repo()
 
 resources = Resources.get_instance()

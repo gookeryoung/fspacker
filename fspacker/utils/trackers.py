@@ -8,11 +8,13 @@ from threading import Lock
 
 __all__ = [
     "perf_tracker",
+    "PerformanceTracker",
+    "track_function",
 ]
 
 
 class PerformanceTracker:
-    """Performance tracker class."""
+    """Performance tracker class to measure the execution time of functions."""
 
     global_start_time = None
     function_times: typing.Dict[str, float] = {}
@@ -22,6 +24,7 @@ class PerformanceTracker:
 
     @classmethod
     def initialize(cls):
+        """Initialize the performance tracker."""
         if cls.global_start_time is None:
             cls.global_start_time = time.perf_counter()
             cls.function_times = {}
@@ -34,11 +37,13 @@ class PerformanceTracker:
 
     @classmethod
     def update_total_time(cls):
+        """Update the total execution time."""
         if cls.global_start_time is not None:
             cls.total_time = time.perf_counter() - cls.global_start_time
 
     @classmethod
     def finalize(cls):
+        """Finalize the performance tracking and log the results."""
         if cls.global_start_time is not None and cls.debug_mode:
             cls.update_total_time()
             logging.debug(
@@ -52,6 +57,34 @@ class PerformanceTracker:
                     f"Function '{func_name}' total time: {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
                 )
             cls.global_start_time = None
+
+    @classmethod
+    def track_function(cls, func):
+        """Decorator to track the execution time of a function."""
+        def wrapper(*args, **kwargs):
+            if cls.debug_mode:
+                start_time = time.perf_counter()
+                result = func(*args, **kwargs)
+                end_time = time.perf_counter()
+                elapsed_time = end_time - start_time
+
+                with cls.lock:
+                    func_name = f"{func.__module__}.{func.__name__}"
+                    cls.function_times[func_name] = cls.function_times.get(func_name, 0) + elapsed_time
+
+                cls.update_total_time()
+                total_time = cls.total_time
+                if total_time > 0:
+                    percentage = (elapsed_time / total_time) * 100
+                    logging.debug(
+                        f"Function '{func_name}' took {elapsed_time:.6f} seconds [{percentage:.2f}% of total]."
+                    )
+            else:
+                result = func(*args, **kwargs)
+
+            return result
+
+        return wrapper
 
 
 def perf_tracker(func):

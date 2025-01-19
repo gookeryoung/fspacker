@@ -14,7 +14,7 @@ def test_embed_file():
     )
 
 
-def test_dirs(monkeypatch):
+def test_dirs():
     from fspacker.conf.settings import settings
 
     assert settings.cache_dir == pathlib.Path("~").expanduser() / ".cache" / "fspacker"
@@ -44,7 +44,7 @@ def test_clear_dirs(tmpdir, monkeypatch):
     assert settings.cache_dir == tmpdir / ".cache"
 
 
-def test_config(tmpdir):
+def test_config():
     from fspacker.conf.settings import settings
 
     settings.config["mode.offline"] = True

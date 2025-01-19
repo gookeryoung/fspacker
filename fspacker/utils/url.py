@@ -5,7 +5,7 @@ import typing
 import requests
 
 from fspacker.conf.settings import settings
-from fspacker.utils.trackers import perf_tracker
+from fspacker.utils import trackers
 
 __all__ = [
     "get_fastest_embed_url",
@@ -44,7 +44,7 @@ def _check_url_access_time(url: str) -> float:
 def _get_fastest_url(urls: typing.Dict[str, str]) -> str:
     """Check fastest url for embed python."""
     min_time, fastest_url = 10.0, ""
-    for name, embed_url in urls.items():
+    for embed_url in urls.values():
         time_used = _check_url_access_time(embed_url)
         if time_used > 0:
             if time_used < min_time:
@@ -55,7 +55,7 @@ def _get_fastest_url(urls: typing.Dict[str, str]) -> str:
     return fastest_url
 
 
-@perf_tracker
+@trackers.track_function
 def get_fastest_pip_url() -> str:
     if fastest_url := settings.config.get("url.pip"):
         return fastest_url
@@ -65,7 +65,7 @@ def get_fastest_pip_url() -> str:
         return fastest_url
 
 
-@perf_tracker
+@trackers.track_function
 def get_fastest_embed_url() -> str:
     if fastest_url := settings.config.get("url.embed", ""):
         return fastest_url
