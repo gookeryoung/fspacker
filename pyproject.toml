@@ -40,7 +40,6 @@ black = "~24"
 sphinx = "~7"
 sphinx-autodoc-typehints = "~2"
 
-
 [tool.poetry-dynamic-versioning]
 enable = false
 vcs = "git"
