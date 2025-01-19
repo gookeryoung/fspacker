@@ -57,5 +57,26 @@ def test_gui_pyside2(run_parser):
     run_parser("gui_pyside2", {"pyside2"}, {"depends", "assets", "resources_rc"})
 
 
+def test_math_matplotlib(run_parser):
+    run_parser("math_matplotlib", {"numpy", "matplotlib"}, set(), {"tkinter"})
+
+
 def test_math_numba(run_parser):
     run_parser("math_numba", {"numba", "numpy"})
+
+
+def test_math_pandas(run_parser):
+    run_parser("math_pandas", {"numpy", "matplotlib", "pandas"}, set(), {"tkinter"})
+
+
+def test_math_torch(run_parser):
+    run_parser(
+        "math_torch",
+        {"torch", "torchvision"},
+        set(),
+        set(),
+    )
+
+
+def test_web_bottle(run_parser):
+    run_parser("web_bottle", {"bottle"})
