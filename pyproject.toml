@@ -4,7 +4,7 @@ dynamic = ["version"]
 
 [tool.poetry]
 name = "fspacker"
-version = "0.6.1.post14.dev0+91ff150"
+version = "0.6.2"
 description = "Fast & Simple Packer toolset for python."
 authors = ["gooker_young <gooker_young@qq.com>"]
 readme = "README.md"

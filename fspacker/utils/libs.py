@@ -56,7 +56,7 @@ def install_lib(
 
     info: LibraryInfo = resources.LIBS_REPO.get(libname.lower())
     if info is None or not info.filepath.exists():
-        if settings.config.get("mode.offline", None) is None:
+        if settings.config.get("mode.offline", None) is True:
             logging.error(f"[!!!] Offline mode, lib [{libname}] not found")
             return False
 
