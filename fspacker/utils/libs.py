@@ -7,7 +7,7 @@ import pkginfo
 
 from fspacker.conf.settings import settings
 from fspacker.core.archive import unpack
-from fspacker.core.libraries import LibraryInfo
+from fspacker.core.libraryinfo import LibraryInfo
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
 from fspacker.utils.trackers import perf_tracker

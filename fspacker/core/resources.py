@@ -41,6 +41,7 @@ def _get_builtin_repo() -> typing.Set[str]:
 
     return _builtin_libs_repo
 
+
 class Resources:
     _instance = None
 
@@ -50,7 +51,7 @@ class Resources:
             cls._instance = Resources()
 
         return cls._instance
-    
+
     @property
     def LIBS_REPO(self):
         return _get_libs_repo()
@@ -58,5 +59,6 @@ class Resources:
     @property
     def BUILTIN_REPO(self):
         return _get_builtin_repo()
+
 
 resources = Resources.get_instance()

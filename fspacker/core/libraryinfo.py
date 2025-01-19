@@ -4,6 +4,7 @@ import pathlib
 from pkginfo import Distribution
 from fspacker.utils.zip import get_zip_meta_data
 
+
 @dataclasses.dataclass
 class LibraryInfo:
     meta_data: Distribution

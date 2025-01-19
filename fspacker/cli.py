@@ -1,11 +1,11 @@
 import logging
 import pathlib
+import subprocess
 import time
 from dataclasses import dataclass
 
 import click
 import toml
-import subprocess
 
 from fspacker.conf.settings import settings
 
@@ -94,18 +94,19 @@ def main():
 @cli.command()
 def update():
     """Update version for fspacker"""
-    pyproject = toml.load("pyproject.toml")
 
-    # 获取当前版本
-    current_version = pyproject["tool"]["poetry"]["version"]
+    pyproject = toml.load("pyproject.toml")
 
     # 获取最新的 Git 标签
     try:
-        tag = subprocess.check_output(
-            ["git", "describe", "--tags", "--abbrev=0"],
-            stderr=subprocess.STDOUT
-        ).strip().decode("utf-8")
-        new_version = tag  # 使用标签作为新版本
+        tag = (
+            subprocess.check_output(
+                ["git", "describe", "--tags", "--abbrev=0"], stderr=subprocess.STDOUT
+            )
+            .strip()
+            .decode("utf-8")
+        )
+        new_version = tag.replace("v", "")  # 使用标签作为新版本
         print(f"Updating version to {new_version} based on the latest tag.")
     except subprocess.CalledProcessError:
         # 如果没有标签，打印信息并返回

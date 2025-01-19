@@ -15,11 +15,11 @@ from fspacker.utils.url import get_fastest_embed_url
 
 def _safe_read_url_data(url: str, timeout: int = 10) -> Optional[bytes]:
     """Safely read data from a URL with HTTPS schema.
-    
+
     Args:
         url: The URL to read from.
         timeout: Connection timeout in seconds.
-    
+
     Returns:
         The content as bytes if successful, None otherwise.
     """
@@ -43,7 +43,7 @@ class RuntimePacker(BasePacker):
 
     def pack(self, target: PackTarget) -> None:
         """Pack runtime dependencies into the target directory.
-        
+
         Args:
             target: The target configuration for packing.
         """
@@ -73,7 +73,7 @@ class RuntimePacker(BasePacker):
 
         fastest_url = get_fastest_embed_url()
         archive_url = f"{fastest_url}{settings.python_ver}/{settings.embed_filename}"
-        
+
         if not archive_url.startswith("https://"):
             logging.error(f"Invalid archive URL: {archive_url}")
             return
@@ -85,10 +85,10 @@ class RuntimePacker(BasePacker):
 
         logging.info(f"Downloading runtime from [{fastest_url}]")
         t0 = time.perf_counter()
-        
+
         with open(settings.embed_filepath, "wb") as f:
             f.write(content)
-            
+
         download_time = time.perf_counter() - t0
         logging.info(f"Download completed in [{download_time:.2f}]s")
 
