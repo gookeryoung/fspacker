@@ -1,12 +1,10 @@
 [project]
 name = "fspacker"
-description = "Fast & Simple Packer toolset for python."
-readme = "README.md"
 dynamic = ["version"]
 
 [tool.poetry]
 name = "fspacker"
-version = "0.6.1"
+version = "0.6.1.post14.dev0+91ff150"
 description = "Fast & Simple Packer toolset for python."
 authors = ["gooker_young <gooker_young@qq.com>"]
 readme = "README.md"
@@ -38,14 +36,13 @@ pytest-cov = "~4"
 mypy = "^1.14.1"
 black = "~24"
 
-
 [tool.poetry.group.docs.dependencies]
 sphinx = "~7"
 sphinx-autodoc-typehints = "~2"
 
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 vcs = "git"
 style = "pep440"
 

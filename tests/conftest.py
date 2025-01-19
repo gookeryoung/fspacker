@@ -4,6 +4,7 @@ import shutil
 import subprocess
 import time
 import typing
+import logging
 
 import pytest
 
@@ -11,6 +12,8 @@ CWD = pathlib.Path(__file__).parent
 DIR_EXAMPLES = CWD.parent / "examples"
 
 TEST_CALL_TIMEOUT = 5
+
+logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
 
 
 def _call_exec(app: str, timeout=TEST_CALL_TIMEOUT):

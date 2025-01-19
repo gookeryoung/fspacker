@@ -52,7 +52,7 @@ def install_lib(
 ) -> bool:
     if (target.packages_dir / libname).exists():
         logging.info("Lib file already exists, exit.")
-        return
+        return False
 
     info: LibraryInfo = resources.LIBS_REPO.get(libname.lower())
     if info is None or not info.filepath.exists():

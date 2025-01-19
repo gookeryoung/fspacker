@@ -18,7 +18,7 @@ class Commands:
         return cls._instance
 
     @staticmethod
-    def pip(args: typing.List[str]) -> typing.Tuple[typing.Optional[str], str]:
+    def pip(args: typing.List[str]) -> int:
         python_executor = "python.exe" if platform.system() == "Windows" else "python3"
         try:
             cmds = [python_executor, "-m", "pip", *args]

@@ -11,5 +11,5 @@ def main():
     module_c.function_c()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
