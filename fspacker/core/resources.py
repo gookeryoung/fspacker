@@ -40,7 +40,6 @@ def _get_builtin_repo() -> typing.Set[str]:
 
     return _builtin_libs_repo
 
-
 class Resources:
     LIBS_REPO = _get_libs_repo()
     BUILTIN_REPO = _get_builtin_repo()

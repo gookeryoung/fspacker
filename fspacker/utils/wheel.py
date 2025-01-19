@@ -5,6 +5,7 @@ import re
 import subprocess
 import typing
 import zipfile
+
 from urllib.parse import urlparse
 
 from fspacker.conf.settings import settings
@@ -63,39 +64,37 @@ def download_wheel(libname: str) -> typing.Optional[pathlib.Path]:
     libname = get_libname(libname)
     match_name = "*".join(re.split(r"[-_]", libname))
     lib_files = list(_ for _ in settings.libs_dir.rglob(f"{match_name}*"))
+
     if not lib_files:
         logging.warning(f"No wheel for [{libname}], start downloading.")
         pip_url = get_fastest_pip_url()
         net_loc = urlparse(pip_url).netloc
-        subprocess.call(
-            [
-                "python",
-                "-m",
-                "pip",
-                "download",
-                libname,
-                "-d",
-                str(settings.libs_dir),
-                "--trusted-host",
-                net_loc,
-                "-i",
-                pip_url,
-            ],
-        )
+
+        try:
+            subprocess.check_call(
+                [
+                    "python",
+                    "-m",
+                    "pip",
+                    "download",
+                    libname,
+                    "-d",
+                    str(settings.libs_dir),
+                    "--trusted-host",
+                    net_loc,
+                    "-i",
+                    pip_url,
+                ],
+            )
+        except subprocess.CalledProcessError as e:
+            logging.error(f"Failed to download wheel [{libname}]: {e}")
+            return None
+
         lib_files = list(_ for _ in settings.libs_dir.rglob(f"{match_name}*"))
 
     if not len(lib_files):
         logging.error(f"[!!!] Download wheel [{libname}] error, {match_name=}")
         return None
 
+    logging.info(f"Successfully downloaded wheel [{libname}] to [{lib_files[0]}]")
     return lib_files[0]
-
-
-def remove_wheel(libname: str) -> None:
-    """Remove wheel file in repo."""
-
-    info = resources.LIBS_REPO.get(libname)
-    if info is not None:
-        if info.filepath.exists():
-            info.filepath.unlink()
-            logging.info(f"Remove wheel file [{info.filepath.name}]")

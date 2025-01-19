@@ -4,6 +4,8 @@ import time
 from dataclasses import dataclass
 
 import click
+import toml
+import subprocess
 
 from fspacker.conf.settings import settings
 
@@ -87,6 +89,39 @@ def build(offline: bool, archive: bool, directory: str, file: str):
 
 def main():
     cli()
+
+
+@cli.command()
+def update():
+    """Update version for fspacker"""
+    pyproject = toml.load("pyproject.toml")
+
+    # 获取当前版本
+    current_version = pyproject["tool"]["poetry"]["version"]
+
+    # 获取最新的 Git 标签
+    try:
+        tag = subprocess.check_output(
+            ["git", "describe", "--tags", "--abbrev=0"],
+            stderr=subprocess.STDOUT
+        ).strip().decode("utf-8")
+        new_version = tag  # 使用标签作为新版本
+        print(f"Updating version to {new_version} based on the latest tag.")
+    except subprocess.CalledProcessError:
+        # 如果没有标签，打印信息并返回
+        print("No tag found. Skipping version update.")
+        return
+
+    # 更新 pyproject.toml
+    pyproject["tool"]["poetry"]["version"] = new_version
+    with open("pyproject.toml", "w") as f:
+        toml.dump(pyproject, f)
+
+    # 更新 fspacker/__init__.py
+    with open("fspacker/__init__.py", "w") as f:
+        f.write(f'__version__ = "{new_version}"')
+
+    print(f"Updated version to {new_version}")
 
 
 if __name__ == "__main__":

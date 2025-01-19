@@ -21,25 +21,42 @@ def get_lib_meta_name(filepath: pathlib.Path) -> typing.Optional[str]:
     :param filepath: Input file path.
     :return: Lib name parsed.
     """
-    meta_data = pkginfo.get_metadata(str(filepath))
-    if meta_data is not None and meta_data.name is not None:
-        return meta_data.name.lower()
-    else:
+    try:
+        meta_data = pkginfo.get_metadata(str(filepath))
+        if meta_data is not None and meta_data.name is not None:
+            logging.info(
+                f"Parsed library name: [{meta_data.name.lower()}] from [{filepath}]"
+            )
+            return meta_data.name.lower()
+        else:
+            logging.warning(f"No valid metadata found in [{filepath}]")
+            return None
+    except Exception as e:
+        logging.error(
+            f"Error occurred while parsing library name from [{filepath}]: {e}"
+        )
         return None
 
 
 def get_lib_meta_depends(filepath: pathlib.Path) -> typing.Set[str]:
-    """Get requires dist of lib file"""
-    meta_data = pkginfo.get_metadata(str(filepath))
-    if meta_data is not None and hasattr(meta_data, "requires_dist"):
-        return set(
-            list(
+    """Get requires dist of lib file."""
+    try:
+        meta_data = pkginfo.get_metadata(str(filepath))
+        if meta_data is not None and hasattr(meta_data, "requires_dist"):
+            dependencies = set(
                 re.split(r"[;<>!=()\[~.]", x)[0].strip()
                 for x in meta_data.requires_dist
             )
+            logging.info(f"Dependencies for library [{filepath.name}]: {dependencies}")
+            return dependencies
+        else:
+            logging.warning(f"No requires found in metadata for [{filepath}]")
+            return set()
+    except Exception as e:
+        logging.error(
+            f"Error occurred while getting dependencies for [{filepath}]: {e}"
         )
-    else:
-        raise ValueError(f"No requires for {filepath}")
+        return set()
 
 
 @perf_tracker
@@ -50,7 +67,8 @@ def install_lib(
     excludes: typing.Optional[typing.Set[str]] = None,
     extend_depends: bool = False,
 ) -> bool:
-    if (target.packages_dir / libname).exists():
+    lib_path = target.packages_dir / libname
+    if lib_path.exists():
         logging.info("Lib file already exists, exit.")
         return False
 
@@ -68,8 +86,7 @@ def install_lib(
         filepath = info.filepath
         unpack_wheel(libname, target.packages_dir, patterns, excludes)
 
-    if extend_depends and filepath is not None and filepath.exists():
-        lib_depends = get_lib_meta_depends(filepath)
-        target.depends.libs |= lib_depends
+    if extend_depends and filepath and filepath.exists():
+        target.depends.libs |= get_lib_meta_depends(filepath)
 
     return True
