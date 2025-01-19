@@ -3,6 +3,7 @@ import shutil
 import ssl
 import time
 import urllib.request
+from typing import Optional
 from urllib.parse import urlparse
 
 from fspacker.conf.settings import settings
@@ -12,8 +13,16 @@ from fspacker.utils.checksum import calc_checksum
 from fspacker.utils.url import get_fastest_embed_url
 
 
-def _safe_read_url_data(url, timeout=10):
-    """Open url safely, only allows https schema."""
+def _safe_read_url_data(url: str, timeout: int = 10) -> Optional[bytes]:
+    """Safely read data from a URL with HTTPS schema.
+    
+    Args:
+        url: The URL to read from.
+        timeout: Connection timeout in seconds.
+    
+    Returns:
+        The content as bytes if successful, None otherwise.
+    """
     parsed_url = urlparse(url)
     allowed_schemes = {"https"}
 
@@ -21,66 +30,68 @@ def _safe_read_url_data(url, timeout=10):
         if parsed_url.scheme not in allowed_schemes:
             raise ValueError(f"Unsupported URL scheme: {parsed_url.scheme}")
 
-        # create context with ssl verification
         context = ssl.create_default_context()
-
         with urllib.request.urlopen(url, timeout=timeout, context=context) as response:
-            content = response.read(1024 * 1024 * 100)  # limited to 100MB
-            return content
-    except ValueError as e:
-        logging.error(f"Read url data error, {e}")
+            return response.read(1024 * 1024 * 100)  # limited to 100MB
+    except (ValueError, urllib.error.URLError) as e:
+        logging.error(f"Failed to read URL data: {e}")
         return None
 
 
 class RuntimePacker(BasePacker):
-    def __init__(self):
-        super().__init__()
+    """Handles the packing of runtime dependencies."""
 
-    def pack(self, target: PackTarget):
+    def pack(self, target: PackTarget) -> None:
+        """Pack runtime dependencies into the target directory.
+        
+        Args:
+            target: The target configuration for packing.
+        """
         dest = target.runtime_dir
         if (dest / "python.exe").exists():
-            logging.info("Runtime folder exists, skip")
+            logging.info("Runtime folder exists, skipping")
             return
 
-        if settings.config.get("mode.offline", None) is not True:
+        if not settings.config.get("mode.offline", False):
             self.fetch_runtime()
 
         logging.info(
-            f"Unpack runtime zip file: [{settings.embed_filepath.name}]->[{dest.relative_to(target.root_dir)}]"
+            f"Unpacking runtime: [{settings.embed_filepath.name}] -> [{dest.relative_to(target.root_dir)}]"
         )
         shutil.unpack_archive(settings.embed_filepath, dest, "zip")
 
     @staticmethod
-    def fetch_runtime():
-        """Fetch runtime zip file"""
-
+    def fetch_runtime() -> None:
+        """Fetch runtime zip file from the fastest available mirror."""
         if settings.embed_filepath.exists():
-            logging.info(
-                f"Compare file [{settings.embed_filepath.name}] with local config checksum"
-            )
+            logging.info(f"Checking [{settings.embed_filepath.name}] checksum")
             src_checksum = settings.config.get("file.embed.checksum", "")
             dst_checksum = calc_checksum(settings.embed_filepath)
             if src_checksum == dst_checksum:
-                logging.info("Checksum matches!")
+                logging.info("Checksum matches, using cached runtime")
                 return
 
         fastest_url = get_fastest_embed_url()
         archive_url = f"{fastest_url}{settings.python_ver}/{settings.embed_filename}"
+        
         if not archive_url.startswith("https://"):
-            logging.error(
-                f"Unsupported archive url: {archive_url}, should starts with `https://`"
-            )
+            logging.error(f"Invalid archive URL: {archive_url}")
             return
 
         content = _safe_read_url_data(archive_url)
-        logging.info(f"Download embed runtime from [{fastest_url}]")
+        if content is None:
+            logging.error("Failed to download runtime")
+            return
+
+        logging.info(f"Downloading runtime from [{fastest_url}]")
         t0 = time.perf_counter()
+        
         with open(settings.embed_filepath, "wb") as f:
             f.write(content)
-        logging.info(
-            f"Download finished, total used: [{time.perf_counter() - t0:.2f}]s."
-        )
+            
+        download_time = time.perf_counter() - t0
+        logging.info(f"Download completed in [{download_time:.2f}]s")
 
         checksum = calc_checksum(settings.embed_filepath)
-        logging.info(f"Write checksum [{checksum}] into config file")
+        logging.info(f"Updating checksum [{checksum}]")
         settings.config["file.embed.checksum"] = checksum
