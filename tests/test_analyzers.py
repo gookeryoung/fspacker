@@ -8,7 +8,11 @@ from importlib.metadata import PackageNotFoundError
 
 import pytest
 
-from fspacker.core.analyzers import LibraryAnalyzer, LibraryMetaData
+from fspacker.core.analyzers import (
+    LibraryAnalyzer,
+    LibraryMetaData,
+    BuiltInLibraryAnalyzer,
+)
 
 
 @pytest.fixture()
@@ -290,3 +294,20 @@ def test_analyze_packages_in_directory(mocker):
 
     # Clean up the temporary directory
     shutil.rmtree(temp_dir)
+
+
+def test_get_builtin_libraries():
+    """Test getting the list of built-in libraries."""
+
+    built_in_libraries = BuiltInLibraryAnalyzer.get_builtin_libraries()
+    assert isinstance(built_in_libraries, set)
+    assert len(built_in_libraries) > 0  # Ensure there are built-in libraries
+
+
+def test_get_library_info():
+    """Test getting information about a specific built-in library."""
+
+    info = BuiltInLibraryAnalyzer.get_library_info("math")
+    assert info["name"] == "math"
+    assert "doc" in info  # Ensure documentation is present
+    assert "version" in info  # Ensure version is present

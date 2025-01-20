@@ -1,15 +1,19 @@
 import dataclasses
+import importlib
 import importlib.metadata
 import json
 import logging
 import os
 import tarfile
-import zipfile
 from typing import List, Dict, Optional
 
 import packaging.requirements
+import stdlib_list
+from pkginfo import Wheel
 
-__all__ = ["LibraryAnalyzer", "LibraryMetaData"]
+from fspacker.conf.settings import settings
+
+__all__ = ["LibraryAnalyzer", "LibraryMetaData", "BuiltInLibraryAnalyzer"]
 
 
 @dataclasses.dataclass
@@ -210,8 +214,7 @@ class LibraryAnalyzer:
         dependencies: Dict[str, List[str]] = {}
         try:
             if package_path.endswith(".whl"):
-                with zipfile.ZipFile(package_path) as z:
-                    metadata = z.read("METADATA").decode("utf-8")
+                metadata = Wheel(package_path)
             elif package_path.endswith(".tar.gz"):
                 with tarfile.open(package_path) as tar:
                     for member in tar.getmembers():
@@ -267,3 +270,41 @@ class LibraryAnalyzer:
             )
 
         return all_dependencies
+
+
+class BuiltInLibraryAnalyzer:
+    """A class for analyzing Python built-in libraries."""
+
+    @staticmethod
+    def get_builtin_libraries() -> List[str]:
+        """
+        Get a list of all built-in libraries.
+
+        Returns:
+            List[str]: A list of built-in library names.
+        """
+        return set(stdlib_list.stdlib_list(settings.python_ver_short))
+
+    @staticmethod
+    def get_library_info(library_name: str) -> Dict[str, str]:
+        """
+        Get information about a specific built-in library.
+
+        Args:
+            library_name (str): The name of the library to analyze.
+
+        Returns:
+            Dict[str, str]: A dictionary containing library information.
+        """
+        info = {}
+        try:
+            library = importlib.import_module(library_name)
+            info["name"] = library_name
+            info["version"] = getattr(library, "__version__", "N/A")
+            info["doc"] = library.__doc__ or "No documentation available."
+        except ImportError:
+            info["error"] = f"Library '{library_name}' is not a built-in library."
+        except Exception as e:
+            info["error"] = str(e)
+
+        return info

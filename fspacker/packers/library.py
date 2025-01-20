@@ -1,6 +1,6 @@
 import logging
 
-from fspacker.core.libraries import get_libname
+from fspacker.core.analyzers import LibraryAnalyzer
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
@@ -59,7 +59,7 @@ class LibraryPacker(BasePacker):
 
         logging.info(f"Start packing [{target.libs}] with default")
         for lib in list(target.libs):
-            lib = get_libname(lib)
+            lib = LibraryAnalyzer(lib).metadata.name
             if lib in resources.libs_repo.keys():
                 self.SPECS["default"].pack(lib, target=target)
             else:

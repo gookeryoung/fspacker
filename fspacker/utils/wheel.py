@@ -8,7 +8,7 @@ import zipfile
 from urllib.parse import urlparse
 
 from fspacker.conf.settings import settings
-from fspacker.core.libraries import get_libname
+from fspacker.core.analyzers import LibraryAnalyzer
 from fspacker.core.resources import resources
 from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import get_fastest_pip_url
@@ -60,7 +60,7 @@ def unpack_wheel(
 @perf_tracker
 def download_wheel(libname: str) -> typing.Optional[pathlib.Path]:
     """Download wheel file for lib name, if not found in lib repo."""
-    libname = get_libname(libname)
+    libname = LibraryAnalyzer(libname).metadata.name
     match_name = "*".join(re.split(r"[-_]", libname))
     lib_files = list(_ for _ in settings.libs_dir.rglob(f"{match_name}*"))
 
