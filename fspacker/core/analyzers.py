@@ -2,6 +2,8 @@ import dataclasses
 import importlib.metadata
 import json
 import logging
+import tarfile
+import zipfile
 from typing import List, Dict, Optional
 
 import packaging.requirements
@@ -192,3 +194,46 @@ class LibraryAnalyzer:
             except Exception as e:
                 logging.error(f"Error exporting dependency tree to {filepath}: {e}")
         return self.dependency_tree
+
+    @staticmethod
+    def get_dependencies_from_package(package_path: str) -> Dict[str, List[str]]:
+        """
+        Get the dependency information from a local .whl or .tar.gz file.
+
+        Args:
+            package_path (str): The path to the package file.
+
+        Returns:
+            Dict[str, List[str]]: A mapping of package names to their dependencies.
+        """
+        dependencies: Dict[str, List[str]] = {}
+        try:
+            if package_path.endswith(".whl"):
+                with zipfile.ZipFile(package_path) as z:
+                    metadata = z.read("METADATA").decode("utf-8")
+            elif package_path.endswith(".tar.gz"):
+                with tarfile.open(package_path) as tar:
+                    for member in tar.getmembers():
+                        if member.name.endswith("METADATA"):
+                            f = tar.extractfile(member)
+                            if f:
+                                metadata = f.read().decode("utf-8")
+                                break
+            else:
+                raise ValueError(
+                    "Unsupported package format. Please provide a .whl or .tar.gz file."
+                )
+
+            # Parse dependency information
+            for line in metadata.splitlines():
+                if line.startswith("Requires-Dist:"):
+                    requirement = line.split(":", 1)[1].strip()
+                    package_name = packaging.requirements.Requirement(requirement).name
+                    dependencies.setdefault(package_name, []).append(requirement)
+
+        except Exception as e:
+            logging.error(
+                f"Error reading dependencies from package '{package_path}': {e}"
+            )
+
+        return dependencies

@@ -1,4 +1,8 @@
 import json
+import os
+import tarfile
+import tempfile
+import zipfile
 from importlib.metadata import PackageNotFoundError
 
 import pytest
@@ -144,9 +148,14 @@ def test_build_dependency_tree(
 
 
 def test_export_dependency_tree(
-    mocker, tmp_path, mock_distribution, mock_dep_dist_urllib3, mock_dep_dist_chardet
+    mocker,
+    tmp_path,
+    mock_distribution,
+    mock_dep_dist_urllib3,
+    mock_dep_dist_chardet,
 ):
     """Test exporting the dependency tree to a JSON file."""
+
     with mocker.patch(
         "importlib.metadata.distribution",
         side_effect=[
@@ -165,3 +174,51 @@ def test_export_dependency_tree(
             exported_tree = json.load(f)
 
         assert exported_tree == dependency_tree
+
+
+def create_mock_whl_file(dependencies):
+    """Create a mock .whl file containing specified dependency information."""
+
+    temp_dir = tempfile.mkdtemp()
+    whl_path = os.path.join(temp_dir, "mock_package.whl")
+    metadata_content = "\n".join(f"Requires-Dist: {dep}" for dep in dependencies)
+
+    with zipfile.ZipFile(whl_path, "w") as whl:
+        whl.writestr("METADATA", metadata_content)
+
+    return whl_path
+
+
+def create_mock_tar_gz_file(dependencies):
+    """Create a mock .tar.gz file containing specified dependency information."""
+
+    temp_dir = tempfile.mkdtemp()
+    tar_gz_path = os.path.join(temp_dir, "mock_package.tar.gz")
+    metadata_content = "\n".join(f"Requires-Dist: {dep}" for dep in dependencies)
+
+    with tarfile.open(tar_gz_path, "w:gz") as tar:
+        metadata_file = tempfile.NamedTemporaryFile(delete=False)
+        metadata_file.write(metadata_content.encode("utf-8"))
+        metadata_file.close()
+        tar.add(metadata_file.name, arcname="METADATA")
+        os.unlink(metadata_file.name)
+
+    return tar_gz_path
+
+
+def test_get_dependencies_from_package():
+    """Test getting dependency information from .whl and .tar.gz files."""
+
+    dependencies = ["packageA >= 1.0.0", "packageB < 2.0.0"]
+
+    # Test .whl file
+    whl_path = create_mock_whl_file(dependencies)
+    whl_dependencies = LibraryAnalyzer.get_dependencies_from_package(whl_path)
+    assert "packageA" in whl_dependencies
+    assert "packageB" in whl_dependencies
+
+    # Test .tar.gz file
+    tar_gz_path = create_mock_tar_gz_file(dependencies)
+    tar_gz_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
+    assert "packageA" in tar_gz_dependencies
+    assert "packageB" in tar_gz_dependencies
