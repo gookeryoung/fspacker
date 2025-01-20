@@ -2,6 +2,7 @@ import dataclasses
 import importlib.metadata
 import json
 import logging
+import os
 import tarfile
 import zipfile
 from typing import List, Dict, Optional
@@ -237,3 +238,32 @@ class LibraryAnalyzer:
             )
 
         return dependencies
+
+    @staticmethod
+    def analyze_packages_in_directory(
+        directory_path: str,
+    ) -> Dict[str, Dict[str, List[str]]]:
+        """
+        Analyze all .whl and .tar.gz files in the specified directory.
+
+        Args:
+            directory_path (str): The path to the directory containing package files.
+
+        Returns:
+            Dict[str, Dict[str, List[str]]]: A mapping of package names to their dependencies.
+        """
+        all_dependencies = {}
+        try:
+            for filename in os.listdir(directory_path):
+                if filename.endswith(".whl") or filename.endswith(".tar.gz"):
+                    package_path = os.path.join(directory_path, filename)
+                    dependencies = LibraryAnalyzer.get_dependencies_from_package(
+                        package_path
+                    )
+                    all_dependencies[filename] = dependencies
+        except Exception as e:
+            logging.error(
+                f"Error analyzing packages in directory '{directory_path}': {e}"
+            )
+
+        return all_dependencies

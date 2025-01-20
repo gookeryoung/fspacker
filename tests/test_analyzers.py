@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import tarfile
 import tempfile
 import zipfile
@@ -13,6 +14,7 @@ from fspacker.core.analyzers import LibraryAnalyzer, LibraryMetaData
 @pytest.fixture()
 def mock_distribution(mocker):
     """Create a mock distribution object."""
+
     mock_dist = mocker.MagicMock()
     mock_dist.metadata = {
         "Name": "requests",
@@ -29,6 +31,7 @@ def mock_distribution(mocker):
 @pytest.fixture
 def mock_dep_dist_urllib3(mocker):
     """Create a mock dependency distribution object."""
+
     mock_dep_dist = mocker.MagicMock()
     mock_dep_dist.metadata = {
         "Name": "urllib3",
@@ -45,6 +48,7 @@ def mock_dep_dist_urllib3(mocker):
 @pytest.fixture
 def mock_dep_dist_chardet(mocker):
     """Create a mock dependency distribution object."""
+
     mock_dep_dist = mocker.MagicMock()
     mock_dep_dist.metadata = {
         "name": "chardet",
@@ -61,6 +65,7 @@ def mock_dep_dist_chardet(mocker):
 
 def test_get_library_metadata_found(mocker, mock_distribution):
     """Test retrieving metadata for an existing library."""
+
     with mocker.patch(
         "importlib.metadata.distribution", return_value=mock_distribution
     ):
@@ -78,6 +83,7 @@ def test_get_library_metadata_found(mocker, mock_distribution):
 
 def test_get_library_metadata_not_found(mocker):
     """Test retrieving metadata for a non-existent library."""
+
     with mocker.patch(
         "importlib.metadata.distribution", side_effect=PackageNotFoundError
     ):
@@ -89,6 +95,7 @@ def test_get_library_metadata_not_found(mocker):
 
 def test_display_metadata(capsys, mocker, mock_distribution):
     """Test displaying library metadata."""
+
     with mocker.patch(
         "importlib.metadata.distribution", return_value=mock_distribution
     ):
@@ -110,6 +117,7 @@ def test_display_metadata(capsys, mocker, mock_distribution):
 
 def test_analyze_dependencies(mocker, mock_distribution):
     """Test analyzing library dependencies."""
+
     with mocker.patch(
         "importlib.metadata.distribution", return_value=mock_distribution
     ):
@@ -126,6 +134,7 @@ def test_build_dependency_tree(
     mock_dep_dist_chardet,
 ):
     """Test building the dependency tree."""
+
     with mocker.patch(
         "importlib.metadata.distribution",
         side_effect=[
@@ -222,3 +231,62 @@ def test_get_dependencies_from_package():
     tar_gz_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
     assert "packageA" in tar_gz_dependencies
     assert "packageB" in tar_gz_dependencies
+
+
+def create_mock_packages_directory(dependencies):
+    """Create a mock directory with .whl and .tar.gz files containing specified dependency information."""
+
+    temp_dir = tempfile.mkdtemp()
+
+    # Create a mock .whl file
+    whl_path = os.path.join(temp_dir, "mock_package.whl")
+    metadata_content = "\n".join(f"Requires-Dist: {dep}" for dep in dependencies)
+    with zipfile.ZipFile(whl_path, "w") as whl:
+        whl.writestr("METADATA", metadata_content)
+
+    # Create a mock .tar.gz file
+    tar_gz_path = os.path.join(temp_dir, "mock_package.tar.gz")
+    with tarfile.open(tar_gz_path, "w:gz") as tar:
+        metadata_file = tempfile.NamedTemporaryFile(delete=False)
+        metadata_file.write(metadata_content.encode("utf-8"))
+        metadata_file.close()
+        tar.add(metadata_file.name, arcname="METADATA")
+        os.unlink(metadata_file.name)
+
+    return temp_dir
+
+
+def test_analyze_packages_in_directory(mocker):
+    """Test analyzing all .whl and .tar.gz files in a directory."""
+
+    dependencies = ["packageA >= 1.0.0", "packageB < 2.0.0"]
+    temp_dir = create_mock_packages_directory(dependencies)
+
+    # Mock the distribution return values
+    mock_dist_pack_a = mocker.MagicMock()
+    mock_dist_pack_a.metadata = {
+        "Name": "mock_package",
+        "Summary": "Mock package for testing.",
+        "Home-page": "https://mockpackage.readthedocs.io",
+        "Author": "Mock Author",
+        "License": "MIT",
+    }
+    mock_dist_pack_a.version = "0.1.0"
+    mock_dist_pack_a.requires = ["packageA >= 1.0.0", "packageB < 2.0.0"]
+
+    with mocker.patch("importlib.metadata.distribution", return_value=mock_dist_pack_a):
+        all_dependencies = LibraryAnalyzer.analyze_packages_in_directory(temp_dir)
+
+        assert "mock_package.whl" in all_dependencies
+        assert "mock_package.tar.gz" in all_dependencies
+        assert all_dependencies["mock_package.whl"] == {
+            "packageA": ["packageA >= 1.0.0"],
+            "packageB": ["packageB < 2.0.0"],
+        }
+        assert all_dependencies["mock_package.tar.gz"] == {
+            "packageA": ["packageA >= 1.0.0"],
+            "packageB": ["packageB < 2.0.0"],
+        }
+
+    # Clean up the temporary directory
+    shutil.rmtree(temp_dir)
