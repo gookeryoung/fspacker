@@ -7,7 +7,6 @@ from fspacker.conf.settings import settings
 from fspacker.core.libraryinfo import LibraryInfo
 from fspacker.utils.trackers import perf_tracker
 
-
 __all__ = ["resources"]
 
 _extern_libs_repo: typing.Dict[str, LibraryInfo] = {}
@@ -53,11 +52,11 @@ class Resources:
         return cls._instance
 
     @property
-    def LIBS_REPO(self):
+    def libs_repo(self):
         return _get_libs_repo()
 
     @property
-    def BUILTIN_REPO(self):
+    def builtin_repo(self):
         return _get_builtin_repo()
 
 

@@ -99,7 +99,7 @@ class SourceParser(BaseParser):
             self.info.sources.add(import_str.split(".")[0])
         else:
             import_name = import_str.split(".")[0].lower()
-            if import_name not in resources.BUILTIN_REPO:
+            if import_name not in resources.builtin_repo:
                 # ast lib
                 self.info.libs.add(import_name)
 

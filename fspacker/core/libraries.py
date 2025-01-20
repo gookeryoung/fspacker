@@ -25,7 +25,7 @@ def get_lib_meta_name(libname: str) -> str:
     :return: The metadata name of the library.
     """
     try:
-        info = resources.LIBS_REPO.get(libname)
+        info = resources.libs_repo.get(libname)
         if info is None:
             logging.error(f"Library [{libname}] not found in repository.")
             return ""

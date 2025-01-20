@@ -60,7 +60,7 @@ class LibraryPacker(BasePacker):
         logging.info(f"Start packing [{target.libs}] with default")
         for lib in list(target.libs):
             lib = get_libname(lib)
-            if lib in resources.LIBS_REPO.keys():
+            if lib in resources.libs_repo.keys():
                 self.SPECS["default"].pack(lib, target=target)
             else:
                 logging.error(f"[!!!] Lib [{lib}] for [{lib}] not found in repo")

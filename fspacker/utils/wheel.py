@@ -5,7 +5,6 @@ import re
 import subprocess
 import typing
 import zipfile
-
 from urllib.parse import urlparse
 
 from fspacker.conf.settings import settings
@@ -31,7 +30,7 @@ def unpack_wheel(
         logging.info(f"Lib [{libname}] already unpacked, skip")
         return
 
-    info = resources.LIBS_REPO.get(libname)
+    info = resources.libs_repo.get(libname)
     if info is not None:
         logging.info(f"Unpacking by pattern [{info.meta_data.name}]->[{dest_dir.name}]")
 
