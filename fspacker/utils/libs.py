@@ -72,7 +72,7 @@ def install_lib(
         logging.info("Lib file already exists, exit.")
         return False
 
-    info: LibraryInfo = resources.libs_repo.get(libname.lower())
+    info = resources.libs_repo.get(libname.lower())
     if info is None or not info.filepath.exists():
         if settings.config.get("mode.offline", None) is True:
             logging.error(f"[!!!] Offline mode, lib [{libname}] not found")

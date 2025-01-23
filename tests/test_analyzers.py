@@ -194,7 +194,20 @@ def create_mock_whl_file(dependencies):
 
     temp_dir = tempfile.mkdtemp()
     whl_path = os.path.join(temp_dir, "mock_package.whl")
-    metadata_content = "\n".join(f"Requires-Dist: {dep}" for dep in dependencies)
+
+    # Create a mock METADATA content
+    metadata_content = "\n".join(
+        [
+            "Metadata-Version: 2.1",
+            "Name: mock_package",
+            "Version: 0.1.0",
+            "Summary: A mock package for testing.",
+            "Home-page: https://mockpackage.readthedocs.io",
+            "Author: Mock Author",
+            "License: MIT",
+            *[f"Requires-Dist: {dep}" for dep in dependencies],
+        ]
+    )
 
     with zipfile.ZipFile(whl_path, "w") as whl:
         whl.writestr("METADATA", metadata_content)
@@ -219,22 +232,34 @@ def create_mock_tar_gz_file(dependencies):
     return tar_gz_path
 
 
-def test_get_dependencies_from_package():
+def test_get_dependencies_from_package(mocker):
     """Test getting dependency information from .whl and .tar.gz files."""
 
-    dependencies = ["packageA >= 1.0.0", "packageB < 2.0.0"]
+    # Test dependencies for .whl file
+    whl_dependencies = ["packageA >= 1.0.0", "packageB < 2.0.0"]
+    whl_path = create_mock_whl_file(whl_dependencies)
 
-    # Test .whl file
-    whl_path = create_mock_whl_file(dependencies)
-    whl_dependencies = LibraryAnalyzer.get_dependencies_from_package(whl_path)
-    assert "packageA" in whl_dependencies
-    assert "packageB" in whl_dependencies
+    parsed_whl_dependencies = LibraryAnalyzer.get_dependencies_from_package(whl_path)
+    assert "packageA" in parsed_whl_dependencies
+    assert "packageB" in parsed_whl_dependencies
+    assert parsed_whl_dependencies["packageA"] == ["packageA >= 1.0.0"]
+    assert parsed_whl_dependencies["packageB"] == ["packageB < 2.0.0"]
 
-    # Test .tar.gz file
-    tar_gz_path = create_mock_tar_gz_file(dependencies)
-    tar_gz_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
-    assert "packageA" in tar_gz_dependencies
-    assert "packageB" in tar_gz_dependencies
+    # Test dependencies for .tar.gz file
+    tar_gz_dependencies = ["packageC == 1.0.0", "packageD >= 2.0.0"]
+    tar_gz_path = create_mock_tar_gz_file(tar_gz_dependencies)
+
+    parsed_tar_gz_dependencies = LibraryAnalyzer.get_dependencies_from_package(
+        tar_gz_path
+    )
+    assert "packageC" in parsed_tar_gz_dependencies
+    assert "packageD" in parsed_tar_gz_dependencies
+    assert parsed_tar_gz_dependencies["packageC"] == ["packageC == 1.0.0"]
+    assert parsed_tar_gz_dependencies["packageD"] == ["packageD >= 2.0.0"]
+
+    # Test with an unsupported file type
+    with pytest.raises(ValueError):
+        LibraryAnalyzer.get_dependencies_from_package("unsupported_file.txt")
 
 
 def create_mock_packages_directory(dependencies):
@@ -264,21 +289,29 @@ def test_analyze_packages_in_directory(mocker):
     """Test analyzing all .whl and .tar.gz files in a directory."""
 
     dependencies = ["packageA >= 1.0.0", "packageB < 2.0.0"]
-    temp_dir = create_mock_packages_directory(dependencies)
+    temp_dir = tempfile.mkdtemp()
+
+    # Create mock packages
+    whl_path = create_mock_whl_file(dependencies)
+    tar_gz_path = create_mock_tar_gz_file(dependencies)
+
+    # Move the mock packages to the temporary directory
+    shutil.move(whl_path, os.path.join(temp_dir, "mock_package.whl"))
+    shutil.move(tar_gz_path, os.path.join(temp_dir, "mock_package.tar.gz"))
 
     # Mock the distribution return values
-    mock_dist_pack_a = mocker.MagicMock()
-    mock_dist_pack_a.metadata = {
+    mock_dist_pack = mocker.MagicMock()
+    mock_dist_pack.metadata = {
         "Name": "mock_package",
         "Summary": "Mock package for testing.",
         "Home-page": "https://mockpackage.readthedocs.io",
         "Author": "Mock Author",
         "License": "MIT",
     }
-    mock_dist_pack_a.version = "0.1.0"
-    mock_dist_pack_a.requires = ["packageA >= 1.0.0", "packageB < 2.0.0"]
+    mock_dist_pack.version = "0.1.0"
+    mock_dist_pack.requires = dependencies
 
-    with mocker.patch("importlib.metadata.distribution", return_value=mock_dist_pack_a):
+    with mocker.patch("importlib.metadata.distribution", return_value=mock_dist_pack):
         all_dependencies = LibraryAnalyzer.analyze_packages_in_directory(temp_dir)
 
         assert "mock_package.whl" in all_dependencies
@@ -311,3 +344,21 @@ def test_get_library_info():
     assert info["name"] == "math"
     assert "doc" in info  # Ensure documentation is present
     assert "version" in info  # Ensure version is present
+
+
+def test_get_dependencies_from_orderedset(mocker):
+    """Test getting dependency information from orderedset-2.0.3.tar.gz."""
+    dependencies = ["some_dependency >= 1.0.0"]
+    tar_gz_path = create_mock_tar_gz_file(dependencies)
+
+    # Test the parsing of the orderedset tar.gz file
+    parsed_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
+    assert "some_dependency" in parsed_dependencies
+
+    """Test getting dependency information from orderedset-2.0.3.tar.gz."""
+    dependencies = ["some_dependency >= 1.0.0"]
+    tar_gz_path = create_mock_tar_gz_file(dependencies)
+
+    # Test the parsing of the orderedset tar.gz file
+    parsed_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
+    assert "some_dependency" in parsed_dependencies

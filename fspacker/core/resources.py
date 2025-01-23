@@ -1,7 +1,12 @@
+import typing
 from functools import cached_property
 
 from fspacker.conf.settings import settings
-from fspacker.core.analyzers import BuiltInLibraryAnalyzer, LibraryAnalyzer
+from fspacker.core.analyzers import (
+    BuiltInLibraryAnalyzer,
+    LibraryAnalyzer,
+    LibraryMetaData,
+)
 
 __all__ = ["resources"]
 
@@ -17,11 +22,11 @@ class Resources:
         return cls._instance
 
     @cached_property
-    def libs_repo(self):
+    def libs_repo(self) -> typing.List[LibraryMetaData]:
         return LibraryAnalyzer.analyze_packages_in_directory(settings.libs_dir)
 
     @cached_property
-    def builtin_repo(self):
+    def builtin_repo(self) -> typing.Set[str]:
         return BuiltInLibraryAnalyzer.get_builtin_libraries()
 
 

@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import tarfile
+import typing
 from typing import List, Dict, Optional
 
 import packaging.requirements
@@ -55,6 +56,7 @@ class LibraryMetaData:
     homepage: str = ""
     author: str = ""
     license: str = ""
+    filepath: str = ""
     dependencies: List[str] = dataclasses.field(default_factory=list)
 
 
@@ -212,16 +214,25 @@ class LibraryAnalyzer:
             Dict[str, List[str]]: A mapping of package names to their dependencies.
         """
         dependencies: Dict[str, List[str]] = {}
+        raw_dependencies = (
+            []
+        )  # Initialize raw_dependencies to avoid referencing before assignment
         try:
             if package_path.endswith(".whl"):
                 metadata = Wheel(package_path)
+                raw_dependencies = metadata.requires_dist or []
             elif package_path.endswith(".tar.gz"):
                 with tarfile.open(package_path) as tar:
                     for member in tar.getmembers():
-                        if member.name.endswith("METADATA"):
+                        if member.name == "METADATA":
                             f = tar.extractfile(member)
                             if f:
-                                metadata = f.read().decode("utf-8")
+                                metadata_content = f.read().decode("utf-8")
+                                raw_dependencies = [
+                                    line.split(":", 1)[1].strip()
+                                    for line in metadata_content.splitlines()
+                                    if line.startswith("Requires-Dist:")
+                                ]
                                 break
             else:
                 raise ValueError(
@@ -229,15 +240,16 @@ class LibraryAnalyzer:
                 )
 
             # Parse dependency information
-            for line in metadata.splitlines():
-                if line.startswith("Requires-Dist:"):
-                    requirement = line.split(":", 1)[1].strip()
-                    package_name = packaging.requirements.Requirement(requirement).name
-                    dependencies.setdefault(package_name, []).append(requirement)
+            for requirement in raw_dependencies:
+                package_name = packaging.requirements.Requirement(requirement).name
+                dependencies.setdefault(package_name, []).append(requirement)
 
         except Exception as e:
             logging.error(
                 f"Error reading dependencies from package '{package_path}': {e}"
+            )
+            raise ValueError(
+                "Unsupported package format. Please provide a .whl or .tar.gz file."
             )
 
         return dependencies
@@ -276,7 +288,7 @@ class BuiltInLibraryAnalyzer:
     """A class for analyzing Python built-in libraries."""
 
     @staticmethod
-    def get_builtin_libraries() -> List[str]:
+    def get_builtin_libraries() -> typing.Set[str]:
         """
         Get a list of all built-in libraries.
 
@@ -286,7 +298,7 @@ class BuiltInLibraryAnalyzer:
         return set(stdlib_list.stdlib_list(settings.python_ver_short))
 
     @staticmethod
-    def get_library_info(library_name: str) -> Dict[str, str]:
+    def get_library_info(library_name: str) -> typing.Dict[str, str]:
         """
         Get information about a specific built-in library.
 
