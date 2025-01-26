@@ -8,6 +8,7 @@ version = "0.6.4"
 description = "Fast & Simple Packer toolset for python."
 authors = [ "gooker_young <gooker_young@qq.com>",]
 readme = "README.md"
+
 [[tool.poetry.source]]
 name = "aliyun"
 url = "http://mirrors.aliyun.com/pypi/simple/"
