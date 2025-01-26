@@ -1,8 +1,10 @@
 [project]
 name = "fspacker"
-version = "0.6.4"
+dynamic = ["version"]
 description = "Fast & Simple Packer toolset for python."
-authors = [ "gooker_young <gooker_young@qq.com>",]
+authors = [
+    { name = "gooker_young", email = "gooker_young@qq.com" },
+]
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
@@ -13,6 +15,10 @@ dependencies = [
     "stdlib-list>=0.10.0",
     "toml>=0.10.2",
 ]
+
+[project.scripts]
+fsp = "fspacker.cli:main"
+fsupdate = "fspacker.cli:update"
 
 [tool.uv]
 index-url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
@@ -37,3 +43,12 @@ doc = [
     "sphinx-autodoc-typehints>=2.0.1",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets]
+sources = ["fspacker"]
+
+[tool.hatch.version]
+path = "fspacker/__init__.py"
