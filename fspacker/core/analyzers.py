@@ -6,7 +6,7 @@ import logging
 import os
 import tarfile
 import typing
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 import packaging.requirements
 import stdlib_list
@@ -14,7 +14,11 @@ from pkginfo import Wheel
 
 from fspacker.conf.settings import settings
 
-__all__ = ["LibraryAnalyzer", "LibraryMetaData", "BuiltInLibraryAnalyzer"]
+__all__ = [
+    "LibraryAnalyzer",
+    "LibraryMetaData",
+    "BuiltInLibraryAnalyzer",
+]
 
 
 @dataclasses.dataclass
@@ -180,9 +184,7 @@ class LibraryAnalyzer:
         """
         return self.metadata.dependencies
 
-    def export_dependency_tree(
-        self, filepath: Optional[str] = None
-    ) -> Dict[str, List[str]]:
+    def export_dependency_tree(self, filepath: Optional[str] = None) -> Dict[str, List[str]]:
         """
         Export the dependency tree to a JSON file.
 
@@ -233,9 +235,7 @@ class LibraryAnalyzer:
                                 ]
                                 break
             else:
-                raise ValueError(
-                    "Unsupported package format. Please provide a .whl or .tar.gz file."
-                )
+                raise ValueError("Unsupported package format. Please provide a .whl or .tar.gz file.")
 
             # Parse dependency information
             for requirement in raw_dependencies:
@@ -243,12 +243,8 @@ class LibraryAnalyzer:
                 dependencies.setdefault(package_name, []).append(requirement)
 
         except Exception as e:
-            logging.error(
-                f"Error reading dependencies from package '{package_path}': {e}"
-            )
-            raise ValueError(
-                "Unsupported package format. Please provide a .whl or .tar.gz file."
-            )
+            logging.error(f"Error reading dependencies from package '{package_path}': {e}")
+            raise ValueError("Unsupported package format. Please provide a .whl or .tar.gz file.")
 
         return dependencies
 
@@ -270,14 +266,10 @@ class LibraryAnalyzer:
             for filename in os.listdir(directory_path):
                 if filename.endswith(".whl") or filename.endswith(".tar.gz"):
                     package_path = os.path.join(directory_path, filename)
-                    dependencies = LibraryAnalyzer.get_dependencies_from_package(
-                        package_path
-                    )
+                    dependencies = LibraryAnalyzer.get_dependencies_from_package(package_path)
                     all_dependencies[filename] = dependencies
         except Exception as e:
-            logging.error(
-                f"Error analyzing packages in directory '{directory_path}': {e}"
-            )
+            logging.error(f"Error analyzing packages in directory '{directory_path}': {e}")
 
         return all_dependencies
 

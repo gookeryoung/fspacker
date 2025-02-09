@@ -2,9 +2,7 @@
 name = "fspacker"
 dynamic = ["version"]
 description = "Fast & Simple Packer toolset for python."
-authors = [
-    { name = "gooker_young", email = "gooker_young@qq.com" },
-]
+authors = [{ name = "gooker_young", email = "gooker_young@qq.com" }]
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
@@ -38,10 +36,7 @@ dev = [
     "pytest-mock>=3.14.0",
     "mypy>=1.14.1",
 ]
-doc = [
-    "sphinx>=7.1.2",
-    "sphinx-autodoc-typehints>=2.0.1",
-]
+doc = ["sphinx>=7.1.2", "sphinx-autodoc-typehints>=2.0.1"]
 
 [build-system]
 requires = ["hatchling"]

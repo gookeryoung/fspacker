@@ -1,12 +1,12 @@
 [build-system]
-requires = [ "poetry-core>=1.0.0",]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "fspacker"
 version = "0.6.4"
 description = "Fast & Simple Packer toolset for python."
-authors = [ "gooker_young <gooker_young@qq.com>",]
+authors = ["gooker_young <gooker_young@qq.com>"]
 readme = "README.md"
 
 [[tool.poetry.source]]

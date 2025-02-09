@@ -2,6 +2,7 @@ import dataclasses
 import pathlib
 
 from pkginfo import Distribution
+
 from fspacker.utils.zip import get_zip_meta_data
 
 
