@@ -220,9 +220,7 @@ class LibraryAnalyzer:
             Dict[str, List[str]]: A mapping of package names to their dependencies.
         """
         dependencies: Dict[str, List[str]] = {}
-        raw_dependencies = (
-            []
-        )  # Initialize raw_dependencies to avoid referencing before assignment
+        raw_dependencies: typing.Sequence[str] = []
         try:
             if package_path.endswith(".whl"):
                 metadata = Wheel(package_path)

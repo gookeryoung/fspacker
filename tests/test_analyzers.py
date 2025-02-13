@@ -9,9 +9,9 @@ from importlib.metadata import PackageNotFoundError
 import pytest
 
 from fspacker.core.analyzers import (
+    BuiltInLibraryAnalyzer,
     LibraryAnalyzer,
     LibraryMetaData,
-    BuiltInLibraryAnalyzer,
 )
 
 

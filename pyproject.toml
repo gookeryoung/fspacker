@@ -47,3 +47,6 @@ sources = ["fspacker"]
 
 [tool.hatch.version]
 path = "fspacker/__init__.py"
+
+[tool.mypy]
+exclude = ["docs/", "examples/", "tests/"]

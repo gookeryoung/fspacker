@@ -3,9 +3,10 @@ import shutil
 
 
 def test_embed_file():
-    from fspacker.conf.settings import settings
-    import sys
     import platform
+    import sys
+
+    from fspacker.conf.settings import settings
 
     version = sys.version.split(" ")[0]
     assert (
@@ -47,7 +48,6 @@ def test_clear_dirs(tmpdir, monkeypatch):
 def test_config():
     from fspacker.conf.settings import settings
 
-    settings.config["mode.offline"] = True
-    assert settings.config.get("mode.offline") is True
+    settings.is_offline_mode = False
     assert settings.config.get("mode.not_exist", None) is None
     assert settings.config.get("mode.debug", None) is None

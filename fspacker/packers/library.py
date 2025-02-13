@@ -6,8 +6,8 @@ from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
 from fspacker.packers.libspec.base import DefaultLibrarySpecPacker
 from fspacker.packers.libspec.gui import (
-    PySide2Packer,
     PygamePacker,
+    PySide2Packer,
     TkinterPacker,
 )
 from fspacker.packers.libspec.sci import (
@@ -64,4 +64,7 @@ class LibraryPacker(BasePacker):
                 self.SPECS["default"].pack(lib, target=target)
             else:
                 logging.error(f"[!!!] Lib [{lib}] for [{lib}] not found in repo")
-                install_lib(lib, target)
+                if lib != "Unknown":
+                    install_lib(lib, target)
+                else:
+                    logging.error("lib unknown, skip.")

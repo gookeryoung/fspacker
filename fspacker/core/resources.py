@@ -5,7 +5,6 @@ from fspacker.conf.settings import settings
 from fspacker.core.analyzers import (
     BuiltInLibraryAnalyzer,
     LibraryAnalyzer,
-    LibraryMetaData,
 )
 
 __all__ = ["resources"]
@@ -22,7 +21,7 @@ class Resources:
         return cls._instance
 
     @cached_property
-    def libs_repo(self) -> typing.List[LibraryMetaData]:
+    def libs_repo(self) -> typing.Dict[str, typing.Dict[str, typing.List[str]]]:
         return LibraryAnalyzer.analyze_packages_in_directory(settings.libs_dir)
 
     @cached_property

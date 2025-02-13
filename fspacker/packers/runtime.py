@@ -52,7 +52,7 @@ class RuntimePacker(BasePacker):
             logging.info("Runtime folder exists, skipping")
             return
 
-        if not settings.config.get("mode.offline", False):
+        if not settings.is_offline_mode:
             self.fetch_runtime()
 
         logging.info(

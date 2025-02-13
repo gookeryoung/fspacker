@@ -7,10 +7,10 @@ from dataclasses import dataclass
 import click
 import toml
 
-from fspacker.conf.settings import settings
-
 
 def _proc_directory(directory: str, file: str):
+    from fspacker.conf.settings import settings
+
     file_path = pathlib.Path(file)
     dir_path = pathlib.Path(directory) if directory is not None else pathlib.Path.cwd()
 
@@ -20,6 +20,7 @@ def _proc_directory(directory: str, file: str):
 
     t0 = time.perf_counter()
     logging.info(f"Source root directory: [{dir_path}]")
+    logging.info(f"Current mode: [offline={settings.is_offline_mode}]")
 
     from fspacker.process import Processor
 
@@ -68,18 +69,12 @@ def cli(ctx: click.Context, debug: bool, version: bool):
 @click.option("-d", "--directory", default=None, help="Input source file.")
 @click.option("-f", "--file", default="", help="Input source file.")
 @click.option(
-    "--offline",
-    is_flag=True,
-    help="Offline mode, must set FSPACKER_CACHE and FSPACKER_LIBS first.",
-)
-@click.option(
     "-a", "--archive", is_flag=True, help="Archive mode, pack as archive files."
 )
-def build(offline: bool, archive: bool, directory: str, file: str):
-    logging.info(f"Current directory: [{directory}].")
+def build(archive: bool, directory: str, file: str):
+    from fspacker.conf.settings import settings
 
-    if offline:
-        settings.config["mode.offline"] = True
+    logging.info(f"Current directory: [{directory}].")
 
     if archive:
         settings.config["mode.archive"] = True
@@ -101,7 +96,8 @@ def update():
     try:
         tag = (
             subprocess.check_output(
-                ["git", "describe", "--tags", "--abbrev=0"], stderr=subprocess.STDOUT
+                ["git", "describe", "--tags", "--abbrev=0"],
+                stderr=subprocess.STDOUT,
             )
             .strip()
             .decode("utf-8")

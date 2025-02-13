@@ -7,7 +7,7 @@ from io import StringIO
 
 from fspacker.conf.settings import settings
 from fspacker.core.resources import resources
-from fspacker.core.target import PackTarget, Dependency
+from fspacker.core.target import Dependency, PackTarget
 
 __all__ = ["parsers"]
 

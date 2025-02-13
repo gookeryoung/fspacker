@@ -11,7 +11,7 @@ from fspacker.core.libraryinfo import LibraryInfo
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
 from fspacker.utils.trackers import perf_tracker
-from fspacker.utils.wheel import unpack_wheel, download_wheel
+from fspacker.utils.wheel import download_wheel, unpack_wheel
 
 
 def get_lib_meta_name(filepath: pathlib.Path) -> typing.Optional[str]:
@@ -74,7 +74,7 @@ def install_lib(
 
     info = resources.libs_repo.get(libname.lower())
     if info is None or not info.filepath.exists():
-        if settings.config.get("mode.offline", None) is True:
+        if settings.is_offline_mode:
             logging.error(f"[!!!] Offline mode, lib [{libname}] not found")
             return False
 
