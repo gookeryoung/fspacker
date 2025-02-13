@@ -23,7 +23,6 @@ index-url = 'https://pypi.tuna.tsinghua.edu.cn/simple/'
 
 [dependency-groups]
 dev = [
-    "black>=24.8.0",
     "coverage>=7.6.1",
     "pytest-benchmark>=4.0.0",
     "pytest>=8.3.4",
