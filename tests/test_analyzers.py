@@ -70,9 +70,7 @@ def mock_dep_dist_chardet(mocker):
 def test_get_library_metadata_found(mocker, mock_distribution):
     """Test retrieving metadata for an existing library."""
 
-    mocker.patch(
-        "importlib.metadata.distribution", return_value=mock_distribution
-    )
+    mocker.patch("importlib.metadata.distribution", return_value=mock_distribution)
     analyzer = LibraryAnalyzer("requests")
     metadata = analyzer.get_library_metadata()
 
@@ -88,9 +86,7 @@ def test_get_library_metadata_found(mocker, mock_distribution):
 def test_get_library_metadata_not_found(mocker):
     """Test retrieving metadata for a non-existent library."""
 
-    mocker.patch(
-        "importlib.metadata.distribution", side_effect=PackageNotFoundError
-    )
+    mocker.patch("importlib.metadata.distribution", side_effect=PackageNotFoundError)
     analyzer = LibraryAnalyzer("nonexistent-library")
     metadata = analyzer.get_library_metadata()
 
@@ -100,9 +96,7 @@ def test_get_library_metadata_not_found(mocker):
 def test_display_metadata(capsys, mocker, mock_distribution):
     """Test displaying library metadata."""
 
-    mocker.patch(
-        "importlib.metadata.distribution", return_value=mock_distribution
-    )
+    mocker.patch("importlib.metadata.distribution", return_value=mock_distribution)
     analyzer = LibraryAnalyzer("requests")
     analyzer.display_metadata()
 
@@ -122,9 +116,7 @@ def test_display_metadata(capsys, mocker, mock_distribution):
 def test_analyze_dependencies(mocker, mock_distribution):
     """Test analyzing library dependencies."""
 
-    mocker.patch(
-        "importlib.metadata.distribution", return_value=mock_distribution
-    )
+    mocker.patch("importlib.metadata.distribution", return_value=mock_distribution)
     analyzer = LibraryAnalyzer("requests")
     dependencies = analyzer.analyze_dependencies()
 
@@ -196,16 +188,18 @@ def create_mock_whl_file(dependencies):
     whl_path = os.path.join(temp_dir, "mock_package.whl")
 
     # Create a mock METADATA content
-    metadata_content = "\n".join([
-        "Metadata-Version: 2.1",
-        "Name: mock_package",
-        "Version: 0.1.0",
-        "Summary: A mock package for testing.",
-        "Home-page: https://mockpackage.readthedocs.io",
-        "Author: Mock Author",
-        "License: MIT",
-        *[f"Requires-Dist: {dep}" for dep in dependencies],
-    ])
+    metadata_content = "\n".join(
+        [
+            "Metadata-Version: 2.1",
+            "Name: mock_package",
+            "Version: 0.1.0",
+            "Summary: A mock package for testing.",
+            "Home-page: https://mockpackage.readthedocs.io",
+            "Author: Mock Author",
+            "License: MIT",
+            *[f"Requires-Dist: {dep}" for dep in dependencies],
+        ]
+    )
 
     with zipfile.ZipFile(whl_path, "w") as whl:
         whl.writestr("METADATA", metadata_content)
@@ -218,9 +212,7 @@ def create_mock_tar_gz_file(dependencies):
 
     temp_dir = tempfile.mkdtemp()
     tar_gz_path = os.path.join(temp_dir, "mock_package.tar.gz")
-    metadata_content = "\n".join(
-        f"Requires-Dist: {dep}" for dep in dependencies
-    )
+    metadata_content = "\n".join(f"Requires-Dist: {dep}" for dep in dependencies)
 
     with tarfile.open(tar_gz_path, "w:gz") as tar:
         metadata_file = tempfile.NamedTemporaryFile(delete=False)
@@ -239,9 +231,7 @@ def test_get_dependencies_from_package(mocker):
     whl_dependencies = ["packageA >= 1.0.0", "packageB < 2.0.0"]
     whl_path = create_mock_whl_file(whl_dependencies)
 
-    parsed_whl_dependencies = LibraryAnalyzer.get_dependencies_from_package(
-        whl_path
-    )
+    parsed_whl_dependencies = LibraryAnalyzer.get_dependencies_from_package(whl_path)
     assert "packageA" in parsed_whl_dependencies
     assert "packageB" in parsed_whl_dependencies
     assert parsed_whl_dependencies["packageA"] == ["packageA >= 1.0.0"]
@@ -271,9 +261,7 @@ def create_mock_packages_directory(dependencies):
 
     # Create a mock .whl file
     whl_path = os.path.join(temp_dir, "mock_package.whl")
-    metadata_content = "\n".join(
-        f"Requires-Dist: {dep}" for dep in dependencies
-    )
+    metadata_content = "\n".join(f"Requires-Dist: {dep}" for dep in dependencies)
     with zipfile.ZipFile(whl_path, "w") as whl:
         whl.writestr("METADATA", metadata_content)
 
@@ -356,9 +344,7 @@ def test_get_dependencies_from_orderedset(mocker):
     tar_gz_path = create_mock_tar_gz_file(dependencies)
 
     # Test the parsing of the orderedset tar.gz file
-    parsed_dependencies = LibraryAnalyzer.get_dependencies_from_package(
-        tar_gz_path
-    )
+    parsed_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
     assert "some_dependency" in parsed_dependencies
 
     """Test getting dependency information from orderedset-2.0.3.tar.gz."""
@@ -366,7 +352,5 @@ def test_get_dependencies_from_orderedset(mocker):
     tar_gz_path = create_mock_tar_gz_file(dependencies)
 
     # Test the parsing of the orderedset tar.gz file
-    parsed_dependencies = LibraryAnalyzer.get_dependencies_from_package(
-        tar_gz_path
-    )
+    parsed_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
     assert "some_dependency" in parsed_dependencies
