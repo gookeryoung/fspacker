@@ -15,16 +15,12 @@ class DependsPacker(BasePacker):
         dst.mkdir(exist_ok=True, parents=True)
 
         root = target.root_dir
-        logging.info(
-            f"Copy source file: [{target.src.name}]->[{dst.relative_to(root)}]"
-        )
+        logging.info(f"Copy source file: [{target.src.name}]->[{dst.relative_to(root)}]")
         shutil.copy(str(target.src), str(dst))
 
         for dep in target.sources:
             dep_target = list(_ for _ in target.src.parent.glob(f"{dep}*"))[0]
             if dep_target.is_dir():
-                shutil.copytree(
-                    dep_target, str(dst / dep_target.stem), dirs_exist_ok=True
-                )
+                shutil.copytree(dep_target, str(dst / dep_target.stem), dirs_exist_ok=True)
             elif dep_target.is_file():
                 shutil.copy(dep_target, str(dst / dep_target.name))

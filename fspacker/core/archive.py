@@ -47,9 +47,7 @@ class ArchiveFactory:
         if filepath.exists() and filepath.suffix in self.SUFFIXES:
             archive = self.ARCHIVES.get(filepath.suffix[1:].lower(), None)
             if archive is not None:
-                logging.info(
-                    f"Unpack file [{filepath}]->[{dest_dir}], using [{archive}]."
-                )
+                logging.info(f"Unpack file [{filepath}]->[{dest_dir}], using [{archive}].")
                 archive.unpack(filepath, dest_dir)
                 return
 

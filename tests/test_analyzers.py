@@ -241,9 +241,7 @@ def test_get_dependencies_from_package(mocker):
     tar_gz_dependencies = ["packageC == 1.0.0", "packageD >= 2.0.0"]
     tar_gz_path = create_mock_tar_gz_file(tar_gz_dependencies)
 
-    parsed_tar_gz_dependencies = LibraryAnalyzer.get_dependencies_from_package(
-        tar_gz_path
-    )
+    parsed_tar_gz_dependencies = LibraryAnalyzer.get_dependencies_from_package(tar_gz_path)
     assert "packageC" in parsed_tar_gz_dependencies
     assert "packageD" in parsed_tar_gz_dependencies
     assert parsed_tar_gz_dependencies["packageC"] == ["packageC == 1.0.0"]

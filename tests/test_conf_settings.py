@@ -9,20 +9,14 @@ def test_embed_file():
     from fspacker.conf.settings import settings
 
     version = sys.version.split(" ")[0]
-    assert (
-        settings.embed_filename
-        == f"python-{version}-embed-{platform.machine().lower()}.zip"
-    )
+    assert settings.embed_filename == f"python-{version}-embed-{platform.machine().lower()}.zip"
 
 
 def test_dirs():
     from fspacker.conf.settings import settings
 
     assert settings.cache_dir == pathlib.Path("~").expanduser() / ".cache" / "fspacker"
-    assert (
-        settings.libs_dir
-        == pathlib.Path("~").expanduser() / ".cache" / "fspacker" / "libs-repo"
-    )
+    assert settings.libs_dir == pathlib.Path("~").expanduser() / ".cache" / "fspacker" / "libs-repo"
 
 
 def test_user_dirs(tmpdir, monkeypatch):

@@ -45,3 +45,28 @@ path = "fspacker/__init__.py"
 
 [tool.mypy]
 exclude = ["docs/", "examples/", "tests/"]
+
+[tool.ruff]
+line-length = 120
+fix = true
+show-fixes = true
+output-format = "full"
+exclude = ["**/ui_*.py", "**/*_rc.py"]
+
+[tool.ruff.lint]
+select = [
+    "B",  # flake8-bugbear
+    "E",  # pycodestyle error
+    "F",  # pyflakes
+    "I",  # isort
+    "UP", # pyupgrade
+    "W",  # pycodestyle warning
+]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+order-by-type = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]

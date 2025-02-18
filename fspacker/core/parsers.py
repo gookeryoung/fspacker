@@ -60,9 +60,7 @@ class SourceParser(BaseParser):
                 logging.info(f"Add pack target{parsers.TARGETS[entry.stem]}")
 
     def _parse_folder(self, filepath: pathlib.Path) -> None:
-        files: typing.List[pathlib.Path] = list(
-            _ for _ in filepath.iterdir() if _.suffix == ".py"
-        )
+        files: typing.List[pathlib.Path] = list(_ for _ in filepath.iterdir() if _.suffix == ".py")
         for file in files:
             self._parse_content(file)
 

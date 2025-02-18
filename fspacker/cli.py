@@ -41,9 +41,7 @@ class BuildOptions:
 
 @click.group(invoke_without_command=True)
 @click.option("--debug", is_flag=True, help="Debug mode, show detail information.")
-@click.option(
-    "-v", "--version", is_flag=True, help="Debug mode, show detail information."
-)
+@click.option("-v", "--version", is_flag=True, help="Debug mode, show detail information.")
 @click.pass_context
 def cli(ctx: click.Context, debug: bool, version: bool):
     ctx.obj = BuildOptions(debug=debug, show_version=version)
@@ -68,9 +66,7 @@ def cli(ctx: click.Context, debug: bool, version: bool):
 @cli.command()
 @click.option("-d", "--directory", default=None, help="Input source file.")
 @click.option("-f", "--file", default="", help="Input source file.")
-@click.option(
-    "-a", "--archive", is_flag=True, help="Archive mode, pack as archive files."
-)
+@click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
 def build(archive: bool, directory: str, file: str):
     from fspacker.conf.settings import settings
 

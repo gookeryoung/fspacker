@@ -55,9 +55,7 @@ class RuntimePacker(BasePacker):
         if not settings.is_offline_mode:
             self.fetch_runtime()
 
-        logging.info(
-            f"Unpacking runtime: [{settings.embed_filepath.name}] -> [{dest.relative_to(target.root_dir)}]"
-        )
+        logging.info(f"Unpacking runtime: [{settings.embed_filepath.name}] -> [{dest.relative_to(target.root_dir)}]")
         shutil.unpack_archive(settings.embed_filepath, dest, "zip")
 
     @staticmethod

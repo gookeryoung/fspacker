@@ -46,9 +46,7 @@ class TkinterPacker(ChildLibSpecPacker):
             logging.info("Use [tkinter] pack spec")
 
             if not (target.dist_dir / "lib").exists():
-                logging.info(
-                    f"Unpacking tkinter: [{settings.tkinter_lib_path.name}]->[{target.packages_dir.name}]"
-                )
+                logging.info(f"Unpacking tkinter: [{settings.tkinter_lib_path.name}]->[{target.packages_dir.name}]")
                 shutil.unpack_archive(settings.tkinter_lib_path, target.dist_dir, "zip")
             else:
                 logging.info("[tkinter][lib] already packed, skipping")

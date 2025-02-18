@@ -24,17 +24,13 @@ def get_lib_meta_name(filepath: pathlib.Path) -> typing.Optional[str]:
     try:
         meta_data = pkginfo.get_metadata(str(filepath))
         if meta_data is not None and meta_data.name is not None:
-            logging.info(
-                f"Parsed library name: [{meta_data.name.lower()}] from [{filepath}]"
-            )
+            logging.info(f"Parsed library name: [{meta_data.name.lower()}] from [{filepath}]")
             return meta_data.name.lower()
         else:
             logging.warning(f"No valid metadata found in [{filepath}]")
             return None
     except Exception as e:
-        logging.error(
-            f"Error occurred while parsing library name from [{filepath}]: {e}"
-        )
+        logging.error(f"Error occurred while parsing library name from [{filepath}]: {e}")
         return None
 
 
@@ -43,19 +39,14 @@ def get_lib_meta_depends(filepath: pathlib.Path) -> typing.Set[str]:
     try:
         meta_data = pkginfo.get_metadata(str(filepath))
         if meta_data is not None and hasattr(meta_data, "requires_dist"):
-            dependencies = set(
-                re.split(r"[;<>!=()\[~.]", x)[0].strip()
-                for x in meta_data.requires_dist
-            )
+            dependencies = set(re.split(r"[;<>!=()\[~.]", x)[0].strip() for x in meta_data.requires_dist)
             logging.info(f"Dependencies for library [{filepath.name}]: {dependencies}")
             return dependencies
         else:
             logging.warning(f"No requires found in metadata for [{filepath}]")
             return set()
     except Exception as e:
-        logging.error(
-            f"Error occurred while getting dependencies for [{filepath}]: {e}"
-        )
+        logging.error(f"Error occurred while getting dependencies for [{filepath}]: {e}")
         return set()
 
 
