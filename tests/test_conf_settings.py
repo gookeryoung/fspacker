@@ -42,6 +42,6 @@ def test_clear_dirs(tmpdir, monkeypatch):
 def test_config():
     from fspacker.settings import settings
 
-    settings.is_offline_mode = False
+    settings.config["mode.offline"] = False
     assert settings.config.get("mode.not_exist", None) is None
     assert settings.config.get("mode.debug", None) is None

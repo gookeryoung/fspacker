@@ -29,28 +29,38 @@ cli = AliasedGroup(
 
 
 @cli.command("build", short_help="Build source files. [b]")
-@click.option("--debug/--no-debug", "-D/-ND", default=False, help="Debug mode, show detail information.")
-@click.option("-f", "--file", default="", help="Input source file.")
 @click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
-@click.argument("directory", default=None)
-def build_command(archive: bool, directory: str, file: str, debug: bool):
+@click.option("--debug/--no-debug", "-D/-ND", default=False, help="Debug mode, show detail information.")
+@click.option("--offline", "-O", is_flag=True, help="Offline mode, skip network requests.")
+@click.option("-f", "--file", default="", help="Input source file.")
+@click.argument("directory", default=None, required=False)
+def build_command(
+    archive: bool,
+    directory: str,
+    file: str,
+    offline: bool,
+    debug: bool,
+):
     """Build source files."""
 
     if debug:
         logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
-        logging.info("Debug mode enabled.")
+        logging.info("[Debug] mode enabled.")
     else:
         logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
-        logging.info("Debug mode disabled.")
 
     from fspacker.settings import settings
 
     if archive:
-        settings.config["mode.archive"] = True
-    else:
-        settings.config["mode.archive"] = False
+        logging.info("[Archive] mode enabled.")
 
-    from fspacker.settings import settings
+    if offline:
+        logging.info("[Offline] mode enabled.")
+    else:
+        logging.info("[Online] mode enabled.")
+
+    settings.config["mode.archive"] = archive
+    settings.config["mode.offline"] = offline
 
     file_path = pathlib.Path(file)
     dir_path = pathlib.Path(directory) if directory is not None else pathlib.Path.cwd()
@@ -61,7 +71,6 @@ def build_command(archive: bool, directory: str, file: str, debug: bool):
 
     t0 = time.perf_counter()
     logging.info(f"Source root directory: [{dir_path}]")
-    logging.info(f"Current mode: [offline={settings.is_offline_mode}]")
 
     from fspacker.process import Processor
 

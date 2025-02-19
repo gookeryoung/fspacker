@@ -5,24 +5,12 @@ import pathlib
 import platform
 import typing
 
-import requests
-
 __all__ = [
     "settings",
 ]
 
 
 _config: typing.Dict[str, typing.Any] = {}
-
-
-def _check_offline_mode():
-    try:
-        requests.get("https://www.baidu.cn", timeout=1)
-        return False
-    except requests.ConnectionError:
-        return True
-    except requests.Timeout:
-        return True
 
 
 def _get_cache_dir() -> pathlib.Path:
@@ -76,7 +64,6 @@ class Settings:
     """Global settings for fspacker."""
 
     # global
-    is_offline_mode = _check_offline_mode()
     src_dir = pathlib.Path(__file__).parent.parent
     assets_dir = src_dir / "assets"
     # resource files and folders
@@ -171,6 +158,10 @@ class Settings:
     @property
     def config(self):
         return _get_config()
+
+    @property
+    def offline_mode(self):
+        return self.config["mode.offline"]
 
     @classmethod
     def save_config(cls):

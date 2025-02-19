@@ -52,7 +52,7 @@ class RuntimePacker(BasePacker):
             logging.info("Runtime folder exists, skipping")
             return
 
-        if not settings.is_offline_mode:
+        if not settings.offline_mode:
             self.fetch_runtime()
 
         logging.info(f"Unpacking runtime: [{settings.embed_filepath.name}] -> [{dest.relative_to(target.root_dir)}]")
