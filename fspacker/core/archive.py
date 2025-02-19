@@ -1,6 +1,7 @@
 import logging
 import pathlib
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 
 from fspacker.core.commands import commands
 

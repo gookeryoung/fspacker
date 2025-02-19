@@ -6,7 +6,9 @@ import logging
 import os
 import tarfile
 import typing
-from typing import Dict, List, Optional
+from typing import Dict
+from typing import List
+from typing import Optional
 
 import packaging.requirements
 import stdlib_list
@@ -52,7 +54,7 @@ class LibraryMetaData:
     LibraryMetaData(name='requests', version='2.25.1', summary='Python HTTP for Humans.', homepage='https://requests.readthedocs.io', author='Kenneth Reitz', license='Apache-2.0', dependencies=[])
     >>> LibraryMetaData(name="requests", version="2.25.1", summary="Python HTTP for Humans.", homepage="https://requests.readthedocs.io", author="Kenneth Reitz", license="Apache-2.0", dependencies=["urllib3", "chardet"])
     LibraryMetaData(name='requests', version='2.25.1', summary='Python HTTP for Humans.', homepage='https://requests.readthedocs.io', author='Kenneth Reitz', license='Apache-2.0', dependencies=['urllib3', 'chardet'])
-    """
+    """  # noqa: E501
 
     name: str = "Unknown"
     version: str = ""
@@ -207,7 +209,7 @@ class LibraryAnalyzer:
     @staticmethod
     def get_dependencies_from_package(
         package_path: str,
-    ) -> Dict[str, List[str]]:
+    ) -> typing.Optional[typing.Dict[str, typing.List[str]]]:
         """
         Get the dependency information from a local .whl or .tar.gz file.
 
@@ -217,7 +219,7 @@ class LibraryAnalyzer:
         Returns:
             Dict[str, List[str]]: A mapping of package names to their dependencies.
         """
-        dependencies: Dict[str, List[str]] = {}
+        dependencies: typing.Dict[str, typing.List[str]] = {}
         raw_dependencies: typing.Sequence[str] = []
         try:
             if package_path.endswith(".whl"):
@@ -246,7 +248,6 @@ class LibraryAnalyzer:
 
         except Exception as e:
             logging.error(f"Error reading dependencies from package '{package_path}': {e}")
-            raise ValueError("Unsupported package format. Please provide a .whl or .tar.gz file.")
 
         return dependencies
 

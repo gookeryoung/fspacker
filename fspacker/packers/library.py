@@ -5,18 +5,14 @@ from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
 from fspacker.packers.libspec.base import DefaultLibrarySpecPacker
-from fspacker.packers.libspec.gui import (
-    PygamePacker,
-    PySide2Packer,
-    TkinterPacker,
-)
-from fspacker.packers.libspec.sci import (
-    MatplotlibSpecPacker,
-    NumbaSpecPacker,
-    NumpySpecPacker,
-    PandasSpecPacker,
-    TorchSpecPacker,
-)
+from fspacker.packers.libspec.gui import PygamePacker
+from fspacker.packers.libspec.gui import PySide2Packer
+from fspacker.packers.libspec.gui import TkinterPacker
+from fspacker.packers.libspec.sci import MatplotlibSpecPacker
+from fspacker.packers.libspec.sci import NumbaSpecPacker
+from fspacker.packers.libspec.sci import NumpySpecPacker
+from fspacker.packers.libspec.sci import PandasSpecPacker
+from fspacker.packers.libspec.sci import TorchSpecPacker
 from fspacker.utils.libs import install_lib
 
 __all__ = [
@@ -50,7 +46,7 @@ class LibraryPacker(BasePacker):
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")
-        for k, v in self.SPECS.items():
+        for k, _ in self.SPECS.items():
             if k in target.libs:
                 self.SPECS[k].pack(k, target=target)
                 target.libs.remove(k)
