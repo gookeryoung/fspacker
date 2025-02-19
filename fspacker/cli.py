@@ -4,7 +4,6 @@ import subprocess
 import time
 
 import click
-import toml
 
 
 class AliasedGroup(click.Group):
@@ -29,7 +28,28 @@ cli = AliasedGroup(
 )
 
 
-def _proc_directory(directory: str, file: str):
+@cli.command("build", short_help="Build source files. [b]")
+@click.option("-d", "--directory", type=click.STRING, default=None, help="Input source file.")
+@click.option("--debug/--no-debug", "-D/-ND", default=False, help="Debug mode, show detail information.")
+@click.option("-f", "--file", default="", help="Input source file.")
+@click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
+def build_command(archive: bool, directory: str, file: str, debug: bool):
+    """Build source files."""
+
+    if debug:
+        logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
+        logging.info("Debug mode enabled.")
+    else:
+        logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
+        logging.info("Debug mode disabled.")
+
+    from fspacker.conf.settings import settings
+
+    logging.info(f"Current directory: [{directory}].")
+
+    if archive:
+        settings.config["mode.archive"] = True
+
     from fspacker.conf.settings import settings
 
     file_path = pathlib.Path(file)
@@ -51,33 +71,8 @@ def _proc_directory(directory: str, file: str):
     logging.info(f"Packing done! Total used: [{time.perf_counter() - t0:.2f}]s.")
 
 
-@cli.command("build", short_help="Build source files.")
-@click.option("-d", "--directory", type=click.STRING, default=None, help="Input source file.")
-@click.option("--debug/--no-debug", "-D/-ND", default=False, help="Debug mode, show detail information.")
-@click.option("-f", "--file", default="", help="Input source file.")
-@click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
-def build_command(archive: bool, directory: str, file: str, debug: bool):
-    if debug:
-        logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
-        logging.info("Debug mode enabled.")
-    else:
-        logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
-        logging.info("Debug mode disabled.")
-
-    from fspacker.conf.settings import settings
-
-    logging.info(f"Current directory: [{directory}].")
-
-    if archive:
-        settings.config["mode.archive"] = True
-
-    _proc_directory(directory, file)
-
-
-@cli.command("update", short_help="Update version for fspacker based on the latest Git tag.")
+@cli.command("update", short_help="Update version for fspacker based on the latest Git tag. [u]")
 def update_command():
-    pyproject = toml.load("pyproject.toml")
-
     # Get latest tag from Git
     try:
         tag = (
@@ -94,10 +89,6 @@ def update_command():
         print("No tag found. Skipping version update.")
         return
 
-    # Update pyproject.toml
-    with open("pyproject.toml", "w") as f:
-        toml.dump(pyproject, f)
-
     with open("fspacker/__init__.py", "w") as f:
         build_date = time.strftime("%Y-%m-%dT%H:%M:%SZ")
         f.write(f'__version__ = "{new_version}"\n')
@@ -106,7 +97,7 @@ def update_command():
     print(f"Updated version to {new_version}")
 
 
-@cli.command("version", short_help="Show version information.")
+@cli.command("version", short_help="Show version information. [v]")
 def version_command():
     """Show version information."""
 
