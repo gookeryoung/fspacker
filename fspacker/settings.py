@@ -56,7 +56,7 @@ def _get_config() -> typing.Dict[str, typing.Any]:
     if not len(_config):
         config_file = _get_cache_dir() / "config.json"
         if config_file.exists():
-            with open(config_file, "r") as file:
+            with open(config_file) as file:
                 _config = json.load(file)
 
     return _config
@@ -69,7 +69,7 @@ def _save_config() -> None:
     if len(_config):
         config_file = _get_cache_dir() / "config.json"
         with open(config_file, "w") as file:
-            json.dump(_config, file, ensure_ascii=True, check_circular=True, indent=4)
+            json.dump(_config, file, indent=4, ensure_ascii=True, check_circular=True)
 
 
 class Settings:

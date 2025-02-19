@@ -14,7 +14,7 @@ import packaging.requirements
 import stdlib_list
 from pkginfo import Wheel
 
-from fspacker.conf.settings import settings
+from fspacker.settings import settings
 
 __all__ = [
     "LibraryAnalyzer",

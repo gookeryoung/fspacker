@@ -22,7 +22,7 @@ def calc_checksum(filepath: pathlib.Path, block_size: int = 4096) -> str:
     except FileNotFoundError:
         logging.error(f"File not found: [{filepath}]")
         return ""
-    except IOError as e:
+    except OSError as e:
         logging.error(f"IO error occurred while reading file [{filepath}]: {e}")
         return ""
 

@@ -1,4 +1,4 @@
-from fspacker.conf.settings import settings
+from fspacker.settings import settings
 
 
 def _map_libname(libname: str) -> str:

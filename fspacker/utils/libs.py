@@ -5,13 +5,14 @@ import typing
 
 import pkginfo
 
-from fspacker.conf.settings import settings
 from fspacker.core.archive import unpack
 from fspacker.core.libraryinfo import LibraryInfo
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
+from fspacker.settings import settings
 from fspacker.utils.trackers import perf_tracker
-from fspacker.utils.wheel import download_wheel, unpack_wheel
+from fspacker.utils.wheel import download_wheel
+from fspacker.utils.wheel import unpack_wheel
 
 
 def get_lib_meta_name(filepath: pathlib.Path) -> typing.Optional[str]:

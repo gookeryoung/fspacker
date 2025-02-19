@@ -2,9 +2,9 @@ import logging
 import shutil
 import string
 
-from fspacker.conf.settings import settings
 from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
+from fspacker.settings import settings
 
 # int file template
 INT_TEMPLATE = string.Template(

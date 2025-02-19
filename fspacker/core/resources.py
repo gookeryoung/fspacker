@@ -1,11 +1,9 @@
 import typing
 from functools import cached_property
 
-from fspacker.conf.settings import settings
-from fspacker.core.analyzers import (
-    BuiltInLibraryAnalyzer,
-    LibraryAnalyzer,
-)
+from fspacker.core.analyzers import BuiltInLibraryAnalyzer
+from fspacker.core.analyzers import LibraryAnalyzer
+from fspacker.settings import settings
 
 __all__ = ["resources"]
 

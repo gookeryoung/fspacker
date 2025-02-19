@@ -7,9 +7,9 @@ import typing
 import zipfile
 from urllib.parse import urlparse
 
-from fspacker.conf.settings import settings
 from fspacker.core.analyzers import LibraryAnalyzer
 from fspacker.core.resources import resources
+from fspacker.settings import settings
 from fspacker.utils.trackers import perf_tracker
 from fspacker.utils.url import get_fastest_pip_url
 

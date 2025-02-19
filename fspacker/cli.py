@@ -29,10 +29,10 @@ cli = AliasedGroup(
 
 
 @cli.command("build", short_help="Build source files. [b]")
-@click.option("-d", "--directory", type=click.STRING, default=None, help="Input source file.")
 @click.option("--debug/--no-debug", "-D/-ND", default=False, help="Debug mode, show detail information.")
 @click.option("-f", "--file", default="", help="Input source file.")
 @click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
+@click.argument("directory", default=None)
 def build_command(archive: bool, directory: str, file: str, debug: bool):
     """Build source files."""
 
@@ -43,14 +43,14 @@ def build_command(archive: bool, directory: str, file: str, debug: bool):
         logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
         logging.info("Debug mode disabled.")
 
-    from fspacker.conf.settings import settings
-
-    logging.info(f"Current directory: [{directory}].")
+    from fspacker.settings import settings
 
     if archive:
         settings.config["mode.archive"] = True
+    else:
+        settings.config["mode.archive"] = False
 
-    from fspacker.conf.settings import settings
+    from fspacker.settings import settings
 
     file_path = pathlib.Path(file)
     dir_path = pathlib.Path(directory) if directory is not None else pathlib.Path.cwd()
