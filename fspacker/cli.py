@@ -2,10 +2,31 @@ import logging
 import pathlib
 import subprocess
 import time
-from dataclasses import dataclass
 
 import click
 import toml
+
+
+class AliasedGroup(click.Group):
+    """Custom click group class for aliasing commands."""
+
+    def get_command(self, ctx, cmd_name):
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        elif len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        ctx.fail(f"Too many matches: {','.join(sorted(matches))}")
+
+
+# Group for fspacker command line interface
+cli = AliasedGroup(
+    name="fspacker",
+    help="fspacker command line interface.",
+)
 
 
 def _proc_directory(directory: str, file: str):
@@ -30,44 +51,19 @@ def _proc_directory(directory: str, file: str):
     logging.info(f"Packing done! Total used: [{time.perf_counter() - t0:.2f}]s.")
 
 
-@dataclass
-class BuildOptions:
-    debug: bool
-    show_version: bool
-
-    def __repr__(self):
-        return f"Build mode: [debug: {self.debug}, version: {self.show_version}]."
-
-
-@click.group(invoke_without_command=True)
-@click.option("--debug", is_flag=True, help="Debug mode, show detail information.")
-@click.option("-v", "--version", is_flag=True, help="Debug mode, show detail information.")
-@click.pass_context
-def cli(ctx: click.Context, debug: bool, version: bool):
-    ctx.obj = BuildOptions(debug=debug, show_version=version)
-
-    if debug:
-        logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
-    else:
-        logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
-
-    logging.info(ctx.obj)
-
-    if version:
-        from fspacker import __version__
-
-        logging.info(f"fspacker {__version__}")
-        return
-
-    if ctx.invoked_subcommand is None:
-        ctx.invoke(build)
-
-
-@cli.command()
-@click.option("-d", "--directory", default=None, help="Input source file.")
+@cli.command("build", short_help="Build source files.")
+@click.option("-d", "--directory", type=click.STRING, default=None, help="Input source file.")
+@click.option("--debug/--no-debug", "-D/-ND", default=False, help="Debug mode, show detail information.")
 @click.option("-f", "--file", default="", help="Input source file.")
 @click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
-def build(archive: bool, directory: str, file: str):
+def build_command(archive: bool, directory: str, file: str, debug: bool):
+    if debug:
+        logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
+        logging.info("Debug mode enabled.")
+    else:
+        logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
+        logging.info("Debug mode disabled.")
+
     from fspacker.conf.settings import settings
 
     logging.info(f"Current directory: [{directory}].")
@@ -78,17 +74,11 @@ def build(archive: bool, directory: str, file: str):
     _proc_directory(directory, file)
 
 
-def main():
-    cli()
-
-
-@cli.command()
-def update():
-    """Update version for fspacker"""
-
+@cli.command("update", short_help="Update version for fspacker based on the latest Git tag.")
+def update_command():
     pyproject = toml.load("pyproject.toml")
 
-    # 获取最新的 Git 标签
+    # Get latest tag from Git
     try:
         tag = (
             subprocess.check_output(
@@ -98,23 +88,36 @@ def update():
             .strip()
             .decode("utf-8")
         )
-        new_version = tag.replace("v", "")  # 使用标签作为新版本
+        new_version = tag.replace("v", "")
         print(f"Updating version to {new_version} based on the latest tag.")
     except subprocess.CalledProcessError:
-        # 如果没有标签，打印信息并返回
         print("No tag found. Skipping version update.")
         return
 
-    # 更新 pyproject.toml
-    pyproject["tool"]["poetry"]["version"] = new_version
+    # Update pyproject.toml
     with open("pyproject.toml", "w") as f:
         toml.dump(pyproject, f)
 
-    # 更新 fspacker/__init__.py
     with open("fspacker/__init__.py", "w") as f:
-        f.write(f'__version__ = "{new_version}"')
+        build_date = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        f.write(f'__version__ = "{new_version}"\n')
+        f.write(f'__build_date__ = "{build_date}"\n')
 
     print(f"Updated version to {new_version}")
+
+
+@cli.command("version", short_help="Show version information.")
+def version_command():
+    """Show version information."""
+
+    from fspacker import __build_date__
+    from fspacker import __version__
+
+    click.echo(f"fspacker {__version__}, build date: {__build_date__}")
+
+
+def main():
+    cli.main()
 
 
 if __name__ == "__main__":
