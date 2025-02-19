@@ -1,22 +1,18 @@
 import logging
 
-from fspacker.core.libraries import get_libname
+from fspacker.core.analyzers import LibraryAnalyzer
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
 from fspacker.packers.libspec.base import DefaultLibrarySpecPacker
-from fspacker.packers.libspec.gui import (
-    PySide2Packer,
-    PygamePacker,
-    TkinterPacker,
-)
-from fspacker.packers.libspec.sci import (
-    MatplotlibSpecPacker,
-    NumbaSpecPacker,
-    NumpySpecPacker,
-    PandasSpecPacker,
-    TorchSpecPacker,
-)
+from fspacker.packers.libspec.gui import PygamePacker
+from fspacker.packers.libspec.gui import PySide2Packer
+from fspacker.packers.libspec.gui import TkinterPacker
+from fspacker.packers.libspec.sci import MatplotlibSpecPacker
+from fspacker.packers.libspec.sci import NumbaSpecPacker
+from fspacker.packers.libspec.sci import NumpySpecPacker
+from fspacker.packers.libspec.sci import PandasSpecPacker
+from fspacker.packers.libspec.sci import TorchSpecPacker
 from fspacker.utils.libs import install_lib
 
 __all__ = [
@@ -50,7 +46,7 @@ class LibraryPacker(BasePacker):
 
         logging.info(f"After updating target ast tree: {target}")
         logging.info("Start packing with specs")
-        for k, v in self.SPECS.items():
+        for k, _ in self.SPECS.items():
             if k in target.libs:
                 self.SPECS[k].pack(k, target=target)
                 target.libs.remove(k)
@@ -59,9 +55,12 @@ class LibraryPacker(BasePacker):
 
         logging.info(f"Start packing [{target.libs}] with default")
         for lib in list(target.libs):
-            lib = get_libname(lib)
-            if lib in resources.LIBS_REPO.keys():
+            lib = LibraryAnalyzer(lib).metadata.name
+            if lib in resources.libs_repo.keys():
                 self.SPECS["default"].pack(lib, target=target)
             else:
                 logging.error(f"[!!!] Lib [{lib}] for [{lib}] not found in repo")
-                install_lib(lib, target)
+                if lib != "Unknown":
+                    install_lib(lib, target)
+                else:
+                    logging.error("lib unknown, skip.")

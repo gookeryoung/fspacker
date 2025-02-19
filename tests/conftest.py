@@ -29,9 +29,7 @@ def _call_exec(app: str, timeout=TEST_CALL_TIMEOUT):
                     proc.terminate()
                     return True
                 else:
-                    print(
-                        f"App [{app}]exited prematurely with return code [{proc.returncode}]."
-                    )
+                    print(f"App [{app}]exited prematurely with return code [{proc.returncode}].")
                     return False
 
             time.sleep(1)
@@ -68,7 +66,7 @@ def _run_project(project_dir: pathlib.Path, timeout: int = TEST_CALL_TIMEOUT):
 
 @pytest.fixture(autouse=True, scope="session")
 def clear_dist_folders():
-    print(f"Clear all dist folders.")
+    print("Clear all dist folders.")
     dist_folders = list(x for x in DIR_EXAMPLES.rglob("dist") if x.is_dir())
     for dist_folder in dist_folders:
         shutil.rmtree(dist_folder)
@@ -77,9 +75,7 @@ def clear_dist_folders():
 @pytest.fixture(autouse=True, scope="function")
 def set_default_dirs(monkeypatch):
     print("Setting up default env.")
-    monkeypatch.setenv(
-        "FSPACKER_CACHE", str(pathlib.Path("~").expanduser() / ".cache" / "fspacker")
-    )
+    monkeypatch.setenv("FSPACKER_CACHE", str(pathlib.Path("~").expanduser() / ".cache" / "fspacker"))
     monkeypatch.setenv(
         "FSPACKER_LIBS",
         str(pathlib.Path("~").expanduser() / ".cache" / "fspacker" / "libs-repo"),

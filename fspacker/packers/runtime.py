@@ -6,9 +6,9 @@ import urllib.request
 from typing import Optional
 from urllib.parse import urlparse
 
-from fspacker.conf.settings import settings
 from fspacker.core.target import PackTarget
 from fspacker.packers.base import BasePacker
+from fspacker.settings import settings
 from fspacker.utils.checksum import calc_checksum
 from fspacker.utils.url import get_fastest_embed_url
 
@@ -52,12 +52,10 @@ class RuntimePacker(BasePacker):
             logging.info("Runtime folder exists, skipping")
             return
 
-        if not settings.config.get("mode.offline", False):
+        if not settings.offline_mode:
             self.fetch_runtime()
 
-        logging.info(
-            f"Unpacking runtime: [{settings.embed_filepath.name}] -> [{dest.relative_to(target.root_dir)}]"
-        )
+        logging.info(f"Unpacking runtime: [{settings.embed_filepath.name}] -> [{dest.relative_to(target.root_dir)}]")
         shutil.unpack_archive(settings.embed_filepath, dest, "zip")
 
     @staticmethod

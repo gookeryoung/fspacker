@@ -1,0 +1,15 @@
+repos:
+  - repo: https://gitcode.com/gh_mirrors/ru/ruff-pre-commit.git
+    rev: v0.7.3
+    hooks:
+      - id: ruff
+        exclude: '(ui_.*.py)' # ignore pyqt ui files
+      - id: ruff-format
+  - repo: https://gitcode.com/gh_mirrors/pr/pre-commit-hooks.git
+    rev: v5.0.0
+    hooks:
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: fix-byte-order-marker
+      - id: trailing-whitespace
+      - id: end-of-file-fixer

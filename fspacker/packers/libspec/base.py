@@ -44,7 +44,7 @@ class DefaultLibrarySpecPacker(LibSpecPackerMixin):
     def pack(self, lib: str, target: PackTarget):
         if lib not in target.lib_folders:
             logging.info(f"Packing [{lib}], using [default] lib spec")
-            info = resources.LIBS_REPO.get(lib)
+            info = resources.libs_repo.get(lib)
             if info.filepath.suffix == ".whl":
                 install_lib(lib, target)
             elif info.filepath.suffix == ".gz":

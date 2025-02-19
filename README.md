@@ -73,5 +73,5 @@ Run command:
 
 ```bash
 cd .../ex01_helloworld_console
-fsp
+fsp b
 ```

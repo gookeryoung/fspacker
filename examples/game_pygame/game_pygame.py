@@ -71,27 +71,15 @@ def pos_to_rect(pos: Tuple[int, int], size: int) -> Tuple[int, int, int, int]:
 class Snake:
     __slots__ = ["grids", "speed", "direction"]
 
-    def __init__(
-        self, pos: Tuple[int, int], length: int, speed: int, direction: str
-    ) -> None:
+    def __init__(self, pos: Tuple[int, int], length: int, speed: int, direction: str) -> None:
         self.speed: int = speed
         self.direction: str = direction
 
         motion = GS.motions[direction]
         if direction in ("left", "right"):
-            self.grids = deque(
-                [
-                    (x, pos[1])
-                    for x in range(pos[0], pos[0] - length * motion[0], -motion[0])
-                ]
-            )
+            self.grids = deque([(x, pos[1]) for x in range(pos[0], pos[0] - length * motion[0], -motion[0])])
         else:
-            self.grids = deque(
-                [
-                    (pos[0], y)
-                    for y in range(pos[1], pos[1] - length * motion[1], -motion[1])
-                ]
-            )
+            self.grids = deque([(pos[0], y) for y in range(pos[1], pos[1] - length * motion[1], -motion[1])])
 
     def draw(self, screen: pg.surface.Surface) -> None:
         for grid in self.grids:
@@ -177,8 +165,7 @@ class Game:
         clock = pg.time.Clock()
         start_time = tpc()
         bg, border, food, info, warn, food_border = [
-            convert_color(GS.colors[x])
-            for x in "bg border food info warn food_border".split()
+            convert_color(GS.colors[x]) for x in "bg border food info warn food_border".split()
         ]
         boundary_x, boundary_y = (
             GS.geometry["grid"] * GS.geometry["nx"],
@@ -219,9 +206,7 @@ class Game:
                     self.snake.move()
                     start_time = tpc()
             else:
-                self.screen.blit(
-                    self.ttf_large.render("游戏结束!", True, warn), (180, 150)
-                )
+                self.screen.blit(self.ttf_large.render("游戏结束!", True, warn), (180, 150))
                 self.screen.blit(
                     self.ttf_large.render("输入 '回车' 继续", True, warn),
                     (140, 200),
@@ -236,18 +221,14 @@ class Game:
                 (535, 60),
             )
 
-            self.screen.blit(
-                self.ttf_large.render("操作提示", True, border), (535, 140)
-            )
+            self.screen.blit(self.ttf_large.render("操作提示", True, border), (535, 140))
             self.screen.blit(self.ttf.render("方向: W/A/S/D", True, info), (535, 200))
             self.screen.blit(self.ttf.render("退出: ESC", True, info), (535, 240))
 
             if self.snake.grids[0] == self.food:
                 self.snake.eat()
                 self.score += 50
-                self.snake.speed = (
-                    bisect.bisect(GS.scores, self.score) + GS.snake_init.speed
-                )
+                self.snake.speed = bisect.bisect(GS.scores, self.score) + GS.snake_init.speed
                 self.generate_food()
 
             pg.display.flip()

@@ -2,12 +2,14 @@ import ast
 import logging
 import pathlib
 import typing
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from io import StringIO
 
-from fspacker.conf.settings import settings
 from fspacker.core.resources import resources
-from fspacker.core.target import PackTarget, Dependency
+from fspacker.core.target import Dependency
+from fspacker.core.target import PackTarget
+from fspacker.settings import settings
 
 __all__ = ["parsers"]
 
@@ -28,7 +30,7 @@ class FolderParser(BaseParser):
             logging.info(f"Skip parsing folder: [{entry.stem}]")
             return
 
-        for k, v in parsers.TARGETS.items():
+        for _, v in parsers.TARGETS.items():
             if entry.stem in v.code:
                 v.sources.add(entry.stem)
                 logging.info(f"Update pack target: {v}")
@@ -60,9 +62,7 @@ class SourceParser(BaseParser):
                 logging.info(f"Add pack target{parsers.TARGETS[entry.stem]}")
 
     def _parse_folder(self, filepath: pathlib.Path) -> None:
-        files: typing.List[pathlib.Path] = list(
-            _ for _ in filepath.iterdir() if _.suffix == ".py"
-        )
+        files: typing.List[pathlib.Path] = list(_ for _ in filepath.iterdir() if _.suffix == ".py")
         for file in files:
             self._parse_content(file)
 
@@ -99,7 +99,7 @@ class SourceParser(BaseParser):
             self.info.sources.add(import_str.split(".")[0])
         else:
             import_name = import_str.split(".")[0].lower()
-            if import_name not in resources.BUILTIN_REPO:
+            if import_name not in resources.builtin_repo:
                 # ast lib
                 self.info.libs.add(import_name)
 

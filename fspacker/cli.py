@@ -2,15 +2,66 @@ import logging
 import pathlib
 import subprocess
 import time
-from dataclasses import dataclass
 
 import click
-import toml
-
-from fspacker.conf.settings import settings
 
 
-def _proc_directory(directory: str, file: str):
+class AliasedGroup(click.Group):
+    """Custom click group class for aliasing commands."""
+
+    def get_command(self, ctx, cmd_name):
+        rv = click.Group.get_command(self, ctx, cmd_name)
+        if rv is not None:
+            return rv
+        matches = [x for x in self.list_commands(ctx) if x.startswith(cmd_name)]
+        if not matches:
+            return None
+        elif len(matches) == 1:
+            return click.Group.get_command(self, ctx, matches[0])
+        ctx.fail(f"Too many matches: {','.join(sorted(matches))}")
+
+
+# Group for fspacker command line interface
+cli = AliasedGroup(
+    name="fspacker",
+    help="fspacker command line interface.",
+)
+
+
+@cli.command("build", short_help="Build source files. [b]")
+@click.option("-a", "--archive", is_flag=True, help="Archive mode, pack as archive files.")
+@click.option("--debug/--no-debug", "-D/-ND", default=False, help="Debug mode, show detail information.")
+@click.option("--offline", "-O", is_flag=True, help="Offline mode, skip network requests.")
+@click.option("-f", "--file", default="", help="Input source file.")
+@click.argument("directory", default=None, required=False)
+def build_command(
+    archive: bool,
+    directory: str,
+    file: str,
+    offline: bool,
+    debug: bool,
+):
+    """Build source files."""
+
+    if debug:
+        logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
+        logging.info("[Debug] mode enabled.")
+    else:
+        logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
+
+    from fspacker.settings import settings
+
+    if archive:
+        logging.info("[Archive] mode enabled.")
+
+    if offline:
+        logging.info("[Offline] mode enabled.")
+    else:
+        logging.info("[Online] mode enabled.")
+
+    settings.config["mode.archive"] = archive
+    settings.config["mode.offline"] = offline
+
     file_path = pathlib.Path(file)
     dir_path = pathlib.Path(directory) if directory is not None else pathlib.Path.cwd()
 
@@ -29,100 +80,44 @@ def _proc_directory(directory: str, file: str):
     logging.info(f"Packing done! Total used: [{time.perf_counter() - t0:.2f}]s.")
 
 
-@dataclass
-class BuildOptions:
-    debug: bool
-    show_version: bool
-
-    def __repr__(self):
-        return f"Build mode: [debug: {self.debug}, version: {self.show_version}]."
-
-
-@click.group(invoke_without_command=True)
-@click.option("--debug", is_flag=True, help="Debug mode, show detail information.")
-@click.option(
-    "-v", "--version", is_flag=True, help="Debug mode, show detail information."
-)
-@click.pass_context
-def cli(ctx: click.Context, debug: bool, version: bool):
-    ctx.obj = BuildOptions(debug=debug, show_version=version)
-
-    if debug:
-        logging.basicConfig(level=logging.DEBUG, format="[*] %(message)s")
-    else:
-        logging.basicConfig(level=logging.INFO, format="[*] %(message)s")
-
-    logging.info(ctx.obj)
-
-    if version:
-        from fspacker import __version__
-
-        logging.info(f"fspacker {__version__}")
-        return
-
-    if ctx.invoked_subcommand is None:
-        ctx.invoke(build)
-
-
-@cli.command()
-@click.option("-d", "--directory", default=None, help="Input source file.")
-@click.option("-f", "--file", default="", help="Input source file.")
-@click.option(
-    "--offline",
-    is_flag=True,
-    help="Offline mode, must set FSPACKER_CACHE and FSPACKER_LIBS first.",
-)
-@click.option(
-    "-a", "--archive", is_flag=True, help="Archive mode, pack as archive files."
-)
-def build(offline: bool, archive: bool, directory: str, file: str):
-    logging.info(f"Current directory: [{directory}].")
-
-    if offline:
-        settings.config["mode.offline"] = True
-
-    if archive:
-        settings.config["mode.archive"] = True
-
-    _proc_directory(directory, file)
-
-
-def main():
-    cli()
-
-
-@cli.command()
-def update():
-    """Update version for fspacker"""
-
-    pyproject = toml.load("pyproject.toml")
-
-    # 获取最新的 Git 标签
+@cli.command("update", short_help="Update version for fspacker based on the latest Git tag. [u]")
+def update_command():
+    # Get latest tag from Git
     try:
         tag = (
             subprocess.check_output(
-                ["git", "describe", "--tags", "--abbrev=0"], stderr=subprocess.STDOUT
+                ["git", "describe", "--tags", "--abbrev=0"],
+                stderr=subprocess.STDOUT,
             )
             .strip()
             .decode("utf-8")
         )
-        new_version = tag.replace("v", "")  # 使用标签作为新版本
+        new_version = tag.replace("v", "")
         print(f"Updating version to {new_version} based on the latest tag.")
     except subprocess.CalledProcessError:
-        # 如果没有标签，打印信息并返回
         print("No tag found. Skipping version update.")
         return
 
-    # 更新 pyproject.toml
-    pyproject["tool"]["poetry"]["version"] = new_version
-    with open("pyproject.toml", "w") as f:
-        toml.dump(pyproject, f)
-
-    # 更新 fspacker/__init__.py
     with open("fspacker/__init__.py", "w") as f:
-        f.write(f'__version__ = "{new_version}"')
+        build_date = time.strftime("%Y-%m-%dT%H:%M:%SZ")
+        f.write(f'__version__ = "{new_version}"\n')
+        f.write(f'__build_date__ = "{build_date}"\n')
 
     print(f"Updated version to {new_version}")
+
+
+@cli.command("version", short_help="Show version information. [v]")
+def version_command():
+    """Show version information."""
+
+    from fspacker import __build_date__
+    from fspacker import __version__
+
+    click.echo(f"fspacker {__version__}, build date: {__build_date__}")
+
+
+def main():
+    cli.main()
 
 
 if __name__ == "__main__":

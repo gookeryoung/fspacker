@@ -5,13 +5,14 @@ import typing
 
 import pkginfo
 
-from fspacker.conf.settings import settings
 from fspacker.core.archive import unpack
 from fspacker.core.libraryinfo import LibraryInfo
 from fspacker.core.resources import resources
 from fspacker.core.target import PackTarget
+from fspacker.settings import settings
 from fspacker.utils.trackers import perf_tracker
-from fspacker.utils.wheel import unpack_wheel, download_wheel
+from fspacker.utils.wheel import download_wheel
+from fspacker.utils.wheel import unpack_wheel
 
 
 def get_lib_meta_name(filepath: pathlib.Path) -> typing.Optional[str]:
@@ -24,17 +25,13 @@ def get_lib_meta_name(filepath: pathlib.Path) -> typing.Optional[str]:
     try:
         meta_data = pkginfo.get_metadata(str(filepath))
         if meta_data is not None and meta_data.name is not None:
-            logging.info(
-                f"Parsed library name: [{meta_data.name.lower()}] from [{filepath}]"
-            )
+            logging.info(f"Parsed library name: [{meta_data.name.lower()}] from [{filepath}]")
             return meta_data.name.lower()
         else:
             logging.warning(f"No valid metadata found in [{filepath}]")
             return None
     except Exception as e:
-        logging.error(
-            f"Error occurred while parsing library name from [{filepath}]: {e}"
-        )
+        logging.error(f"Error occurred while parsing library name from [{filepath}]: {e}")
         return None
 
 
@@ -43,19 +40,14 @@ def get_lib_meta_depends(filepath: pathlib.Path) -> typing.Set[str]:
     try:
         meta_data = pkginfo.get_metadata(str(filepath))
         if meta_data is not None and hasattr(meta_data, "requires_dist"):
-            dependencies = set(
-                re.split(r"[;<>!=()\[~.]", x)[0].strip()
-                for x in meta_data.requires_dist
-            )
+            dependencies = set(re.split(r"[;<>!=()\[~.]", x)[0].strip() for x in meta_data.requires_dist)
             logging.info(f"Dependencies for library [{filepath.name}]: {dependencies}")
             return dependencies
         else:
             logging.warning(f"No requires found in metadata for [{filepath}]")
             return set()
     except Exception as e:
-        logging.error(
-            f"Error occurred while getting dependencies for [{filepath}]: {e}"
-        )
+        logging.error(f"Error occurred while getting dependencies for [{filepath}]: {e}")
         return set()
 
 
@@ -72,15 +64,15 @@ def install_lib(
         logging.info("Lib file already exists, exit.")
         return False
 
-    info: LibraryInfo = resources.LIBS_REPO.get(libname.lower())
+    info = resources.libs_repo.get(libname.lower())
     if info is None or not info.filepath.exists():
-        if settings.config.get("mode.offline", None) is True:
+        if settings.offline_mode:
             logging.error(f"[!!!] Offline mode, lib [{libname}] not found")
             return False
 
         filepath = download_wheel(libname)
         if filepath and filepath.exists():
-            resources.LIBS_REPO[libname] = LibraryInfo.from_filepath(filepath)
+            resources.libs_repo[libname] = LibraryInfo.from_filepath(filepath)
             unpack(filepath, target.packages_dir)
     else:
         filepath = info.filepath

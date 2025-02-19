@@ -4,7 +4,7 @@ import typing
 
 import requests
 
-from fspacker.conf.settings import settings
+from fspacker.settings import settings
 from fspacker.utils.trackers import perf_tracker
 
 __all__ = [
